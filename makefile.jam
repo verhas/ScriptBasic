@@ -1,0 +1,192 @@
+{@comment 
+
+Read this file only if you are curious. Just run
+
+                perl setup.pl --help
+
+and that will tell you all.
+----------------------------------------------------------------------------------------
+Jamal source for the makefile to compile ScriptBasic core code.
+
+To get the actual makefile you have to process this file using the macro processor Jamal
+with the actual macro package containing the macro defintion for the compiler. Thus
+
+             perl jamal.pl -m make_vc7.jim makefile.jam makefile.vc7
+
+to get the Visual C++ v7.0 specific make file,
+
+             perl jamal.pl -m make_bcc.jim makefile.jam makefile.bcc
+
+to get the Borland bcc compiler specific make file,
+
+             perl jamal.pl -m make_gcc.jim makefile.jam makefile
+
+to get the GNU C compiler specific make file under UNIX/Linux.
+
+Note that these macros are defined in several files:
+
+make_common.jim contains the macro defintions that are compiler and operating system independent.
+
+make_nt.jim contains the macros that are NT specific, but compiler independent
+make_unix.jim contains the macros that are UNIX specific, but compiler independent
+
+make_gcc.jim contains the macros that are GNU CC specific under UNIX
+make_bcc.jim contains the macros that are Borland C compiler specific
+make_vc7.jim contains the macros that are Microsoft Visual C++ v7.0 compiler specific
+
+The compiler specific macro files include the operating system specific macro files, which finally
+include make_common.jim.
+
+This technology allows single makefile maintenance. Hopefully.
+
+}\
+
+{@comment
+
+Define the object files that are CORE of ScriptBasic and are used in each and every variation.
+
+}\
+{#define objectfiles=\
+ {MainObj basext} {MainObj builder} {MainObj buildnum} {MainObj confpile} {MainObj conftree} {MainObj dynlolib}\
+ {MainObj epreproc} {MainObj errcodes} {MainObj execute} {MainObj expression} {MainObj filesys} {MainObj getopt} {MainObj hndlptr} {MainObj hookers}\
+ {MainObj httpd} {MainObj ipreproc} {MainObj lexer} {MainObj logger} {MainObj lsp} {MainObj match}\
+ {MainObj memory} {MainObj modumana} {MainObj myalloc} {MainObj mygmtime} {MainObj options} \
+ {MainObj reader} {MainObj report} {MainObj scriba} {MainObj sym} {MainObj syntax} {MainObj thread} {MainObj uniqfnam} {MainObj md5}\
+ {MainObj environ} {MainObj external} {MainObj extops} {MainObj file} {MainObj function} {MainObj goto} {MainObj if}\
+ {MainObj let} {MainObj mathfunc} {MainObj mathops} {MainObj print} {MainObj string} {MainObj time} {MainObj while}}
+
+all: {MainExe scriba} {#if/{#eq {#if/{?macos}/{?macos}/nomacos} nogusi}//{MainExe sbhttpd}} {MainLib libscriba}
+
+{@comment ------------------------------------------------------------
+
+ The main LIB containing all common code of ScriptBasic used to
+ link the BASIC -> C compiler generated C code.
+
+----------------------------------------------------------------------}
+{MainLib libscriba} : {objectfiles} {MainObj stndlone}
+	{lib} {LibOptOutput {MainLib libscriba}} {objectfiles} {MainObj stndlone}
+
+{@comment ------------------------------------------------------------
+
+ The LIB containing all common code for variations of ScriptBasic
+
+----------------------------------------------------------------------}
+{MainLib lscriba} : {objectfiles}
+	{lib} {LibOptOutput {MainLib lscriba}} {objectfiles}
+
+{@comment ------------------------------------------------------------
+
+ Generated C files
+
+----------------------------------------------------------------------}
+errcodes.c : errors.def
+	perl generrh.pl
+
+syntax.c : syntax.def
+	perl syntaxer.pl
+
+lmt_none.c : lmt_none.def
+	perl lmt_make.pl $?
+
+{@comment ------------------------------------------------------------
+
+ Main OBJECT files
+
+----------------------------------------------------------------------}
+{#define CompileMain/X/Y=\
+{MainObj X} : X.c Y
+	{cc} {CcOptCompile} {CcOptOutput {MainObj X}} X.c
+}
+{CompileMain confpile}
+{CompileMain ipreproc}
+{CompileMain lsp}
+{CompileMain scriba}
+{CompileMain buildnum}
+{CompileMain builder filesys.h report.h lexer.h sym.h expression.h myalloc.h builder.h errcodes.h buildnum.h}
+{CompileMain conftree conftree.h errcodes.h filesys.h}
+{CompileMain dynlolib}
+{CompileMain execute sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h}
+{CompileMain expression errcodes.h report.h lexer.h sym.h expression.h myalloc.h}
+{CompileMain filesys errcodes.h}
+{CompileMain httpd}
+{CompileMain getopt}
+{CompileMain lexer errcodes.h report.h lexer.h}
+{CompileMain match errcodes.h}
+{CompileMain logger}
+{CompileMain mygmtime}
+{CompileMain thread}
+{CompileMain hndlptr}
+{CompileMain memory errcodes.h myalloc.h}
+{CompileMain modumana basext.h sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h dynlolib.h modumana.h}
+{CompileMain hookers basext.h sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h dynlolib.h hookers.h}
+{CompileMain myalloc}
+{CompileMain epreproc myalloc.h}
+{CompileMain options sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h}
+{CompileMain stndlone getopt.h scriba.h basext.h}
+{CompileMain reader filesys.h report.h errcodes.h conftree.h reader.h}
+{CompileMain report errcodes.h}
+{CompileMain sym}
+{CompileMain basext}
+{CompileMain uniqfnam}
+{CompileMain errcodes}
+{CompileMain syntax report.h lexer.h sym.h expression.h syntax.h}
+{CompileMain md5}
+
+{@comment ------------------------------------------------------------
+
+ Command OBJs
+
+----------------------------------------------------------------------}
+{#define CompileCommand/X=\
+{MainObj X} : commands/X.c
+	{cc} {CcOptCompile} {CcOptOutput {MainObj X}} commands/X.c
+}
+{CompileCommand extops}
+{CompileCommand environ}
+{CompileCommand external}
+{CompileCommand file}
+{CompileCommand function}
+{CompileCommand goto}
+{CompileCommand if}
+{CompileCommand let}
+{CompileCommand mathfunc}
+{CompileCommand mathops}
+{CompileCommand print}
+{CompileCommand string}
+{CompileCommand time}
+{CompileCommand while}
+
+
+{@define CompileVariationC/X=
+{VarObj X} : {VarC X}
+	{mkdir {vardir}{VARIATION}}
+	{cc} {CcOptCompile} {CcOptOutput {VarObj X}} {VarC X}
+}
+
+
+{#define VARIATION=standard}
+{#define OBJS={VarObj scribacmd} {MainObj lmt_none}}
+{MainExe scriba} : {MainLib lscriba} {OBJS}
+	{cc} {LdOptOutput {MainExe scriba}} {OBJS} {MainLib lscriba} {StandardLibraries}
+	{#if/{?macos}/echo Please test scriba manually/{exedir}scriba -v}
+
+{VarObj scribacmd} : {VarC scribacmd}
+	{mkdir {vardir}{VARIATION}}
+	{cc} {CcOptCompile} {CcOptOutput {VarObj scribacmd}} {VarC scribacmd}
+
+{MainObj lmt_none} : lmt_none.c
+	{cc} {CcOptCompile} {CcOptOutput {MainObj lmt_none}} lmt_none.c
+
+
+{#define VARIATION=httpd}
+{#define OBJS={VarObj websrv} {VarObj service} {MainObj lmt_none}}
+{MainExe sbhttpd} : {MainLib lscriba} {OBJS}
+	{cc} {LdOptOutput {MainExe sbhttpd}} {OBJS} {MainLib lscriba} {StandardLibraries}
+
+{CompileVariationC websrv}
+
+{CompileVariationC service}
+
+{MainObj lmt_httpd} : lmt_httpd.c
+	{cc} {CcOptCompile} {CcOptOutput {MainObj lmt_httpd}} lmt_httpd.c
+

@@ -1,0 +1,29 @@
+{@define bin={osbin}vc7\}
+{#include macro make_nt.jim}
+{@comment define the command that starts make with Visual C++ v7.0}
+{#define make=nmake}
+
+{@comment
+The C compiler is 'cl'
+/Ox	maximum optimization
+/GA6	optimize for Windows applications/PentiumPro/disable stack checking calls
+/DWIN32	define the symbol WIN32
+/MT	multi-thread compile
+/nologo	be silent while compiling
+/W0	warning level zero (warnings are cared when compiling in the integrated environment for debuging)
+}
+{#define cc=cl /Ox /GA6s /DWIN32 /MT /nologo /W0}
+{#define CcOptOutput/X=/FoX}
+{#define CcOptInput/X=X}
+{#define CcOptCompile=/c}
+{#define CcOptDefine/X=-DX}
+
+{#define lib=lib /nologo}
+{#define LibOptOutput/X=/OUT:X}
+{#define LibOptInput/X=X}
+
+{#define ld=cl /LD /nologo}
+{#define LdOptOutput/X=/FeX}
+{#define LdOptInput/X=X}
+
+{#define StandardLibraries=ws2_32.lib advapi32.lib}

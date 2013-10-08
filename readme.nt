@@ -1,0 +1,28 @@
+This is the README.TXT file of ScriptBasic binary distribution for
+Windows platforms.
+
+ScriptBasic was installed into the directory INSTALLDIRECTORY on your computer.
+
+The binaries of ScriptBasic are located in the directory INSTALLDIRECTORY\bin
+The location of the interpreter was added to the path by the install program,
+thus you can start it typing 'scriba' at the command prompt specifying the
+BASIC program name following it. For example:
+
+INSTALLDIRECTORY>scriba test.sb
+
+To read the documentation of ScriptBasic and the modules installed by setup.exe
+click on the START button and open the documentation.
+
+The ScriptBasic interpreter is licenced LGPL. The text of the licence can be found
+in the file
+
+            INSTALLDIRECTORY\license.txt
+
+Some of the modules use code from different projects thus they may be licensed different.
+
+The homepage of the ScriptBasic interpreter is
+
+            http://scriptbasic.com
+
+Budapest July 2003
+Peter Verhas

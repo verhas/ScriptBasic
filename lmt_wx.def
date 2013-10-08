@@ -1,0 +1,5 @@
+#
+# This file defines which modules are linked statically to ScriptBasic
+# Use the program 
+#
+wx

@@ -1,0 +1,205 @@
+
+This file is deprecated and is not used any more!! This is not a comment.
+This is a deliberate syntax error. Do not use this file. Create install.sh
+starting:
+
+./setup --install
+
+instead of compiling install.sh.jam to install.sh!!!!!
+
+Peter Verhas
+July 14, 2003
+
+# This script is invoked by the tool make when compiling ScriptBasic
+#
+# make install
+#
+# This script copies the compiled files to the installation
+# directories and sets the owner, group and permissions of the
+# files.
+#
+CONFIGDIR=/etc/scriba
+INCLUDE=/usr/share/scriba/include
+SOURCE=/usr/share/scriba/source
+MODULE=/usr/local/lib/scriba
+LIB=/usr/local/lib
+CACHE=/var/cache/scriba/cache
+HEBTEMP=/var/cache/scriba/hebtemp
+BIN=/usr/bin
+LOG=/var/log/scriba
+ETC=/etc/init.d
+ERRCOUNT=0
+{@define ERROR/X=\
+ echo "###ERROR X"
+ let ERRCOUNT=$ERRCOUNT+1
+}\
+{@define CreateDirectory/DIR/PERMISSION=\
+if [ -e DIR ] ; then
+  echo "DIR already exists"
+else
+  echo "DIR creating"
+  mkdir -p DIR 2>/dev/null
+  if [ $? -ne 0 ] ; then
+   {ERROR creating directory DIR}
+  fi
+  chmod PERMISSION DIR 2>/dev/null
+  if [ $? -ne 0 ] ; then
+   {ERROR setting the permission on DIR to value PERMISSION}
+  fi
+fi
+}
+{@define CopyFile/FILE/TO/OWNER/PERMISSION=\
+# if it existed and had some restrictive permission then we
+# have to alter the permission to be able to overwrite it
+# during copy
+chmod 777 TO 2>/dev/null
+cp FILE TO 2>/dev/null
+if [ $? -ne 0 ] ;then
+  {ERROR copying the file FILE to TO}
+fi
+
+chown OWNER:OWNER TO 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR setting the owner of the file FILE to OWNER}
+fi
+
+chmod PERMISSION TO 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR changing the permission of TO to PERMISSION}
+fi
+}
+{@define CopyFiles/FILE/DESTINATION/TOFILS/OWNER/PERMISSION=\
+# if it existed and had some restrictive permission then we
+# have to alter the permission to be able to overwrite it
+# during copy
+chmod 777 TOFILS 2>/dev/null
+cp FILE DESTINATION 2>/dev/null
+if [ $? -ne 0 ] ;then
+  {ERROR copying the file FILE to DESTINATION}
+fi
+
+chown OWNER:OWNER TOFILS 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR setting the owner of the file TOFILS to OWNER}
+fi
+
+chmod PERMISSION TOFILS 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR changing the permission of TOFILS to PERMISSION}
+fi
+}
+
+{CreateDirectory $LOG 666}
+{CreateDirectory $CONFIGDIR 555}
+{CreateDirectory $INCLUDE 555}
+{CreateDirectory $SOURCE 555}
+{CreateDirectory $MODULE 555}
+{CreateDirectory $LIB 655}
+
+
+#
+# clean old cache files that may 
+# have been created by previous version
+#
+if [ -e $CACHE ] ; then
+ echo "purging old cache files from $CACHE"
+ rm -rf $CACHE/*
+else
+ echo "creating cache directory $CACHE"
+ mkdir -p $CACHE
+fi
+echo "setting permission 777 to $CACHE"
+chmod 777 $CACHE 2>/dev/null
+if [ $? -ne 0 ] ; then
+ {ERROR setting the permission of the directory $CACHE to 777}
+fi
+
+if [ -e $HEBTEMP ] ; then
+ rm -rf $HEBTEMP/*
+fi
+mkdir -p $HEBTEMP
+chmod a+rw $HEBTEMP
+
+cp ./scriba $BIN/scriba
+chown root:root $BIN/scriba
+chmod a+rx $BIN/scriba
+
+cp ./cftc $BIN/cftc
+chown root:root $BIN/cftc
+chmod a+rx $BIN/cftc
+
+
+echo "Now I stop the Eszter SB Engine."
+if [ -e /etc/init.d/sbhttpd ] ; then
+  /etc/init.d/sbhttpd stop >/dev/null 2>/dev/null
+fi
+killall sbhttpd 2> /dev/null
+
+echo "copying the file sbhttpd binary executable to $BIN"
+{CopyFile ./sbhttpd $BIN/sbhttpd root 555}
+echo "copying the file sbhttpd shell script to $ETC"
+{CopyFile ./etc-init.d-sbhttpd $ETC/sbhttpd root 555}
+
+cat <<'END'
+************************************************************
+The Eszter SB Application Engine (if it was running) was
+stopped to allow upgrade. It may happen that it was not
+running at all though. No problem.
+
+Due to security reasons the installation process does not
+start or in case it was already running restart the server.
+
+If you need Eszter SB Application Engine running then please
+start it saying:
+
+/etc/init.d/sbhttpd start
+************************************************************"
+END
+
+# this is commented out because we do not want to install
+# and start a http daemon on any system so that the system
+# manager may not be aware of it
+#/etc/init.d/sbhttpd start
+
+echo "copy all the shared object modules"
+{CopyFiles ./*.so $MODULE $MODULE/*.so root 555}
+echo "copy all the .bas include files"
+{CopyFiles ./include/*.bas $INCLUDE $INCLUDE/*.bas root 444}
+echo "copy the scriba library file"
+{CopyFile ./libscriba.a $LIB/libscriba.a root 444}
+echo "copy the example preprocessor to the source directory"
+{CopyFile ./heber.bas $SOURCE/heber.bas root 444}
+
+chmod u+rw $CONFIGDIR/basic.conf 2>/dev/null
+./cftc scriba.conf.unix.lsp $CONFIGDIR/basic.conf 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR creating the default configuration file}
+fi
+cat <<END
+************************************************************
+The ScriptBasic configuration file was updated using the
+default sample configuration file. In case you have already
+a configuration file that you have used reinstall it
+using the configuration compiler program saying:
+
+/usr/bin/cftc your_old_config_file $CONFIGDIR/basic.conf
+
+If you did not have a configuration from an older installation
+then start using the default configuration and save the text
+version of the default config file at a location you wish.
+The text version of the default configuration is stored in
+the file scriba.conf.unix.lsp
+************************************************************
+END
+
+if [ $ERRCOUNT -eq 0 ] ; then
+ echo "It seems that the installation was sucessful"
+else
+ if [ $ERRCOUNT -eq 1 ] ; then
+  echo "There was one error during installation."
+ else
+  echo "There were $ERRCOUNT errors during installation."
+ fi
+fi
+echo
+echo "DID YOU READ ALL THE MESSAGES ABOVE? THEY ARE IMPORTANT!"

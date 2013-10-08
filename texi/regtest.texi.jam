@@ -1,0 +1,2514 @@
+{#sep/[[[/]]]}
+[[[#use samples]]]
+ [[[@define TBD=
+This section is under development. In case you think that you can and want to write this section, please do not hesitate. First contact @email{peter@@verhas.com} for formatting details and then go ahead.
+]]]
+
+[[[@define Example/FILE_NAME/TEXT=
+[[[#::sample FILE_NAME
+TEXT]]]
+Example @code{FILE_NAME} :
+
+@example
+TEXT
+@end example]]]
+
+
+[[[@define Result/FILE_NAME=
+
+Result executing @code{FILE_NAME} :
+
+
+@example
+[[[#::execute scriba FILE_NAME 2> error.txt ]]]
+@end example
+
+Possible error messages sent to @code{stderr}:
+@example
+[[[#include tmp/error.txt]]]
+@end example
+]]]
+
+[[[@define ResultWithInput/FILE_NAME/INPUT=
+[[[#::sample input.txt
+INPUT]]]
+
+Result executing @code{FILE_NAME} :
+
+
+@example
+
+[[[#::execute scriba FILE_NAME < input.txt 2> error.txt ]]]
+@end example]]]
+
+[[[@define ExampleAndResult/FILE_NAME/TEXT=
+[[[Example/FILE_NAME/TEXT]]]
+
+[[[Result/FILE_NAME]]]
+]]]
+
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename source
+@settitle ScriptBasic Regression Test Documentation
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title ScriptBasic Regression Test Documentation
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+Compiling this documentation executes a series of ScriptBasic programs and gets both the source code and the result into the final documentation. The reason for this is to have regression test for each new version of ScriptBasic more or less documented.
+
+Some regression test can not be performed from this documentation compilation. In such case the source file is still included into this documentation but the program is not executed. These are CGI programs, console IO testing programs or some programs that require more interactivity than just @code{stdin} input and @code{stdout} output.
+
+This documentation was created using
+
+[[[#::execute scriba -v 2> sversion.txt]]]
+@example
+
+[[[#include tmp/sversion.txt]]]
+@end example
+
+@chapter Command Line Tests
+
+@section testnt.bas
+
+This test some functions of the module @code{NT}.
+
+[[[ExampleAndResult testnt.bas
+import nt.bas
+
+print nt::RegRead("HKLM\\SOFTWARE\\SCRIPTBASIC\\CONFIG"),"\n"
+print nt::RegRead("HKLM\\SOFTWARE\\SCRIPTBASIC\\DWORD"),"\n"
+print nt::RegRead("HKLM\\SOFTWARE\\SCRIPTBASIC\\BIN"),"\n"
+
+' nt::RegDel "HKLM\\SOFTWARE\\SCRIPTBASIC\\BIN"
+nt::RegWrite "HKLM\\SOFTWARE\\SCRIPTBASIC\\BIN1","kakukk"
+nt::RegWrite "HKLM\\SOFTWARE\\SCRIPTBASIC\\DWORD1",614
+
+nt::RegWrite "HKLM\\SOFTWARE\\SCRIPTBASIC\\" , "default value"
+
+' nt::RegWrite "HKLM\\SOFTWARE\\SCRIPTBASIC\\SUB\\DWORD1",614
+]]]
+
+The result printed should be the full path to the configuration file of the actual installation and @code{undef} twice.
+
+After executing this script check the Windows NT registry to see that the sample program has written some information into it.
+
+@section reftest.bas
+
+This program generated access violation until v1.0b26. This was because ScriptBasic handled variable references to other variables in an extremely simple manner.
+
+[[[ExampleAndResult reftest.bas
+sub test(a)
+ undef q
+ print a
+end sub
+q[1] = 1
+test q[1]
+print q
+]]]
+
+@section const.bas
+
+This program test the difference local (module local) and global constants.
+
+[[[ExampleAndResult const.bas
+module TEST
+a = "VARIABLE"
+Global Const a = "a "
+Const b = "b "
+
+sub TestSub
+const c = "c "
+print "  values in TestSub=",a,b,c,"\n"
+var a
+print "a in sub=",a,"\n"
+end sub
+
+print "values in the module=",a,b,c,"\n"
+print "values called from within the module:\n"
+TestSub
+var a
+print "a in module=",a,"\n"
+end module
+print "values outside the module=",a,b,c,"\n"
+print "values called from outside the module:\n"
+TEST::TestSub
+var a
+print "a in global=",a,"\n"
+]]]
+
+@section commandline.bas
+
+[[[Example commandline.bas
+' This program demonstrates the command function
+' start the program using the command line:
+'     scriba commandline.bas a b c d e f
+'
+print "The command line was:\n",command(),"\n"
+]]]
+
+@section gdtest.bas
+
+This program creates a file @file{test.png} with some graphics in it.
+
+[[[Example gdtest.bas
+import gd.bas
+
+brush = gd::Create(10,10)
+white = gd::Color(brush,255,255,255)
+black = gd::Color(brush,0,240,0)
+gd::Line brush,0,0,10,10,black
+gd::Line brush,0,10,10,0,black
+
+' gd::SavePng brush,"brush.png"
+
+image = gd::Create(400,300)
+
+white = gd::Color(image,255,255,255)
+gd::SetTransparentColor image,white
+black = gd::Color(image,0,0,0)
+red =  gd::Color(image,255,0,0)
+blue =  gd::Color(image,0,0,255)
+green = gd::Color(image,0,255,0)
+
+gd::Point image,0,0,black
+
+gd::Rectangle image,200,50,250,100,red
+gd::FilledRectangle image,225,75,275,125,green
+
+gd::Rectangle image,324,190,376,290,black
+gd::SetTile image,brush
+' caused stack overflow on a fine NT? Should be some poor implementation
+'gd::FillToBorder image,325,191,black,gd::Tiled
+
+gd::Circle image,350,50,40,blue
+gd::FillToBorder image,350,50,blue,green
+gd::Fill image,201,51,blue
+
+gd::SetBrush image,brush
+gd::Line image,300,200,300,350,gd::Brushed
+
+gd::SetColor image,black
+
+gd::SetFont image,gd::FontTiny
+gd::print image,0,0,"THIS PICTURE WAS CREATED FROM ScriptBasic USING THE MODULE GD/PNG"
+gd::print image,0,10,"x=",gd::SizeX(image)," y=",gd::SizeY(image)
+gd::print image,100,100,"Tiny ",12*3+55
+
+gd::SetFont image,gd::FontSmall
+gd::print image,100,120,"Small ",55*63
+
+gd::SetFont image,gd::FontMedium
+gd::print image,100,150,"Medium ",24/19
+
+gd::SetFont image,gd::FontLarge
+gd::print image,100,190,"Large ",sin(3.1)
+
+gd::SetFont image,gd::FontGiant
+gd::print image,100,240,"Giant ",log(1000)
+
+
+for i=0 to 65 step 5
+  gd::Line image,i,20,65-i,75
+next i
+
+LineStyle[0] = black
+LineStyle[1] = black
+LineStyle[2] = undef
+LineStyle[3] = undef
+LineStyle[4] = red
+LineStyle[5] = green
+LineStyle[6] = blue
+LineStyle[7] = undef
+LineStyle[8] = red
+LineStyle[9] = red
+
+gd::LineStyle image,LineStyle
+
+gd::Line image,0,90,100,90,undef
+
+for i=0 to 65 step 5
+  gd::Line image,i,100,65-i,165,undef
+next i
+
+
+ImagePng = gd::Png(image)
+
+gd::Destroy image
+
+fn = 0
+open "test.png" for output as fn
+binmode fn
+print#fn,ImagePng
+undef ImagePng
+close#fn
+
+print "donez\n"
+
+]]]
+
+
+@section asc.bas
+
+[[[ExampleAndResult asc.bas
+print asc("ALMA")
+print
+print asc("00")
+print
+print asc(undef)
+print
+]]]
+
+@section replace.bas
+
+[[[ExampleAndResult replace.bas
+print Replace("alabama mama", "a","x",3,5)
+print
+end
+OriginalString = "a-a-a-a-"
+StringToReplace = "a"
+ReplaceString ="KURTA"
+for i=-1 to 5
+  print Replace(OriginalString,StringToReplace,ReplaceString,i)
+  print
+next i
+print "---------\n"
+print Replace(OriginalString,StringToReplace,ReplaceString)
+print
+for i=-1 to 5
+  print Replace(OriginalString,StringToReplace,ReplaceString,i,3)
+  print
+next i
+print "---------\n"
+print Replace(OriginalString,StringToReplace,ReplaceString,undef,3)
+print
+
+]]]
+
+@section replace_bug1.bas
+
+This program is to test a bug that was present in earlier version of ScriptBasic.
+
+[[[ExampleAndResult replace_bug1.bas
+print replace("abcd","bc","x"),"\n"
+
+]]]
+
+@section replace_bug2.bas
+
+This program is to test a bug that was present in earlier version of ScriptBasic.
+
+[[[ExampleAndResult replace_bug2.bas
+print replace("abcd","b","x"),"\n"
+print replace("abcd","bc","xx"),"\n"
+print replace("abcd","b","xx"),"\n"
+print replace("abcd","bc","x"),"\n"
+
+]]]
+
+@section replace_bug3.bas
+
+This program is to test a bug that was present in earlier version of ScriptBasic.
+
+[[[ExampleAndResult replace_bug3.bas
+print replace("abcd","b","x"),"\n"
+print replace("abcd","b","xx"),"\n"
+print replace("abcd","bc","xx"),"\n"
+print replace("abcd","bc","x"),"\n"
+print"\n"
+print replace("abcd","b","x"),"\n"
+print replace("abcd","bc","xx"),"\n"
+print replace("abcd","b","xx"),"\n"
+print replace("abcd","bc","x"),"\n"
+
+' axcd
+' axxcd
+' axxc
+' axx
+' 
+' axcd
+' axxd
+' axxcd
+' axx
+]]]
+
+@section stringfunexa.bas
+
+[[[ExampleAndResult stringfunexa.bas
+' This concatenation will result "65"
+a = 6 & 5
+' the first character of the string "65" is used
+q = STRING(5,a)
+' val(65) on the other hand is "A"
+w = STRING(5,val(a))
+print "This should print 66666AAAAA\n"
+print q,w
+
+]]]
+
+@section scompare.bas
+
+[[[ExampleAndResult scompare.bas
+option compare sbCaseInSensitive
+const nl="\n"
+a{"kakukk"} ="birka"
+a{"mukik"} = "hurka"
+a{"mukak"} = "hurki"
+
+print a{"KAKUKK"},nl
+
+]]]
+
+@section testcall.bas
+
+This program tests the function call features of ScriptBasic. This tests rather the syntax analyzer capabilities and less the run-time. The function call syntax is rather free and is implemented by a special syntax analysis function in the interpreter. It is allowed to call a function without the keyword @code{Call} is the function is already defined, but is needed if the function/sub is not defined yet (before the actual function/sub definition).
+
+Calling a function can be with and without arguments, and the arguments can be enclosed between parentheses but it is not a must unless the function is called inside and expression. Using parenthesis can be confusing when the first argument is enclosed between parentheses but the argument list is not. For this case a special algorithm is applied that counts the opening and closing parentheses on the line following the function call. This is tested in this program.
+
+[[[ExampleAndResult testcall.bas
+Call MySub(1,2,3)
+Call MySub 2,3,4
+Call MySub(3),4,5
+Call MySub 4,(5),6
+Call MySub
+Call MySub()
+Call MySub(3)
+
+sub MySub(a,b,c)
+ByVal a,b,c
+if not isdefined(a) then a = "-"
+if not isdefined(b) then b = "-"
+if not isdefined(c) then c = "-"
+print a," ",b," ",c
+print "\n"
+
+end sub
+
+MySub(1,2,3)
+MySub 2,3,4
+MySub(3),4,5
+MySub 4,(5),6
+MySub
+MySub()
+MySub(3)
+Call MySub(1,2,3)
+Call MySub 2,3,4
+Call MySub(3),4,5
+Call MySub 4,(5),6
+Call MySub
+Call MySub()
+Call MySub(3)
+
+]]]
+
+@section recurse.bas
+
+This program tests recursive function call of the simplest type. It actually does nothing, but calculates the number @code{10}. It knows that @code{10} is assigned to 10 and that the number assigned to a number @code{x < 10} is the same as the number assigned to @code{x+1}.
+
+[[[ExampleAndResult recurse.bas
+'
+' This function calculates the number 10
+' recursively
+'
+function Calculate10(x)
+
+ print "Starting calculate 10 for the number ",x,"\n"
+
+  if x = 10 then
+   Calculate10 = x
+  else
+   Calculate10 = Calculate10(x+1)
+  endif
+
+ print "Ending calculate 10 for the number ",x,"\n"
+
+end function
+
+Calculate10 1
+]]]
+
+@section msgbox.bas
+
+This program uses the module @code{nt} and displays several message boxes. It actually displays all possible message box options, with several buttons, and signs. This program is interactive and thus it is not executed when this document is compiled.
+
+[[[Example msgbox.bas
+import nt.bas
+
+nt::MsgBox """This program test the various text boxes.
+
+In the coming message boxes press the various keys as requested by the text
+and check on the console window that the program reported the correct
+button you pressed. (Only initials are printed.)
+""","Initial MsgBox"
+
+splita " |ARI|O|RC|YN|YNC" BY "|" TO buttons
+splita " |W|I|Q|S" BY "|" TO marks
+
+for j=lbound(marks) to ubound(marks)
+
+for i=lbound(buttons) to ubound(buttons)
+
+for d=1 to len(buttons[i])
+print i," ",buttons[i]," ",j," ",marks[j]," ",d,"\n"
+R = nt::MsgBox(buttons[i],marks[j],buttons[i],marks[j],d)
+print R
+print
+
+next d
+next i
+next j
+
+
+]]]
+
+@section testpow.bas
+
+This program tests the power operator. The power operator is quite complex, because it is implemented to result valid result in as many cases as possible.
+
+[[[ExampleAndResult testpow.bas
+print "here comes a lot of 1:\n"
+print 2 ^ 0
+print -2 ^ 0
+print 2.0 ^ 0
+print -2.0 ^ 0
+print "2" ^ 0
+print "-2" ^ 0
+print "2.0" ^ 0
+print "-2.0" ^ 0
+print
+print "here comes\n2-22-22-22-2\n"
+print 2 ^ 1
+print -2 ^ 1
+print 2.0 ^ 1
+print -2.0 ^ 1
+print "2" ^ 1
+print "-2" ^ 1
+print "2.0" ^ 1
+print "-2.0" ^ 1
+print " and it did!! I told you, believe me!\n"
+print "here comes a lot of 4:\n"
+print 2 ^ 2
+print -2 ^ 2
+print 2.0 ^ 2
+print -2.0 ^ 2
+print "2" ^ 2
+print "-2" ^ 2
+print "2.0" ^ 2
+print "-2.0" ^ 2
+print
+print "2.2 ^ 2 =", 2.2 ^ 2," = ", 2.2*2.2
+print
+print 2.2 ^ -2, " should be the same as ", 1/ (2.2 ^2)
+print
+print 2.2 ^ (1/2), " should be same as ",sqr(2.2)
+print
+print 2.2 ^ -(1/2), " should be same as ", 1/ (2.2^(1/2))
+print
+print 2.2 ^ (-1/2), " last time this number"
+print
+print "again with strings\n"
+print "2.2" ^ 2
+print
+print "2.2" ^ -2, " should be the same as ", 1/ (2.2 ^2)
+print
+print "2.2" ^ "0.5", " should be same as ",sqr(2.2)
+print
+print "2.2" ^ -(1/2), " should be same as ", 1/ (2.2^(1/2))
+print
+print "2.2" ^ (-1/2), " last time this number, ... really, I promise..."
+print
+print "1.0"/sqr("22E-1")
+print
+print "1.0"/sqr("2.2")
+print
+print "never trust a program! Any program, ever!\n"
+
+
+]]]
+
+@section testproclist.bas
+
+This program tests the @code{ListProcesses} function of the module @code{nt}. As you can see there were quite a few processes running on my machine when I compiled this document.
+
+[[[ExampleAndResult testproclist.bas
+import nt.bas
+
+nt::ListProcesses PS
+
+for i=lbound(PS) to ubound(PS)
+
+  for j=0 to 8
+    print PS[i,j]," "
+  next j
+  print "\n"
+
+next i
+
+]]]
+
+@section testre.bas
+
+This program tests the regular expression module named @code{re}.
+
+[[[ExampleAndResult testre.bas
+import re.bas
+
+re::m("alma","a(.*)a")
+print re::format("qqq$1qqq")
+]]]
+
+
+@section testshutdown.bas
+
+It would be unwise to run this sample program during document compilation. To test it run it from the command line on an NT box an see it shutting down.
+
+Oh, and do not forget: you have to have the appropriate privileges to shutdown the NT box to be successful!
+
+[[[Example testshutdown.bas
+import nt.bas
+
+nt::ShutDown undef,undef,0,1,1
+
+]]]
+
+@section teststservice.bas
+
+This program is not executed during the document compilation because its working has to be checked using the NT SCM. Run it on your NT box if you have one and want to use this function.
+
+[[[Example teststservice.bas
+import nt.bas
+print """This test program starts, pauses, continues and stops
+the "Removable Storage" service. After each step it waits for user input.
+Check the state of the service in the SCM graphical display
+pressing F5 to refresh the graphical interface and then
+press ENTER in this command window to go on to the next step.
+"""
+            
+Service$ = "NtmsSvc"
+nt::StartService Service$
+print Service$ & " has been started\n"
+line input wait
+nt::PauseService Service$ 
+print Service$ & " is paused...\n"
+line input wait
+nt::ContinueService Service$
+print Service$ & " is continued...\n"
+line input wait
+nt::StopService Service$
+print Service$ & " has been stopped\n"
+line input wait
+
+
+]]]
+
+
+@section callarg_ex.bas
+
+This program tests,… well, er… I do not know what it tested originally. But at least it executes fine.
+
+[[[ExampleAndResult callarg_ex.bas
+sub thisfunc(a,b,c,d)
+
+print a
+print
+print b
+print
+print c
+print
+print d
+print
+
+a = "kakukk"
+thisfunc = "barna maci"
+
+testvar = "kék maci"
+
+end sub
+
+sub thatfunc(a,b,c,d)
+
+print "testvar is ",testvar
+
+end sub
+
+print "haho!!!\n"
+]]]
+
+@section toolstest.bas
+
+This program tests two function pairs from the module @code{t}. The program creates a three-dimensional array, then converts it to string and saves the string into a file. After the file is loaded into memory and converted back.
+
+[[[ExampleAndResult toolstest.bas
+import t.bas
+
+sub PrintVar(V,level)
+  local i,j
+
+  if IsArray(V) Then
+   for i=lbound(V) to ubound(V)
+     print space(level)
+     print i,"->"
+     PrintVar V[i],level+1
+   next i
+   exit sub
+  end if
+
+  print V,"\n"
+end sub
+
+
+for i=1 to 5
+for j=1 to 5
+for k=1 to 5
+ a[i,j,k] = i*j*k
+next k
+next j
+next i
+
+
+s = t::Array2StringMD5(a)
+
+t::SaveString "savedarray.bin",s
+
+s = undef
+
+q = t::LoadString("savedarray.bin")
+
+t::String2ArrayMD5 b,q
+
+PrintVar b,1
+]]]
+
+@section trick.bas
+
+This program demonstrates the old trick that had to be used before the operator @code{ByVal} was introduced.
+
+[[[ExampleAndResult trick.bas
+#! /usr/bin/scriba
+print " "
+a=1
+call f(a+0)
+print a
+print
+call f(a)
+print a
+print
+function f(x)
+ x=x+1
+end function
+]]]
+@section ctestif
+
+[[[ExampleAndResult ctestif.bas
+' FILE: ctestif.bas
+'
+' This basic program creates another BASIC program to test the IF/ELSEIF/ELSE
+' construction executions. This program creates a program that has
+' several IF ELSEIF ELSE ENDIF constructs with all possible true/false
+' conditions orders. The generated program should NOT write out any "FAILED"
+' and should print several OKs
+' Finally the the two numbers should match the constants printed counting the printed
+' OKs ensuring that all OKs were printed and counting the hopefully zero FAILED prints.
+'
+
+'
+' You can change this, but increasing it 
+' exponentially increases the size of the
+' generated program
+CONST LIMIT = 8
+
+open "testif.bas" for output as 1
+print#1,"""' This program was created by createtestif.bas
+' for more information on this program read the comments of that program
+"""
+print#1,"c=0\nu=0\nfor i=1 to 2"
+c=0
+for i=1 to LIMIT
+  for j=0 to 2^i
+    print#1, "IF ",ABS(odd(j))," THEN\n"
+    if odd(j) then
+      print#1, "print ",c,",\" \",c,\" OK\\n\"\nc+=1\n"
+      c+=1
+      OKwas = true
+    else
+      print#1, """print "FAILED\\n"\nu+=1\n"""
+      OKwas = 0
+    endif
+
+    BITS = j
+    for k=1 to i
+      BITS \= 2
+      if not OKwas and odd(BITS) then
+        print#1, "ELSE IF 1 THEN\n"
+        print#1, "print ",c,",\" \",c,\" OK\\n\"\nc+=1\n"
+        c+=1
+        OKwas = true
+      else
+          print#1, "ELSE IF ",abs(odd(BITS))," THEN\nprint \"FAILED\\n\"\nu+=1\n"
+      endif
+    next k
+    print#1, "ELSE\n"
+    if OKwas then
+      print#1, """print "FAILED\\n"\nu+=1\n"""
+    else
+      print#1, "print ",c,",\" \",c,\" OK\\n\"\nc+=1\n"
+      c+=1
+    endif
+    print#1, "END IF\n\n"
+  next j
+print#1, "' ------\n"
+next i
+print#1, "next\n"
+print#1,"print c,\" = ",2*c,"\"\nprint\n"
+print#1,"print u,\" = ",0,"\"\nprint\n"
+close 1
+print "Program testif.bas was created\n"
+]]]
+
+[[[Result testif.bas]]]
+
+@section hostname.bas
+
+This program tests the function @code{hostname()}. It prints it on the screen.
+
+[[[ExampleAndResult hostname.bas
+print "The local host name is :", hostname(),"\n"
+
+]]]
+@section array.bas
+
+[[[ExampleAndResult array.bas
+a[5,3]=4
+c = a[5]
+print a[5,3],c
+]]]
+
+@section cbigboy.bas
+
+[[[Example cbigboy.bas
+' Run this program to create the BASIC program
+' BIGBOY.BAS
+'
+' Run bigboy with the command line:
+'   scriba bigboy.bas -o bigboy.bbf
+'
+' Now you have both the source and the intermediate compiled version
+'
+' run
+'        basic bigboy.bas
+' and run
+'        basic bigboy.bbf
+' and see the difference in the speed of the startup.
+' 
+open "bigboy.bas" for output as 1
+
+print#1, "a=1\n"
+for i=1 to 10000
+  print #1,"a = a +1\nprint a,\"\\n\"\n"
+next
+
+close 1
+]]]
+
+@section http.bas
+
+This sample program fetches the opening page of the ScriptBasic site. Because the regression test usually executed on an off-line machine this code is not executed during the compilation of this document.
+
+[[[Example http.bas
+' This is a sample showing how easy to download a 
+' web page using ScriptBasic
+'
+open "scriptbasic.com:80" for socket as 1
+print#1,"GET / HTTP/1.0\nHost: scriptbasic.com\n\n"
+while not eof(1)
+ line input #1,a
+ print a
+wend
+close 1
+]]]
+
+@section kill.bas
+
+This script tests the command @code{kill}. To execute it get some harmless process running (like vi or notepad) and get the pid of it using the command @code{ps} on UNIX or the task manager under NT kill the process using this program.
+
+After executing the program check that the process is gone.
+
+[[[Example kill.bas
+print "give me a pid to kill!"
+line input pid
+if kill(pid) then
+  print "success\n"
+else
+  print "cannot kill\n"
+endif
+
+]]]
+
+@section factime.bas
+
+This program test the different file time settings. This program can run on both UNIX and NT however on UNIX create time is not defined.
+
+[[[ExampleAndResult factime.bas
+print FormatDate("YEAR MON DD HH:mm:ss",FileCreateTime("kill.bas"))
+print
+print FormatDate("YEAR MON DD HH:mm:ss",FileModifyTime("kill.bas"))
+print
+print FormatDate("YEAR MON DD HH:mm:ss",FileAccessTime("kill.bas"))
+print
+set file "kill.bas" createtime=TimeValue(1970,10,2,14,53)
+set file "kill.bas" modifytime=TimeValue(1980,10,2,14,53)
+set file "kill.bas" accesstime=TimeValue(1990,10,2,14,53)
+print "------------------\n"
+print FormatDate("YEAR MON DD HH:mm:ss",FileCreateTime("kill.bas"))
+print
+print FormatDate("YEAR MON DD HH:mm:ss",FileModifyTime("kill.bas"))
+print
+print FormatDate("YEAR MON DD HH:mm:ss",FileAccessTime("kill.bas"))
+print
+]]]
+@section funcallexa.bas
+
+This function tests the function definition and calling in a nested situation. The local variable @code{x} should be @code{undef} both times when this is printed.
+
+[[[ExampleAndResult funcallexa.bas
+a = MyFunction(1,2,MyFunction(1,1,1))
+print a
+printnl
+function MyFunction(a,b,c)
+local x
+
+print a,b,c,x
+printnl
+x = a * b * c
+MyFunction = a + b + c
+
+end function
+
+]]]
+
+@section instrrev.bas
+
+[[[ExampleAndResult instrrev.bas
+print InStrRev("almafa","maf")
+print
+print InStrRev("almafa","alma")
+print
+print InStrRev("almafa","afa")
+print
+print InStrRev("almafa","faa")
+print
+
+a = "alabama mama"
+StartPosition = 5000
+while IsDefined(StartPosition)
+  StartPosition = InStrRev(a,"ma",StartPosition)
+  print StartPosition
+  print
+  StartPosition = StartPosition - 1
+wend
+]]]
+
+@section instr.bas
+
+[[[ExampleAndResult instr.bas
+print InStr("almafa","maf")
+print
+print InStr("almafa","alma")
+print
+print InStr("almafa","afa")
+print
+print InStr("almafa","faa")
+print
+
+a = "alabama mama"
+StartPosition = 1
+while IsDefined(StartPosition)
+  StartPosition = InStr(a,"ma",StartPosition)
+  print StartPosition
+  print
+  StartPosition = StartPosition + 1
+wend
+]]]
+
+
+@section strconv.bas
+
+[[[ExampleAndResult strconv.bas
+a =  "123"
+print a+1
+print
+a = a-1
+print a & "bib"
+]]]
+
+
+@section like.bas
+
+[[[ExampleAndResult like.bas
+Const nl="\n"
+a="13*52" like "#*#"
+print joker(1)," ",joker(3),nl
+a="13*52" like "#~*#"
+print joker(1)," ",joker(2),nl
+set no joker "*"
+a="13*52" like "#*#"
+print joker(1)," ",joker(2),nl
+]]]
+
+@section localexa.bas
+
+[[[ExampleAndResult localexa.bas
+a = 1
+call MySub(a+0)
+print a
+sub MySub(x)
+x = x + 1
+end sub
+]]]
+
+@section lock.bas
+
+[[[ExampleAndResult lock.bas
+open "lock.bas" for binary as 1
+lock #1, write
+print "Locked now:"
+' line input a
+print
+lock #1, release
+print "unlocked, but still open"
+' line input a
+print
+close 1
+print "closed"
+print
+]]]
+
+@section locktest1.bas
+
+[[[ExampleAndResult locktest1.bas
+open "locktest.txt" for output as 1
+lock region#1 from 1 to 5 for write
+for i=1 to 5
+print #1, "A"
+next i
+print "5 bytes are done\n"
+for i=1 to 5
+print #1, "B"
+next i
+print "10 bytes are done first 5 bytes are locked\n"
+' line input a
+close 1
+]]]
+
+@section locktest2.bas
+
+[[[ExampleAndResult locktest2.bas
+open "locktest.txt" for input as 1
+line input#1,a
+print a
+close 1
+]]]
+
+@section locktest3.bas
+
+[[[ExampleAndResult locktest3.bas
+open "locktest.txt" for random as 1
+seek#1,5
+for i=1 to 5
+print #1, "D"
+next i
+print "10 bytes are done first 5 bytes are locked\n"
+' line input a
+close 1
+]]]
+
+@section mandel1.bas
+
+[[[Example mandel1.bas
+import japi.bas
+
+function mandel(zre,zim,maxiter)
+  local x,y,tmp,betrag
+  local iter
+
+  x=0.0
+  y=0.0
+  iter=0
+  betrag=0.0
+
+  while iter < maxiter
+    iter += 1
+    tmp=x*x-y*y+zre
+    y=2*x*y+zim
+    x=tmp
+    betrag = x*x + y*y
+    if betrag > 4 then
+      mandel = iter
+      exit function
+    end if
+  wend
+  mandel = maxiter
+end function
+
+breite=320
+hoehe=240
+do_work=FALSE
+
+xstart = -1.8
+xend   =  0.8
+ystart = -1.0
+yend   =  1.0
+
+frame   = japi::frame("Variables Mandelbrot")
+japi::setborderlayout(frame)
+
+menubar = japi::menubar(frame)
+file$    = japi::menu(menubar,"File")
+calc     = japi::menu(menubar,"Calc")
+quit     = japi::menuitem(file$,"Quit")
+start    = japi::menuitem(calc,"Start")
+stopp    = japi::menuitem(calc,"Stop")
+
+canvas  = japi::canvas(frame,breite,hoehe)
+
+japi::pack(frame)
+japi::show(frame)
+
+'   Waiting for actions
+x=-1
+y=-1
+while true
+        if do_work then
+            obj=japi::getaction()
+        else
+            obj=japi::nextaction()
+        endif
+        if obj = quit then stop
+
+        if(obj = start) then
+            x=-1
+            y=-1
+            do_work=TRUE
+            japi::setnamedcolor(canvas,J_WHITE)
+        endif
+        if(obj = stopp) then do_work=FALSE
+
+        if(do_work) then
+            x=(x+1) % breite
+            if(x = 0)then y=(y+1) % hoehe
+            if((x = breite-1) and (y = hoehe-1)) then
+                do_work=FALSE
+            else
+                zre = xstart + x*(xend-xstart) / breite
+                zim = ystart + y*(yend-ystart) / hoehe
+                it = mandel(zre,zim,512)
+                japi::setcolor(canvas,(it*11),(it*13),(it*17))
+                japi::drawpixel(canvas,x,y)
+            endif
+        endif
+
+        if(obj = canvas)then
+            breite = japi::getwidth(canvas)
+            hoehe  = japi::getheight(canvas)
+            x=-1
+            y=-1
+        endif
+
+wend
+]]]
+
+@section curdir.bas
+
+[[[ExampleAndResult hedbergtest.bas
+print CurDir
+print
+print IsDirectory(CurDir)
+]]]
+
+@section onerror.bas
+
+This program tests the error handling of ScriptBasic. It has to print [[[@define ERRMES= An error has occured, but this is no problem.]]]@code{[[[ERRMES]]]}. In case you uncomment the @code{ON ERROR GOTO} statement inside the subroutine the subroutine has to handle the error.
+
+[[[ExampleAndResult onerror.bas
+sub ErrorSub
+'on error goto ErrorLabel
+open "nofile" for input as 1
+
+print "No error has occured in the function"
+
+goto FinishLabel
+ErrorLabel:
+print "An error has occured inside the sub"
+print
+FinishLabel:
+end sub
+
+on error goto ErrorLabel
+
+ErrorSub
+
+print "No error"
+goto FinishLabel
+
+ErrorLabel:
+print "[[[ERRMES]]]"
+
+FinishLabel:
+
+]]]
+
+@section evaorder.bas
+
+This test demonstrates that ScriptBasic evaluates first the left values and then the expression. Therefore this program prints @code{56}.
+
+[[[ExampleAndResult evaorder.bas
+function q
+ z = z + 1
+ q = z
+end function
+
+z =55
+a[q()] = z
+print a[56]
+]]]
+
+@section misc.bas
+
+This program tries to test several features of the ScriptBasic interpreter. On some configuration it may stop with out of memory. In that case check the configuration file memory limit for each interpreter.
+
+[[[ExampleAndResult misc.bas
+' Testing that ScriptBasic is capable printing out constant string
+print "print is OK\n"
+
+' testing numeric operators
+
+print "Testing numeric operators...\n"
+
+a = 2^3
+if a = 8 then
+ print "Power operator seems to be OK\n"
+else
+ print "Power operator said that 2^3=",a,"\n"
+ stop
+endif
+
+a = 2*5
+if a = 10 Then
+ print "multiply operator seems to be OK\n"
+else
+ print "multiply operator said that 2*5=",a,"\n"
+ stop
+endif
+
+a = 10/2
+if a = 5 Then
+ print "div operator seems to be OK\n"
+else
+ print "div operator said that 10/2=",a,"\n"
+ stop
+endif
+
+print "9/2=",9/2
+printnl
+
+print "9\\2=",9\2
+printnl
+
+print "9%4=",9%4
+printnl
+
+print "1+1=",1+1
+printnl
+
+print "6-3=",6-3
+printnl
+
+print "6-3+2=",6-3+2
+printnl
+
+print "6=6?",6=6
+print
+print "6=3?",6=3
+print
+print "3<>3?",3<>3
+print
+print "2<>3?",2<>3
+print
+print "2<3?",2<3
+print
+print "3<2?",3<2
+print
+print "3>2?",3>2
+print
+print "2>3?",2>3
+print
+print "2<=3?",2<=3
+print
+print "3<=2?",3<=2
+print
+print "3>=2?",3>=2
+print
+print "2>=3?",2>=3
+print
+print "2<=2?",2<=2
+print
+print "2>=2?",2>=2
+print
+print "3=",1 or 2
+print
+print "2=", 3 and 2
+print
+print "2=", 3 xor 1
+print
+
+print "testing string concatenation...\n"
+print "a" & "a" & "a" & "a" & "a" & "a" & "a" & "a" & "a" & "a" & "a"
+print
+
+print "testing the for loop\n"
+for i=1 to 10
+print i
+next
+print
+
+print "testing heavy memory usage via string concatenation...\n"
+q = ""
+for i = 1 to 1024
+q = q & " "
+next
+print "q is now string of length ",len(q)," bytes\n"
+print
+print "Creating a one megabyte string concatenating 1024 times a 1K string."
+print
+print "Be patient...\n"
+p = q
+q = ""
+for i = 1 to 1024
+if i%100 = 0 then
+  print "."
+endif
+q = q & p
+next
+print
+print "q is now string of length ",len(q)," bytes\n"
+print "was it ",1024*1024," bytes?\n"
+if 1024*1024 = len(q) then
+  print "yes it was\n"
+else
+  print "No it is a problem...\n"
+  stop
+endif
+]]]
+
+@section bdbtransact.bas
+
+[[[ExampleAndResult bdbtransact.bas
+include bdb.bas
+Const nl = "\n"
+
+DB = bdb::open("alma.db",bdb::BTree,bdb::Create,0)
+
+bdb::BeginTransaction
+print "transaction started\n"
+Counter = bdb::Get(DB,"COUNTER")
+print "Counter is ",Counter,nl
+
+If IsDefined(Counter) Then
+  Counter = Counter + 1
+  bdb::Update DB,Counter
+  print "updated\n "
+Else
+ Counter = 1
+ bdb::Put DB,"COUNTER",Counter
+  print "put\n "
+End If
+bdb::EndTransaction
+print "transaction has finished\n"
+
+bdb::close(DB)
+
+' bdb::Drop "alma.db"
+]]]
+
+@section testcio.bas
+
+This program tests the console IO capabilities of the module @code{CIO}. This is extremely interactive thus here we list only the source code and not the result. The result is actually series of colorful and flashing console screens.
+
+This program is Windows specific and can not be executed under UNIX.
+
+[[[Example testcio.bas
+import cio.bas
+
+cio::SetColor FBlue or BGrey
+cio::cls
+i = 1
+while 1
+
+if i % 2 Then
+ cio::SetColor FBlue or BGrey
+Else
+cio::SetColor FBlue or BIntense
+End If
+
+Xs = cio::SizeX()
+Ys = cio::SizeY()
+
+cio::gotoxy 10,23
+print "The console size is : ",Xs," ",Ys,"\n"
+print "The possible maximal sizes are: ",cio::PossibleMaxX()," ",cio::PossibleMaxY(),"\n"
+print "The actual size is: ",cio::SizeX()," ",cio::SizeY()
+
+cio::SetCursor 50
+
+cio::gotoxy 1,40
+for j=1 to 300
+ cio::SetColor j
+ print "Q"
+next j
+
+sleep 1
+if cio::kbhit() then
+ ch = cio::getch()
+ cio::gotoxy 10,20
+ print "Key ",ch," was pressed..."
+ if ch = 13 then cio::nobreak
+ if ch = asc("a") then cio::break
+end if
+
+cio::gotoxy 10,10
+print i
+i += 1
+print " "
+print cio::GetTitle()
+cio::SetTitle i 
+wend
+]]]
+
+@section concol.bas
+
+This program lists all the possible console character colors on a windows console. This program can not be executed under UNIX
+
+[[[Example concol.bas
+import cio.bas
+
+cio::SetColor FWhite
+cio::cls
+cio::SetTitle "Testing console colors"
+for i=1 to 255
+  cio::gotoxy +(i \ 16) * 4 , +(i % 16) * 2
+  cio::gotoxy( (i \ 16) * 4 , +(i % 16) * 2 )
+  cio::gotoxy (i \ 16) * 4 , +(i % 16) * 2
+  cio::SetColor (i)
+  j = i
+  if i < 100 then j = "0" & j
+  print j
+next i
+cio::SetColor FWhite
+cio::SetCursor 0
+i = cio::getch()
+print "\nDONEZ\n"
+
+]]]
+
+@section compare.bas
+
+This program tests different comparisions.
+
+[[[ExampleAndResult compare.bas
+' note that strings are multi line
+print """This program tests different string comparisions.
+The result should be a lot of 1
+printed. If there is any 0 printed there 
+is an error in the interpreter.
+
+"""
+
+if "a" = "a" then
+ print 1
+else
+ print 0
+end if
+if "a" <> "a" then
+ print 0
+else
+ print 1
+end if
+
+if "a" < "a" then
+ print 0
+else
+ print 1
+end if
+if "a" < "b" then
+ print 1
+else
+ print 0
+end if
+if "b" < "a" then
+ print 0
+else
+ print 1
+end if
+
+
+if "a" > "a" then
+ print 0
+else
+ print 1
+end if
+if "a" > "b" then
+ print 0
+else
+ print 1
+end if
+if "b" > "a" then
+ print 1
+else
+ print 0
+end if
+
+if "a" <= "a" then
+ print 1
+else
+ print 0
+end if
+if "a" <= "b" then
+ print 1
+else
+ print 0
+end if
+if "b" <= "a" then
+ print 0
+else
+ print 1
+end if
+
+if "a" >= "a" then
+ print 1
+else
+ print 0
+end if
+if "a" >= "b" then
+ print 0
+else
+ print 1
+end if
+if "b" >= "a" then
+ print 1
+else
+ print 0
+end if
+
+REM comparing different length strings
+
+if "a" = "ab" then
+ print 0
+else
+ print 1
+end if
+if "a" <> "ab" then
+ print 1
+else
+ print 0
+end if
+
+if "a" < "ab" then
+ print 1
+else
+ print 0
+end if
+if "ab" < "b" then
+ print 1
+else
+ print 0
+end if
+if "b" < "ab" then
+ print 0
+else
+ print 1
+end if
+
+
+if "a" > "ab" then
+ print 0
+else
+ print 1
+end if
+if "a" > "bb" then
+ print 0
+else
+ print 1
+end if
+if "b" > "ab" then
+ print 1
+else
+ print 0
+end if
+
+if "a" <= "ab" then
+ print 1
+else
+ print 0
+end if
+if "ab" <= "b" then
+ print 1
+else
+ print 0
+end if
+if "b" <= "ab" then
+ print 0
+else
+ print 1
+end if
+
+if "ab" >= "a" then
+ print 1
+else
+ print 0
+end if
+if "ab" >= "b" then
+ print 0
+else
+ print 1
+end if
+if "b" >= "ab" _
+then
+ print 1
+else
+ print 0
+end if
+
+
+print "\ntest ended\n"
+]]]
+
+@section hash.bas
+
+This program tests the hash module.
+
+[[[ExampleAndResult hash.bas
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"evil",666
+Zazu = hash::Value(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+print hash::Value(h,"evil"),nl
+hash::Release h
+
+]]]
+
+@section math.bas
+
+[[[ExampleAndResult math.bas
+print "testing the function pow\n"
+for i=-20 to 20
+  print pow(i)
+  print
+next i
+'
+'
+'
+print "testing the function exp\n"
+for i=-20 to 20
+  print exp(i)
+  print
+next i
+'
+'
+'
+print "testing the function log\n"
+for i=0 to 2 step 0.1
+  print log(i)
+  print
+next i
+'
+'
+'
+print "testing the function log10\n"
+for i=0 to 2 step 0.1
+  print log10(i)
+  print
+next i
+'
+'
+'
+print "testing the function sin\n"
+for i=-pi to +pi step pi/20.0
+  print sin(i)
+  print
+next i
+
+for i=-pi to +pi step pi/20.0
+  print space((sin(i)+1.0)*30),"*"
+  print
+next i
+
+]]]
+
+
+@section mysql.bas
+
+MySQL is usually not started on the development machine where this documentation is compiled, therefore here we only list this code without the result printout.
+
+[[[Example testmysql.bas
+import mysql.bas
+
+dbh = mysql::Connect("test")
+print "The data base handle is: ",dbh,"\n"
+' mysql::Shutdown dbh
+' print mysql::ErrorMessage(),"\n"
+print mysql::Stat(dbh)
+print
+mysql::query dbh,"delete from users where name='Kakukk'"
+print "Affected rows after delete is: ",mysql::AffectedRows(dbh)
+print
+mysql::query dbh,"insert into users values ('Kakukk',52)"
+print "Affected rows after inserting kakukk: ",mysql::AffectedRows(dbh)
+print
+print "Info is: ",mysql::Info(dbh)
+print
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]," ",q[1]
+print
+wend
+print "Character set name is: ",mysql::CharacterSetName(dbh)
+print
+
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::FetchHash(dbh,q)
+i=i+1
+print i,". "
+print
+print "name=",q{"name"}
+print
+print "age=",q{"age"}
+print
+wend
+
+
+' mysql::DataSeek dbh,0
+on error resume next
+mysql::query dbh,"select * from user"
+print "Last error is: ",mysql::ErrorMessage(dbh)
+print
+print "Client info is: ",mysql::GetClientInfo()
+print
+print "Host info is: ",mysql::GetHostInfo(dbh)
+print
+print "Proto info is: ",mysql::GetProtoInfo(dbh)
+print
+print "Server info is: ",mysql::GetServerInfo(dbh)
+print
+
+mysql::query dbh,"SHOW PROCESSLIST"
+print "Affected rows after show processlistselect: ",mysql::AffectedRows(dbh)
+print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]
+' mysql::kill dbh,q[0]
+print
+wend
+print "ping result: ",mysql::Ping(dbh)
+print "haho"
+print
+on error resume next
+mysql::Query dbh,"INSERT INTO autoinc values ('huuuh',null)"
+print mysql::ErrorMessage(dbh)
+print
+print mysql::InsertId(dbh)
+print
+
+print "Thread id=",mysql::ThreadId(dbh)
+print
+mysql::kill dbh, mysql::ThreadId(dbh)
+
+mysql::Close(dbh)
+
+
+]]]
+
+@section sleep.bas
+
+Running this program prints the numbers from 1 to 20 with 1 sec delay between them. Running this program from the documentation compilation increases the document compilation with 20 sec and is useless as we can not check interactively the delay between the printouts. Therefore here we list only the code and the result has to be checked separately.
+
+[[[Example sleep.bas
+for i=1 to 20
+print i
+print
+sleep 1
+next i
+]]]
+
+@section time.bas
+
+This program checks the time functions of ScriptBasic.
+
+[[[ExampleAndResult time.bas
+Const nl = "\n"
+for i=1 to 5
+ print i,".\n"
+ print "The local         time is: ",Year,".",Month,".",Day," ",Hour,":",Minute,":",Sec,nl
+ print "The Greenich mean time is: ",FormatDate("YEAR.MM.DD hh:mm:ss",GmTime()),nl
+ a = now
+ b = TimeValue(year,month,day,hour,minute,sec)
+ print "Local time is sec from Now():",a,nl, _
+       "Local time in sec from TimeValue(...)",b,nl, _
+       "The difference should be zero: ",a-b,nl
+ print "GMT:",GmTime,"=",LocalTimeToGmTime(Time),nl
+ print "LCT:",Time,"=",GmTimeToLocalTime(GmTime),nl
+ sleep 1
+next i
+]]]
+
+@section mkdir.bas
+
+To run this test open two terminal windows. Start the program in one until you get the first message. Test in the second window that the directories hoho and hoh/haha were created.
+
+Press enter and after the program has finished check that the directory  disappeared.
+
+[[[Example mkdir.bas
+mkdir "./hoho/haha"
+print "Now you have dir hoho/haha\n"
+print "Press enter..."
+line input q
+deltree "hoho"
+print "Now you do not have dir hoho\n"
+]]]
+
+@section argpass.bas
+
+[[[ExampleAndResult argpass.bas
+sub test_sub(a,b,c)
+local lv,d
+d = 1
+print "1 a b c>",a," ",b," ",c,"\n"
+a += 1
+b = c + d
+lv = 66
+gv = 55
+print "2 a b c>",a," ",b," ",c,"\n"
+end sub
+
+lv = 77
+gv = 100
+
+a = 1
+b = 2
+c = 3
+
+test_sub a,b,c
+print "3 a b c>",a," ",b," ",c,"\n"
+
+print "4 lv gv>",lv," ",gv,"\n"
+
+test_sub ByVal a, b, c
+print "5 a b c>",a," ",b," ",c,"\n"
+]]]
+
+@section callsyntax.bas
+
+This program test that the syntax analyzer checks the parentheses around the @code{CALL} subroutine call arguments correct.
+
+This file should compile and run without error producing no output.
+
+[[[Example callsyntax.bas
+sub test_sub
+
+end sub
+
+Call test_sub
+Call test_sub a
+Call test_sub(a)
+Call test_sub a,b
+Call test_sub(a,b)
+Call test_sub (a),b
+Call test_sub ((a),b)
+Call test_sub (left(a,2))+3
+Call test_sub left(a,2)+3
+Call test_sub (left(a,2)+3,3)
+Call test_sub (i+2)/3 , (j+2)/4
+]]]
+
+@section reftest1.bas
+
+This sample tests that though the global array is released @code{undef}-ing it the local variable @code{a} referencing it still has the value. The program should print @code{1undef}.
+
+[[[ExampleAndResult reftest1.bas
+sub test(a)
+ undef q
+ print a
+end sub
+q[1] = 1
+test q[1]
+print q
+]]]
+
+@section reftest2.bas
+
+This sample allocates an array as local variable. A global variable referenced by the function argument is set to reference the array. Note that it is not the local variable @var{a} is the one that references the array, but rather the global variable that is referenced by @var{a},namely @var{q}. If we wanted @var{a} to reference the array @var{z} then we could use @code{undef a} before the @code{ref} statement.
+
+When the function returns the array is not released when the local variables are released, because there is a reference to it (variable @var{q}) and thje program prints the elements of @var{q}.
+
+[[[ExampleAndResult reftest2.bas
+sub test(a)
+ local z,i
+ for i=1 to 10
+  z[i] = i
+ next
+
+ ref a = z
+end sub
+
+sub testi(h)
+ test h
+end sub
+
+
+testi q
+
+for i=1 to 10
+ print i,". ",q[i],"\n"
+next i
+]]]
+
+@section reftest3.bas
+
+This sample is the same as @file{reftest2.bas} with the addition that the function is calling itself recursively ten times. This time when the command @code{ref} is issued the argument is a variable referencing reference, referencing ... ten times. Still the effect has to be the same. 
+
+[[[ExampleAndResult reftest3.bas
+sub test(a,s)
+ local z,i
+
+ if s = 1 then
+
+  for i=1 to 10
+   z[i] = i
+  next
+ 
+  ref a = z
+
+ else
+
+  test(a,s-1)
+
+ endif
+end sub
+
+test q,100
+
+for i=1 to 10
+ print i,". ",q[i],"\n"
+next i
+]]]
+
+@section reftest4.bas
+
+This sample demonstrates the difference between @code{undef a} and @code{a = undef}.
+
+[[[ExampleAndResult reftest4.bas
+' Set b to be 12
+b = 12
+' a becomes the same as b
+ref a = b
+' b is already the same as a
+ref b = a
+' b is undefed, but a retains the value
+undef b
+print a," = 12\n"
+undef a
+
+b = 12
+ref a = b
+ref b = a
+' this does not brake the reference, but assigns undef to b (and a)
+b = undef
+print a," = undef\n"
+]]]
+
+@section lettest.bas
+
+This test demonstrates that the assignment copies a whole array recursively, strings, reals, integers, subarrays and even references. When @var{z} is changed the last printout has to change also.
+
+[[[ExampleAndResult lettest.bas
+z = "eggdrop"
+a[1] = 1
+a[2] = 1.1
+a[3] = "1111111"
+a[4,1] = 4
+a[4,2] = 4.4
+a[4,3] = "4444444444444444"
+ref a[4,4,5,4,5,5,6] = z
+b = a
+print b[1] ,"\n"
+print b[2] ,"\n"
+print b[3] ,"\n"
+print b[4,1] ,"\n"
+print b[4,2] ,"\n"
+print b[4,3] ,"\n"
+print b[4,4,5,4,5,5,6] ,"\n"
+z = "chicken"
+print b[4,4,5,4,5,5,6] ,"\n"
+]]]
+
+@chapter CGI Programs
+
+Test programs in this chapter can not be executed in this document, therefore they are only listed here. Some of them can be executed as a CGI process, some specifically require the Eszter SB Application Engine execution environment.
+
+@section mt.bas
+
+This is a test program that has to executed in the Eszter SB Application Engine. This is useless being executed from the command line, and in addition being useless result extension specific error, because the CGI module can not handle the execution environment.
+
+Start the Eszter SB Application Engine, configure it so that this program can be executed from some of the configured virtual directories and execute the program.
+
+Note that the Eszter SB Application Engine has both the CGI and the MT modules statically linked so it has to work even if these modules are not installed on the machine.
+
+[[[Example mt.bas
+#!/usr/bin/scriba -c
+global const nl = "\n"
+Const NumberOfCookies = 3
+
+include cgi.bas
+include mt.bas
+
+option cgi$Method cgi::Get or cgi::Upload
+
+cgi::Header 200,"text/html"
+
+cgi::FinishHeader
+
+'-------------------------------------------------------
+print """<HTML>
+<HEAD>
+<title>MT module testing</title>
+</HEAD>
+<BODY><font face="VERDANA" size="2">
+<H1>MT module testing</H1>
+
+"""
+'-------------------------------------------------------
+
+MTVar = mt::GetVariable("testvariable")
+if not isdefined(MTVar) then MTVar = 1
+MTVar = MTVar +1
+mt::SetVariable "testvariable",MTVar
+
+print "The variable is: ",MTVar,"""
+<p>
+"""
+
+call mt::SetSessionId "1"
+if not isdefined(mt::GetSessionVariable("a")) then mt::SetSessionVariable "a",13
+mt::SetSessionVariable "a" ,mt::GetSessionVariable("a")+1
+print "The session variable \"a\" is ",mt::GetSessionVariable("a"),"<p>\n"
+
+mt::DeleteSession "1"
+
+call mt::SetSessionId "2"
+if not isdefined(mt::GetSessionVariable("a")) then  mt::SetSessionVariable "a",14
+mt::SetSessionVariable "a",mt::GetSessionVariable("a")+2
+print "The session variable \"a\" is ",mt::GetSessionVariable("a"),"<p>\n"
+
+print "The current directory is ",curdir(),"<p>\n"
+
+print "The new session is:",mt::GetSessionId(),"""
+mt:SessionTimeout 20*60,"timeout.bas"
+</BODY>
+</HTML>
+"""
+]]]
+
+@section mtlock.bas
+
+This is a test program that has to executed in the Eszter SB Application Engine. This is useless being executed from the command line, and in addition being useless result extension specific error, because the CGI module can not handle the execution environment.
+
+Start the Eszter SB Application Engine, configure it so that this program can be executed from some of the configured virtual directories and execute the program.
+
+Note that the Eszter SB Application Engine has both the CGI and the MT modules statically linked so it has to work even if these modules are not installed on the machine.
+
+[[[Example mtlock.bas
+#!/usr/bin/scriba -c
+
+'
+' Call this program from several browsers and test locking and unlockings
+' seeing how the different programs run and return an answer
+'
+
+
+global const nl = "\n"
+
+include cgi.bas
+include mt.bas
+
+option cgi$Method cgi::Get or cgi::Upload
+
+cgi::Header 200,"text/html"
+
+cgi::FinishHeader
+
+'-------------------------------------------------------
+print """<HTML>
+<HEAD>
+<title>MT module lock testing</title>
+</HEAD>
+<BODY><font face="VERDANA" size="2">
+<H1>MT module lock testing</H1>
+
+"""
+'-------------------------------------------------------
+
+if isdefined(cgi::Param("lockw")) then
+  mt::LockWrite cgi::Param("lockw")
+end if
+
+if isdefined(cgi::Param("lockr")) then
+  mt::LockRead cgi::Param("lockr")
+end if
+
+if isdefined(cgi::Param("unlockw")) then
+  mt::UnlockWrite cgi::Param("unlockw")
+end if
+
+if isdefined(cgi::Param("unlockr")) then
+  mt::UnlockRead cgi::Param("unlockr")
+end if
+
+print """This is OK
+</BODY>
+</HTML>
+"""
+]]]
+
+
+@section echo.bas
+
+[[[Example echo.bas
+#!/usr/bin/scriba -c
+global const nl = "\n"
+Const NumberOfCookies = 3
+
+include cgi.bas
+
+option cgi$Method cgi::Get or cgi::Upload
+
+' cgi::RequestBasicAuthentication "Test Realm"
+cgi::Header 200,"text/html"
+
+'
+' We are setting several cookies. The expiry time is ten seconds so you can test that
+' the cookies are sent by the browser if you press some of the buttons fast enough,
+' but it does not if you are slow
+'
+for i=1 to NumberOfCookies 
+  ' cookie(i) is i, no domain is defined, path is /, expires after 5 seconds, not secure
+  cgi::SetCookie "cookie" & i,i,undef,"/",gmtime()+10,false
+next i
+
+cgi::FinishHeader
+
+'-------------------------------------------------------
+print """<HTML>
+<HEAD>
+<title>CGI parameter testing</title>
+</HEAD>
+<BODY><font face="VERDANA" size="2">
+<H1>View CGI Parameters</H1>
+This page shows the cgi parameters the way it was uploaded.
+<!-- here is the result of the previous HTTP request -->
+<FONT SIZE="3">
+<PRE>
+CGI system variables
+--------------------
+
+"""
+'-------------------------------------------------------
+
+print "ServerSoftware  = ",cgi::ServerSoftware(), nl
+print "ServerName      = ",cgi::ServerName(), nl
+print "GatewayInterface= ",cgi::GatewayInterface(),nl
+print "ServerProtocol  = ",cgi::ServerProtocol(), nl
+print "ServerPort      = ",cgi::ServerPort(), nl
+print "RequestMethod   = ",cgi::RequestMethod(), nl
+print "PathInfo        = ",cgi::PathInfo(), nl
+print "PathTranslated  = ",cgi::PathTranslated(), nl
+print "ScriptName      = ",cgi::ScriptName(), nl
+print "QueryString     = ",cgi::QueryString(), nl
+print "RemoteHost      = ",cgi::RemoteHost(), nl
+print "RemoteAddress   = ",cgi::RemoteAddress(), nl
+print "AuthType        = ",cgi::AuthType(), nl
+print "RemoteUser      = ",cgi::RemoteUser(), nl
+print "RemoteIdent     = ",cgi::RemoteIdent(), nl
+print "ContentType     = ",cgi::ContentType(), nl
+print "ContentLength   = ",cgi::ContentLength(), nl
+print "UserAgent       = ",cgi::UserAgent(), nl
+print "Cookie          = ",cgi::RawCookie(), nl
+
+print "Referer         = ",cgi::Referer(),nl
+print "Password        = ",Environ("HTTP_PASSWORD"),nl
+print "Full auth string= ",Environ("HTTP_AUTHORIZATION"),nl
+print "\nCookies:\n"
+for i=1 to NumberOfCookies
+  print "cookie" & i," ",cgi::Cookie("cookie" & i),"\n"
+next i
+
+print "Text field using Param(\"TEXT-FIELD\") is ",cgi::Param("TEXT-FIELD"),nl,nl
+
+
+if cgi::RequestMethod() = "GET" then
+  print "GET text field using GetParam(\"TEXT-FIELD\") is ",cgi::GetParam("TEXT-FIELD"),nl
+end if
+
+if cgi::RequestMethod() = "POST" then
+  print "POST text field using PostParam(\"TEXT-FIELD\") is ",cgi::PostParam("TEXT-FIELD"),nl
+  if cgi::ContentType() like "multipart*" then
+    print "Original file name is ",cgi::FileName("FILE-UPLOAD-NAME"),nl
+    if cgi::FileLength("FILE-UPLOAD-NAME") > 0 then
+      print "File of length ",cgi::FileLength("FILE-UPLOAD-NAME")," bytes is saved\n"
+      on error goto NoSave
+      cgi::SaveFile "FILE-UPLOAD-NAME","E:/MyProjects/sb/upload.txt"
+    else
+      print "There is no uploaded file."
+    end if
+  end if
+end if
+
+print """</PRE><TABLE><TR><TD BORDER=0 BGCOLOR="EEEEEE"><PRE>
+A simple form to POST parameters:<BR>
+<FORM METHOD="POST" ACTION="echo.bas">
+<INPUT TYPE="TEXT" VALUE="DEFAULT TEXT" NAME="TEXT-FIELD">
+<INPUT TYPE="SUBMIT" NAME="SUBMIT-BUTTON" VALUE=" POST ">
+</FORM>
+</PRE></TD><TD BORDER=1 width="20">&nbsp;</TD><TD BORDER=0 BGCOLOR="EEEEEE"><PRE>
+A simple form to GET parameters:<BR>
+<FORM METHOD="GET" ACTION="echo.bas">
+<INPUT TYPE="TEXT" VALUE="DEFAULT TEXT" NAME="TEXT-FIELD">
+<INPUT TYPE="SUBMIT" NAME="SUBMIT-BUTTON" VALUE=" GET ">
+</FORM>
+</PRE></TD></TR></TABLE><PRE>
+<hr>
+A simple form to UPLOAD a file:<BR>
+<FORM METHOD="POST" ACTION="echo.bas" ENCTYPE="multipart/form-data">
+<INPUT TYPE="TEXT" VALUE="DEFAULT TEXT" NAME="TEXT-FIELD">
+<INPUT TYPE="FILE" VALUE="FILE-UPLOAD-VALUE" NAME="FILE-UPLOAD-NAME">
+<INPUT TYPE="SUBMIT" NAME="SUBMIT-BUTTON" VALUE="UPLOAD FILE">
+</FORM>
+<hr>
+</BODY>
+</HTML>
+"""
+stop
+NoSave:
+
+print "An error has happened saving the file. Code =",error(),nl
+
+resume next
+
+]]]
+
+@section echoquerystring.bas
+
+[[[Example echoquerystring.bas
+#! /usr/bin/scriba -c
+include cgi.bas
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+print """<HTML>
+<BODY>
+<PRE>
+"""
+print Environ("QUERY_STRING")
+print """</PRE>
+</BODY>
+</HTML>
+"""
+stop
+
+
+]]]
+
+@section getparam.bas
+
+[[[Example getparam.bas
+#! /usr/bin/scriba -c
+include cgi.bas
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+print """<HTML>
+<BODY>
+<PRE>
+"""
+print cgi::GetParam("apple")
+print """</PRE>
+</BODY>
+</HTML>
+"""
+stop
+
+
+]]]
+
+@section listenv.bas
+
+[[[Example listenv.bas
+#! /usr/bin/scriba -c
+include cgi.bas
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+print """<HTML>
+<BODY>
+<PRE>
+"""
+i = 0
+while IsDefined( Environ(i) )
+  print i," ",Environ(i),"\n"
+  i = i+1
+wend
+print """</PRE>
+</BODY>
+</HTML>
+"""
+stop
+
+
+]]]
+
+@section mysqlcgi.bas
+
+[[[Example mysqlcgi.bas
+import mysql.bas
+import cgi.bas
+
+option cgi$Method cgi::Get or cgi::Upload
+
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+print """
+<html><body>
+Now we start to connect to the MySQL Server
+<PRE>
+"""
+
+dbh = mysql::Connect("test")
+print "The data base handle is: ",dbh,"\n"
+' mysql::Shutdown dbh
+' print mysql::ErrorMessage(),"\n"
+print mysql::Stat(dbh)
+print
+mysql::query dbh,"delete from users where name='Kakukk'"
+print "Affected rows after delete is: ",mysql::AffectedRows(dbh)
+print
+mysql::query dbh,"insert into users values ('Kakukk',52)"
+print "Affected rows after inserting kakukk: ",mysql::AffectedRows(dbh)
+print
+print "Info is: ",mysql::Info(dbh)
+print
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]," ",q[1]
+print
+wend
+print "Character set name is: ",mysql::CharacterSetName(dbh)
+print
+
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::FetchHash(dbh,q)
+i=i+1
+print i,". "
+print
+print "name=",q{"name"}
+print
+print "age=",q{"age"}
+print
+wend
+
+
+' mysql::DataSeek dbh,0
+on error resume next
+mysql::query dbh,"select * from user"
+print "Last error is: ",mysql::ErrorMessage(dbh)
+print
+print "Client info is: ",mysql::GetClientInfo()
+print
+print "Host info is: ",mysql::GetHostInfo(dbh)
+print
+print "Proto info is: ",mysql::GetProtoInfo(dbh)
+print
+print "Server info is: ",mysql::GetServerInfo(dbh)
+print
+
+mysql::query dbh,"SHOW PROCESSLIST"
+print "Affected rows after show processlistselect: ",mysql::AffectedRows(dbh)
+print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]
+' mysql::kill dbh,q[0]
+print
+wend
+print "ping result: ",mysql::Ping(dbh)
+print "haho"
+print
+on error resume next
+mysql::Query dbh,"INSERT INTO autoinc values ('huuuh',null)"
+print mysql::ErrorMessage(dbh)
+print
+print mysql::InsertId(dbh)
+print
+
+print "Thread id=",mysql::ThreadId(dbh)
+print
+mysql::kill dbh, mysql::ThreadId(dbh)
+
+mysql::Close(dbh)
+
+print """
+</PRE>
+</BODY></HTML>
+"""
+
+]]]
+
+@section postparam.bas
+
+[[[Example postparam.bas
+#! /usr/bin/scriba -c
+include cgi.bas
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+print """<HTML>
+<BODY>
+<PRE>
+<FORM METHOD="POST">
+<INPUT TYPE="TEXT" NAME="apple">
+</FORM>
+"""
+print cgi::PostParam("apple")
+print """</PRE>
+</BODY>
+</HTML>
+"""
+stop
+
+
+]]]
+
+@section 1runrestart.bas
+
+[[[Example 1runrestart.bas
+import mt.bas
+
+chdir "\\"
+
+mt::ListSessions SessionArray
+
+for i= lbound(SessionArray) to ubound(SessionArray)
+  if len(SessionArray[i]) > 3 then
+    print "Deleting the session ",SessionArray[i],"\n"
+    mt::DeleteSession SessionArray[i]
+  end if
+next i
+sleep 30
+
+]]]
+
+@section cgigetex.bas
+
+[[[Example cgigetex.bas
+import cgi.bas
+
+q = undef
+cgi::Header 200,"text/html"
+cgi::FinishHeader
+
+print """
+<HTML>
+<HEAD>
+<title>GetParamEx test</title>
+</HEAD>
+<BODY>
+<FONT FACE="Verdana" SIZE="2">
+<H1>GetParamEx testing</H1>
+This is a test that checks the cgi module function GetParamEx. Call this script
+using the URL <FONT SIZE="3">
+<pre>
+/cgi-bin/cgimodtest.bas?a=1&amp;a=2&amp;a=anything
+</pre>
+</font>
+<p>
+"""
+do
+
+param = cgi::GetParamEx("a",q)
+print "Param is ",param," q is ",q,"<p>\n"
+
+loop while IsDefined(param)
+
+print """That is all
+</BODY>
+</HTML>
+"""
+]]]
+
+@section run404.bas
+
+[[[Example run404.bas
+print """HTTP/1.0 200 OK
+Content-Type: text/html
+
+<HTML>
+<BODY>
+The real page was not found, however<P>
+"""
+print "Hello, this program runs\n"
+for i=1 to 10
+ print sin(i*pi/10),"\n"
+ print "<P>\n"
+next i
+
+print "</BODY></HTML>\n"
+]]]

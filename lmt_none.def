@@ -1,0 +1,9 @@
+#
+# This is a definition file that lists no external module.
+#
+# This file is used by lmt_make.pl to create the file
+# lmt_none.c that lists no modules to statically link
+# into ScriptBasic.
+#
+#
+#

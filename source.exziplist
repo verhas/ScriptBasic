@@ -1,0 +1,6 @@
+; list of files that are to be excluded from the source distribution
+*.exe
+*.lib
+*.dll
+*.obj
+*.exp

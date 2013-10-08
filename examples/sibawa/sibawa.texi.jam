@@ -1,0 +1,45 @@
+{#sep/[[[/]]]}\
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename sibawa
+@settitle SIBAWA Users's and Administrators' Guide
+@setchapternewpage odd
+@c %**end of header
+
+@ifinfo
+This file contains the texinfo format documentation how to use SIBAWA.
+
+Copyright 1999-2002 Peter Verhas
+@end ifinfo
+
+@titlepage
+@title SIBAWA Users's and Administrators' Guide
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1999-2001 Peter Verhas
+Published by @code{peter.verhas.com}
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+@chapter Application Form
+
+In this application is an abstract entity. Forms contain title, which is a textual definition about what the form is, and forms have several fields containing textual value.
+
+Forms can be used for several purposes. You can open a directory of forms to collect applicants for an event. The forms in such a directory can contain the name of the applicants, address and so on.
+
+Forms are ordered into a tree hierarchical structure. It means that all but the root form has a parent form. This way a form directory is a special form that nothing but description, title and other forms having this one as parent.
+
+
+@bye
+
+
+

@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=zlib]]]
+[[[#define FILE=zlbintrf.c]]]
+[[[#include skeleton.jim]]]

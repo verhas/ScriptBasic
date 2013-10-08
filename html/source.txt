@@ -1,0 +1,2748 @@
+%file macros.jim
+{#sep/<%/%>}
+<%#define BUILD=<%#include ../build.txt%>%>
+<%#define VERSION=<%#include ../version.txt%>%>
+Note that this is a macro included file and thus any text outside macro definitions is comment.
+
+Because we use a different font size, as Verdana best looks size="2" therefore the TT font has to be explicitly set to size "3", otherwise we get too tiny TT characters.
+<%#define ttsize="3"%>
+
+This is the font face that we use for the site. Most of the browsers/OS support Verdana. In case some does not the font Arial is still looks similar.
+
+<%#define FontFace=Verdana, Arial%>
+
+Because the TT font setting has to change the size of the font this macro has to be used to display "code" text.
+
+<%#define tt/x=<font size=<%ttsize%>><tt>x</tt></font>%>
+
+This macro sets the default font. This has to be used when starting table elements, because some browsers set the font to the default inside tables.
+
+<%#define SetFont=<FONT SIZE="2" FACE="<%FontFace%>" COLOR="BLACK">%>
+
+The colors of the site.
+
+<%#define FRAMECOLOR=#C7C1A7%>
+<%#define BODYCOLOR=#C7C1A7%>
+<%#define LINEC=#B0AA8E%>
+<%#define SEPLINEC=#C7C1A7%>
+
+Berkeley references ScriptBasic and therefore whenever Berkeley DB is mentioned this macro has to be used.
+
+<%#define Berkeley=<a href="http://www.sleepycat.com">Berkeley</A>%>
+
+
+<%@define DOWNLOADSAMPLES/XXX=
+<A HREF="texi/XXX">download</A> the individual files in <%tt tar.gz%> format<%#dir|texi|-o XXX|(<%$file$size%> bytes)%> <%EXTRACT%> <P>
+%>
+
+<%@define DOWNLOAD/XXX=<a href="../download/XXX"><%tt XXX%></A> <%#dir|../download|-o XXX|(<%$file$size%> bytes)%>%>
+
+<%#define Example/text=<FONT SIZE=<%ttsize%> FACE="Courier CE,Courier"><PRE>
+text
+</PRE></FONT>%>
+
+<%@define DOWNLOADOC/XXX=<a href="../html/texi/XXX"><%tt XXX%></A> <%#dir|../html/texi|-o XXX|(<%$file$size%> bytes)%>%>
+
+<%#define Example/text=<FONT SIZE=<%ttsize%> FACE="Courier CE,Courier"><PRE>
+text
+</PRE></FONT>%>
+
+<%#define SUBSCRIBE/X=<a target="_top" href="http://scriptbasic.com/mailman/listinfo/scriptbasic">X</a>%>
+
+<%@define DOCUMENT/TITLE/XXX/DESCRIPTION=
+<LI><FONT SIZE="+1"><a target="_top" href="texi/XXX/XXX_toc.html">TITLE</A></FONT><BR>
+DESCRIPTION
+<BR><FONT SIZE="1">
+<%DOCULIST XXX%></FONT><P>
+%>
+
+<%@define DOCREF/XYZ=<a target="_top" href="texi/XYZ/XYZ_toc.html">XYZ</A></FONT>
+%>
+
+<%@define DOWNLOADSECTION/X/Y=<TR><TD BGCOLOR="BLACK"><FONT SIZE="3" 
+FACE="<%FontFace%>" COLOR="WHITE">X</FONT></TD><TR>
+<TR><TD VALING="TOP"><FONT SIZE="2" FACE="<%FontFace%>">
+Y
+</FONT></TD></TR>
+%>
+
+<%@define DOCULIST/XXX=
+<%DOC/XXX/html%>
+<%DOC/XXX/html.gz%>
+<a target="_top" href="texi/XXX/XXX_toc.html">html/split</a>(N/A)
+<%DOC/XXX/html.tgz%>
+<%DOC/XXX/pdf%>
+<%DOC/XXX/pdf.gz%>
+<%DOC/XXX/ps.gz%>
+<%DOC/XXX/texi%>
+<%DOC/XXX/texi.gz%>
+<%DOC/XXX/chm%>
+<%DOC/XXX/rtf%>
+<%DOC/XXX/rtf.gz%>
+%>
+<%@define DOC/NAME/EXTENSION=
+<%#dir|texi|-o NAME.EXTENSION|<a target="_top" href="texi/<%$file$name%>">EXTENSION</A>(<%$file$size%>)%>
+%>
+
+
+<%@define START/X=<HTML>
+<HEAD>
+<TITLE>X</TITLE>
+<link rel="stylesheet" href="s.css">
+</HEAD>
+<BODY>
+<H1>X</H1>
+<HR align=left>
+<TABLE BORDER="0"><TR><TD VALIGN=TOP><%MENUES%></TD><TD VALIGN=TOP><FONT FACE="<%FontFace%>" size="2">
+%>
+
+<%#define END=</FONT></TD></TR></TABLE>
+<%#format time=MONTH DD, YEAR HH:0m:0s%><BR>
+<FONT SIZE="1">This page was generated <%#time%></FONT>
+</BODY></HTML>%>
+
+<%#define MENU/XXX/YYY=<FONT SIZE="1" FACE="<%FontFace%>" COLOR="BLACK"><a href="XXX.html"
+>[YYY]</A><BR>
+%>\
+<%#define MENUES=
+<%MENU main MAIN%>
+<%MENU news News%>
+<%MENU general Intro%>
+<%MENU feature Features%>
+<%MENU download Download%>
+<%MENU install Installation%>
+<%MENU support Support%>
+<%MENU suppro Support+%>
+<%MENU documentation Docu%>
+<%MENU audio Tutorial%>
+<%MENU xxxbuglist Bugs%>
+
+<%MENU mirror Mirror%>
+<%MENU author Authors%>
+<%MENU future Future%>
+<%MENU license License%>
+<%MENU win98setup Win98 Setup Bug%>
+<%SUBSCRIBE [Subscribe]%>
+%>
+<%#define UNCOMPRESS=To uncompress the document after download use WinZIP under WIN32 or <%tt gunzip%> under UNIX.%>
+<%#define EXTRACT=To extract this type of archive use WinZIP under WIN32 or <%tt tar%> under UNIX.%>
+
+<%@define BUGREPORT/ID/VERSION/SEVERITY/DESCRIPTION/REASON/SOLUTION/WORKAROUND/ACK=
+<%START Bug Report ID%>
+<TABLE BORDER="0">
+<TR><TD><%SetFont%>Bug Report id=</FONT></TD><TD><%tt ID%></TD></TR>
+<TR><TD><%SetFont%>Affected versions:</FONT></TD><TD><%tt VERSION%></TD></TR>
+<TR><TD><%SetFont%>Severity:</FONT></TD><TD><%tt SEVERITY%></TD></TR>
+</TABLE>
+<HR>
+
+<H2>Bug Description</H2>
+DESCRIPTION
+<H2>Bug Reason, What Causes the Bug</H2>
+REASON
+<H2>Solution</H2>
+SOLUTION
+<H2>Bug Workaround Until Solution is Available</H2>
+WORKAROUND
+<H2>Acknowledgement</H2>
+ACK
+<%END%>
+%>
+
+%file s.css.jam
+A:visited, A:hover, A:link { text-decoration: none }
+A:visited { color: grey }
+A:hover { background: #C7C1A7 }
+BODY {
+font-family: Verdana; 
+font-size: 9pt; 
+background: <%BODYCOLOR%>;
+scrollbar-face-color: white;
+scrollbar-highlight-color: black;
+  scrollbar-shadow-color: =#C7C1A7; 
+  scrollbar-arrow-color: =#C7C1A7;
+  scrollbar-track-color: #C7C1A7;
+  scrollbar-base-color: =#C7C1A7;
+}
+<%@comment ---------------------------------------------------------------------------------%>
+%file index.html.jam
+<HTML>
+<HEAD>
+<TITLE>ScriptBasic the ultimate scripting tool</TITLE>
+</HEAD>
+<FRAMESET ROWS="90,*" BORDER=0>
+<FRAME SRC="head.html" NAME="HEAD" NORESIZE SCROLLING=NO>
+<FRAME SRC="news.html" NORESIZE SCROLLING=AUTO>
+</FRAMESET>
+</HTML>
+%file head.html.jam
+<HTML>
+<HEAD>
+<TITLE>ScriptBasic</TITLE>
+<link rel="stylesheet" href="s.css">
+
+
+<STYLE>
+BODY { font-family: Verdana; font-size: 9pt; background: <%FRAMECOLOR%> }
+</STYLE>
+</HEAD>
+<BODY>
+
+<table border="0"><tr><td><img src="logo.jpg" border="0" align="left"></TD><TD valign=bottom><FONT FACE="<%FontFace%>" size=1>
+<B>the basic scripting language.</b></FONT></td></tr></table>\
+<FONT FACE="<%FontFace%>" SIZE="1" COLOR="BLACK">\
+<a target="_top" href="http://www.scriptbasic.com">Official home page</a> <%SetFont%><FONT SIZE=1>Last updated <%#date%></FONT></FONT><BR>
+<%@comment <a target="_top" href="http://scriptbasic.midian.net/">Mirror at Midian</a>
+
+(may lag one day)<br>%>\
+<a target="_top" href="http://sourceforge.net/projects/scriptbasic/">sourceforge.net project page</a><BR>
+<a href="suppro.html" target="_top">Professional Support for ScriptBasic</a>
+</FONT></TD></TR></TABLE>
+</BODY></HTML>
+
+%file audio.html.jam
+<%START RealAudio Slide show tutorials%>
+
+Here you can find slide shows with real audio voice that give you introductory information
+on ScriptBasic. We plan to deliver more and more such tutorials to ease learning and use of
+ScriptBasic.
+<p>
+To see the slides and listed to the voice first click on the link named AUDIO. When the real player starts click on
+the link named SLIDES in the same line to get to the toc of the presentation. In case there is a slow link somewhere
+between you and our server download may be slow. In such a situation you are requested to press the pause button to
+wait for the first picture and press play
+to listen to the text, when the picture is downloaded.
+<p>
+To listen to the presentation off-line you can download the real audio file (right mouse click and select <%tt Save As%> on the link AUDIO) and you can also download the PowerPoint97 presentation using the link named PPT.
+<p>
+The presentations are prepared before the audio file is ready so you may see some broken links. Also check the
+mirror site. The audio files may be uploaded between builds as they are ready.
+<p>
+<%#define SLIDH/X=<TR><TD COLSPAN="4" BGCOLOR="<%LINEC%>"><%SetFont%><B>X</B></TD></TR>%>
+<%#define SLIDES/X/Y=<TR>
+<TD VALIGN="TOP" BGCOLOR="<%LINEC%>"><%SetFont%><A HREF="../slides/X.ra">AUDIO</A></TD>
+<TD VALIGN="TOP" BGCOLOR="<%LINEC%>"><%SetFont%><A TARGET="pres" HREF="../slides/X/X.htm">SLIDES</A></TD>
+<TD VALIGN="TOP" BGCOLOR="<%LINEC%>"><%SetFont%><A TARGET="_top" HREF="../slides/X.ppt">PPT</A></TD>
+<TD VALIGN="TOP" BGCOLOR="<%LINEC%>"><%SetFont%>Y</TD></TR>
+<TD COLSPAN=4 BGCOLOR="<%SEPLINEC%>"><HR></TD>
+
+%>
+<TABLE>
+<%SLIDH How to use these presentations%>
+<%SLIDES usingpres How to use these presentations? 497KB 9min%>
+<%SLIDH Introduction to ScriptBasic%>
+<%SLIDES intro Introduction to ScriptBasic, what it is, why do we need a new BASIC language interpreter. 1.4MB 12min%>
+<%SLIDH Language Features%>
+<%SLIDES langintro Introduction to the language features. 2MB 17min%>
+<%SLIDH Memory Management%>
+<%SLIDES memory Introduction to memory management. 848KB, 14min%>
+<%SLIDH Main modules%>
+<%SLIDES runflow How ScriptBasic works, what steps lead to program execution. 665KB, 11min%>
+<%SLIDH Symbol table%>
+<%SLIDES sym The symbol table handlign module 870K,7min 26sec%>
+<%SLIDH Embeddign ScriptBasic%>
+<%SLIDES embed How to embed ScriptBasic into an application. 1.45MB,25min%>
+<%SLIDH Syntax analysis%>
+<%SLIDES syntax How the syntax analysis of ScriptBasic works. 2.1MB,35min%>
+<%SLIDH Multi-thread implementation of ScriptBasic%>
+<%SLIDES mt How to write multi-thread modules for ScriptBasic 2MB, 35min%>
+</TABLE>
+
+<%END%>
+
+%file versionnumbering.html.jam
+<%START Version numbering of the interpreter%>
+ScriptBasic versions are numbered with three numbers of the form <%tt M.m.b%>
+<p>
+The first number <%tt M%> is the major version number. This is incremented rarely, only when there is a significantly different version of the interpreter is released.
+<p>
+The second number <%tt m%> is the minor version number. This is incremented when there is some new feature in the core language or interpreter. <%tt m%> is reset to zero when <%tt M%> is incremented.
+<p>
+The last number <%tt b%> is the build number. This is incremented for each release even if there were bug fixes only compared to the previous release. <%tt b%> is reset to zero when <%tt m%> changes.
+<p>
+Versions prior to version <%tt 2.0.0%> were numbered <%tt 1.0bX%>. This is the same numbering, but ...
+<br>
+The letter <%tt b%> was used to separate the build number from the major and minor version numbers. This led to confusion naming the version BETA, which means a non-stable test version. I never released "test" version of ScriptBasic.
+<p>
+The minor version of <%tt 1.x%> remained always zero. The last version in this series was <%tt 1.0b30%> that was followed by <%tt 2.0.0%>
+<p>
+<b>Note:</b>
+From release to release there can be change in the interpreter and in the language. If there is a change in the interpreter but the language you may expect more performance but the programs interpreted by the new and the previous version are the same. If the language changes it also means that some programs that are executable by the new version may not work with the previous version.
+<p>
+The language was not changed in incompatible way. The interpreter interprets a language, which is backward compatible with any previous version. The exception to this rule is that new versions may not be compatible with an error in previous versions or with features implemented but undocumented or implicitly or explicitly declared as non-guaranteed.
+<p>
+There are other versions in addition to the version of the interpreter. One important version number is the module interface version. This is the version of the calling interface that ScriptBasic uses to load and start external modules. To see the actual version of this interface have a look at the definition of the macro <%tt INTERFACE_VERSION%> in the file <%tt basext.c%>, or just execute ScriptBasic STANDARD variation with the command line switch <%tt -v%>.
+<p>
+Modules report the interface versions they can work together when loaded. If that is not compatible with the version of the actual interpreter the module is not loaded and error is raised. This avoids mysterious errors due to incompatible interfaces.
+<p>
+Another version is the internal preprocessor interface version. This is the version of the interface that ScriptBasic uses to load and start internal preprocessors. To see the actual version of this interface have a look at the definition of the macro <%tt IP_INTERFACE_VERSION%> in the file <%tt prepext.c%>.
+<p>
+Internal preprocessors report the interface versions they can work together when loaded. If that is not compatible with the version of the actual interpreter the module is not loaded and error is raised. This avoids mysterious errors due to incompatible interfaces.
+<%END%>
+
+%file news.html.jam
+<%START What is new in ScriptBasic v2.0.0%>
+
+Version 2.0.0 is a new major version. The numbering of versions is radically changed.
+
+Bug fixes and new features. 
+<P>
+<B>New Features</B><P>
+<i>Language features</i>
+<ol>
+<li>You can now alter the behavior of ScriptBasic in regards to undeclared variables inside functions. Undeclared variables inside functions were treated as global variables until now. From this version you can use the compiler directive <%tt declare option DefaultLocal%> to alter this behavior. The other way around is <%tt declare option DefaultGlobal%>. For more information please read the manual.
+<li>Module <%tt T%> can serialize an array variable to XML. Unfortunately there is no currently implemented counter function to read the generated XML file back to an array.
+<li>Mathematical functions <%tt gcd%> and <%tt lcm%> are defined and became reserved words, but are not implemented yet.
+<li>Initial version of the module XML was added to the release.
+<li>Floating numbers printed by the command <%tt print%> are printed with many more digits.
+<li>The debugger handles the console controls under Windows positioning cursor, clearing the console screen and so on providing a more powerful interface towards the programmer.
+</ol>
+<i>Interpreter features</i>
+<ol>
+<li>The Eszter SB Application Engine now can bind on more than one interface and implement an experimental, BASIC programmable FTP daemon as well as the HTTP daemon. The FTP features are experimental, missing some core features and undocumented at the moment.
+<li>The option <%tt -d%> was enhanced. Now it can be used on UNIX as well as on Windows to aid debugging when a module does not load. This option will print what libraries the module tries to load and also interface versions.
+<li>Internal preprocessors need not be configured in the configuration file. The interpreter will find them based on the file name if they are stored in the directory where the module DLL/SO files are.
+<li>The Windows setup program can handle the situation when some files or registry entries are not writable. In this case you can alter the permission during the setup and ask setup to retry the action. You can also tell the setup program to ignore the failure at your own risk.
+</ol>
+<i>Internal, Developer features</i>
+<ol>
+<li>The module interface macro <%tt basext_GetArgsF%> and the function implementing the argument handling for module functions was extended to handle pointer values stored in BASIC strings. Although this is not a safe way to implement handles in modules this may be the only effective way when there are really a lot of handles/pointers to be handled and exchanged by the module and the BASIC program.
+<li>The helper program <%tt setup.pl%> was greatly enhanced. Type <%tt setup --help%> for more information.
+</ol>
+
+<P>
+<B>Bug Fixes</B><P>
+<ol>
+<li>Mathematical functions were fixed. For example <%tt int%>, <%tt cint%>, <%tt fix%>, <%tt round%>, <%tt frac%> functions were corrected to handle large numbers that do not fit into a C <%tt long%>
+<li>When you compiled a BASIC program to executable under Windows you had to start it writing the extension <%tt .exe%> on the command line attached to the name of the program. Now this is not needed anymore.
+<li>Now you can have configuration sub items that contain no items at all. Formerly this was not handled by the configuration compilation system (it was a documented feature). Although it may not seem reasonable to have such a sub item in the configuration file, it may happen when someone comments out configuration items.
+</ol>
+
+
+<p>
+Still you may be interested reading the old news of previous builds.
+<ul>
+<li><b>News of the versions 1.0.x</b>
+
+<li><a href="news30.html">news of build30</A>
+<li><a href="news29.html">news of build29</A>
+<li><a href="news28.html">news of build28</A>
+<li><a href="news27.html">news of build27</A>
+<li><a href="news26.html">news of build26</A>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file main.html.jam
+<%START Introduction%>
+
+This is ScriptBasic v<%VERSION%>.<%BUILD%> official home page. You
+can get a short introductions on ScriptBasic, 
+you can download the compiled version of program as well as the
+source code and documentation.
+
+<p>
+Use the menu items on the left to navigate.
+<p>
+<%#define mt/X/Y=<TR><TD VALIGN="TOP"><FONT SIZE="1" COLOR="BLUE"> [X] </FONT></TD><TD VALIGN="TOP"><FONT SIZE="2">Y</FONT></TD></TR>
+<TR><TD COLSPAN="2"><HR COLOR="BLACK"></TD></TR>
+%>
+<TABLE BORDER="0">
+<%mt MAIN is this page%>
+<%mt News tells you what is new in the current build%>
+<%mt Intro gives a general introduction. %>
+<%mt Features in Short describes tha main architectural features of ScriptBasic, so you can decide if it is worth trying. %>
+<%mt Download ScriptBasic leads you to the download page where you can download the source, the exe and the documentation. %>
+<%mt Installation Instruction describes how to install the program. %>
+<%mt Support helps you to get support in case you are lost in the mud. <%SUBSCRIBE Subscribe%> to the ScriptBasic mailing list!%>
+<%mt Support+ is professional, commercial support%>
+<%mt Docu mentation you can download the available documents and view them on-line%>
+<%mt Tutorial slide shows with audio in RealAudio%>
+<%mt Bugs describe the known bugs update%>
+<%mt Mirror describes how to mirror ScriptBasic (any volunteer?)%>
+<%mt Authors of the program of the program, in case you want to know who we are... %>
+<%mt Future development some words about what we think we want to do%>
+<%mt License conditions (it is free anyway, but not that free. need not pay)%>
+<%mt Subscribe to the mailing list%>
+</TABLE>
+<p>
+<%tt <a href="http://peter.verhas.com/indexe.html" target="_top">p.v.c</a>%>, the author.
+<%END%>
+%file general.html.jam
+<%START General Introduction%>
+This is a free BASIC interpreter. Is it just another after the so many costly and
+free interpreters? Well, you can decide, here it goes:
+<p>
+ScriptBasic implements a <b>rich set of instructions</b> that are available under Win32 as well
+as under Linux/UNIX. Programs written in ScriptBasic are portable unless you work hard
+to insert some system specific code.
+<p>
+If you miss some functions in the language itself there are <b>external modules</b> that <b>implement several features</b>, like CGI handling, MySQL access, regular expressions, graphical user interface, NT/UNIX specific functions (in case you really need something system dependant) and several others.
+<p>
+If you need some more that is not currently available you can ask for it on the ScriptBasic mailing list or you can easily write your own modules in C. ScriptBasic internals, source code and interfaces are <b>well documented</b>. To get a jump start you can even listen to audio/slide show <b>tutorials</b>. <%SUBSCRIBE Subscribe%> to the mailing list now!
+<p>
+<b>ScriptBasic is fast</b>, it generates a compact internal code, which is interpreted. This internal code occupies a single, continuous memory chunk and is usually saved into a cache file. The cache file is automatically checked by ScriptBasic and thus it compiles the source only when needed.
+<p>
+You can also save this code into separate file and deliver it as your application <b>without giving out your source</b> code. This is to protect your intellectual property if you wish to use it. What is more ScriptBasic can be compiled to C and this way you can <B>generate standalone executable</B> on UNIX as well as on Win32 operating systems free of charge. 
+<p>
+<b>To program web application</b> you can use ScriptBasic as a CGI interpreter, but there is even
+a better way. ScriptBasic is integrated into a standalone webserver that executes ScriptBasic
+programs in a single process without the CGI overhead lighting fast. Under Windows NT you can install
+this web server as an NT service and use it several ways. This application named
+Eszter SB Application Engine is supported by the CGI and the MT module allowing you to use in-memory
+application and session variables without file read/write overhead.
+<p>
+Finally: ScriptBasic is <B>LGPL</B>. This means that you can use it, alter it, extend it, embed it.
+The extra <b>L</B> before GPL says that you can embed it even into commercial application that you
+sell for money. (In that case, however consider the commercial suport delivered by EMMAnet ScriptBasic
+partners.)<font size="1">Note that some external modules use libraries that have their own licence!</font>
+<p>
+To get more information why we have created another BASIC interpreter and to let us tell you
+why this is not a JABI (just another BASIC interpreter) see the 
+<a href="audio.html">on-line tutorials</a> with audio support
+and the <a href="documentation.html">documentation</a>.
+<%END%>
+
+%file feature.html.jam
+<%START Features in Short%>
+The aims are painfully high. How do we want to reach this? Read the features we
+designed ScriptBasic to have:
+
+
+<ul>
+<li><b><FONT SIZE="+1">BASIC</FONT></b> No question, this is the MOST important feature of ScriptBasic. There are a lot of people who can program BASIC and only BASIC. There are many people, who can not really program. Those who do not really know what programming is, and still: they write their five-liners in BASIC to solve their simple problems. They never write Perl, Tcl, Java or C.
+Therefore it is BASIC.
+
+<li><b><FONT SIZE="+1">FREE</FONT></B> The interpreter and all other software are distributed under the Lesser GPL licence, which means that the software can be used free of charge even for commercial projects.
+
+<li><B>SUPPORTED</B> The software is continuously developing and is actively supported free of charge as well as on commercial base. To get free of charge support <%SUBSCRIBE subscribe%> to the ScriptBasic mailing list.
+
+<li><B>SCRIPTING</B> language. Variables are typeless. You can store real numbers, integer numbers and strings in any variable. You can mix them and conversion is done automatically.
+
+<li><B>PORTABLE</B> Available in C source and can be compiled on UNIXes as well as on Windows NT. There are precompiled binary setup packages from Linux (Debian and RedHat) and for Win32.
+
+<li><B>4E LANGUAGE</B>, which means easy to extend, easy to embed. ScriptBasic was developed to provide clean and clear interfaces around it, and inside it. It is easy to embed the language to an application and use it as a macro language just like TCL. It is also easy to implement new built-in function and new commands. You can develop dynamically loaded libraries that ScriptBasic may load at run time.
+
+<li><B>COMPILE </B> BASIC programs can be compiled to standalone executable. ScriptBasic creates pseudo compiled code, which is interpreted afterwards. 
+<ul>
+<li>Syntax analysis is done at first and only syntactically perfect programs start to run.
+<li>The compiled code is put into a continuous memory space and compiled code can be saved and loaded again to run without recompilation. This is vital for CGI scripts and is not available for most scripting programming languages.
+<li>Compiled code is binary, not readable. Therefore you can develop and distribute programs and getting some help to protect your intellectual property. You need not give the source code.
+<li>The compiled code can be saved into a text file having C programming language syntax. Compiling this file with a C compiler and linking with the ScriptBasic run-time library you get a standalone binary executable.
+</ul>
+
+<li><B>MULTI-THREAD</B> aware. All the code was designed to be thread-safe. You can embed the code into systems that run multiple interpreters in the same process. An example is the Eszter SB Engine variation of the interpreter, which is a standalone http daemon that runs several threads of execution of different BASIC scripts in a single process.
+</ul>
+<%END%>
+%file download.html.jam
+<%START Download ScriptBasic%>
+You can download compiled code for Linux and Win32 platforms and source for all platforms. The source code is common for all platforms including Win32. You can download the source in two formats. The difference is mainly in packaging.
+<p>
+While downloading the code <%SUBSCRIBE subscribe%> to the ScriptBasic mailing list to get on-line support to install and use ScriptBasic.
+<p>
+<TABLE BORDER=0>
+
+<%DOWNLOADSECTION UNIX
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-source.tar.gz%> UNIX source
+<br>
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-1_i386.deb%> UNIX binaries in Debian package
+<br>
+<%DOWNLOAD scriba-<%VERSION%>b<%BUILD%>-1.src.rpm%> UNIX sources in RedHat package RPM
+<br>
+<%DOWNLOAD scriba-<%VERSION%>b<%BUILD%>-1.i386.rpm%> UNIX binaries in RedHat package RPM
+%>
+
+<%DOWNLOADSECTION WIN32
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-source.zip%> source including documentation
+<br>
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-libs.zip%> libraries that come from some external source and are needed in case you want to recompile ScriptBasic on the WIN32 platform. 
+This includes library file for the <%Berkeley%> DB from Sleepycat Software, Inc.
+<BR>
+<font size="1">You have to download this file and extract it into the source directory if you want to compile the bdb module, but you do not dare to try to compile the <%Berkeley%> DB.
+</font>
+<BR>
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-bin.zip%> Win32 binaries and documentation
+<BR>
+<%DOWNLOAD scriba-v<%VERSION%>b<%BUILD%>-exe.zip%> Win32 SETUP.EXE package
+
+%>
+
+<%DOWNLOADSECTION DOCUMENTS
+<%DOWNLOAD html-v<%VERSION%>b<%BUILD%>.zip%> full documentation set in html.
+<br>
+<%DOWNLOAD chm-v<%VERSION%>b<%BUILD%>.zip%> full documentation set Microsoft Compiled html format.
+<br>
+<%DOWNLOAD pdf-v<%VERSION%>b<%BUILD%>.zip%> full documentation set in PDF.
+<br>
+<%DOWNLOAD text-v<%VERSION%>b<%BUILD%>.zip%> full documentation set in texi.
+%>
+
+<%DOWNLOADSECTION SAMPLES
+<%DOWNLOADOC samplebas.tgz%> sample BASIC programs extracted from the documentation <%DOCREF samplebas%>
+%>
+<%DOWNLOADSECTION EXTERNAL
+Visio GTK module and Socket Module from 
+Peter Van Eerten <a href="http://members.home.nl/peter.van.eerten"><%tt http://members.home.nl/peter.van.eerten%></A>
+%>
+</TABLE>
+<p>
+
+The Win32 files are created using WinZIP. Some users face problems uncompressing these files using PKZIP. Do use WinZIP to uncompress the files.
+<%END%>
+
+%file install.html.jam
+<%START Installation%>
+
+<LI><FONT SIZE="+1">Windows NT/W2K/WIN9x/WINME</FONT>
+<BR>
+Just extract the ZIP file into <%tt C:\ScriptBasic%> or to a directory you think is appropriate and optionally alter your PATH to contain <%tt C:\ScriptBasic\bin%>. To install the Eszter SB Application Engine as NT Service open a command prompt, <%tt cd%> into the directory where the file <%tt sbhttpd.exe%> is and type <%tt sbhttpd -install%>. Optionally you may want to edit the configuration file and recompile it. For further details read the manual.
+<p>
+
+<LI><FONT SIZE="+1">Linux</FONT>
+<BR>
+<%tt dpkg --install scriba-v<%VERSION%>b<%BUILD%>-1_i386.deb%>
+<BR>
+or
+<BR>
+<%tt rpm -i scriba-<%VERSION%>b28-1.i386.rpm%>
+<p>
+
+<LI><FONT SIZE="+1">UNIX</FONT><BR>
+<%tt make install%>
+<p>
+
+<FONT SIZE="1">To get detailed help on installation fine points read the chapter <i>Installation Instruction</I> of the <a target="_top" href="texi/ug.html">Users' Guide</a></FONT>
+<P>
+Before going on <%SUBSCRIBE subscribe%> the mailing list where you can ask questions directly from the developers and from other users if ever you have problems with ScriptBasic (and even if you do not).
+<%END%>
+%file mirror.html.jam
+<%START How to mirror ScriptBasic%>
+Because the ScriptBasic web site is just a bunch of static files it is extremely easy to mirror it
+using <%tt wget%>. Configure <%tt wget%> to download the files and leave the absolute URLs intact.
+<p>
+To now that the web site was refreshed check the file <%tt http://scriptbasic.com/counter.html%>.
+This is a pure <%tt text%> file containing a decimal number increased by one each time the web changes. 
+<%END%>
+%file suppro.html.jam
+<%START ScriptBasic Support+%>
+
+Although ScriptBasic is open source its source code quality is above that of the average open source project. You can use, modify, embed into application ScriptBasic under the licence LGPL free of charge.
+<P>
+The starting L in front of GPL means <i>Lesser</i> thus you can use, modify and embed ScriptBasic even for commercial projects. When deciding what software to use for such a project often commercial, reliable support is a must. ScriptBasic is not without such a support.
+<P>
+The firm <a href="http://www.emma.hu">EMMANET</a> is offering professional support for ScriptBasic on commercial basis called <i>ScriptBasic Support+</i>. 
+<P>
+There are three types of professional support for ScriptBasic.
+<p>
+<H2>Remote support</H2>
+Remote support is available world wide. This includes one working day eMail answer for any question, three day guaranteed bug fixes for any bug reported, remote ssh support upon request for installation and trouble shooting and phone support during Europe daytime.
+<p>
+<font size="1"><B>list price</B> USD200/month + VAT invoiced quaterly in advance</FONT>
+
+<H2>Special Development</H2>
+The ScriptBasic development team may accept development requests professionally. In case you need some special feature in ScriptBasic or a special purpose module you can contract <a href="http://www.emma.hu">EMMAnet Bt.</a> to do the work. The actual development will be done by the ScriptBasic developers. The developed code will belong to you, but in case you decide to release it under GNU GPL or LGPL licence you will get price reduction.
+<p>
+<font size="1"><B>price</B> depend on the actual development and to be negotiated</FONT>
+
+<H2>On-site support/training</H2>
+On-site support delivers knowledge transfer, training and should usually used by ScriptBasic module developers or by firms developing application that embed ScriptBasic. This training and consultation is usually a four day course that is tailored according to the needs of the customer. Video recording of the courses is also possible. The timing, duration, location and course details should be negotiated.
+<p>
+On-site support is available in Europe. On-site support in the USA and in other non-Europe countries should be negotiated and timing also depends on visa conditions.
+<p>
+<font size="1"><B>price</B> USD1000/four day course + VAT plus travel and lodging costs. Travel cost can be calculated 0.2USD/km from Budapest/Hungary. 50% of the total cost is invoiced in advance and payment should arrive one day prior start of travel. 50% is invoiced after the training has been finished.</FONT>
+<p>
+<B>To request more information on Support+ write a mail to <a href="mailto:support@scriptbasic.com"><%tt
+
+support@scriptbasic.com%></a>.</B>
+
+<%END%>
+
+%file support.html.jam
+<%START Support%>
+
+ScriptBasic is alive and is actively supported. If you have a look at the mailing list archive
+<P>
+<center>
+<%SUBSCRIBE <%tt http://scriptbasic.com/mailman/listinfo/scriptbasic%>%>
+</center><P>
+you can realize that with some very few exceptions all questions are answered in a day. <B>Click on the link above now and subscribe to the mailing list!</B> To get answer to your questions has two prior conditions:
+<ol>
+<li><B>You have to subscribe to the list</B> to be able to receive the mails sent to the list. Also due to recent increased spam activity you have to subscribe to the list prior to sending a message to the list.
+<li><B>You have to send your question</B> to the list to get answer. Obvious? Usually it is. This is a friendly list, with only a few number of people (about 100 or so).
+</ol>
+<P>
+Up to now the traffic of the list is small, there are only one or two mails in a month, thus there is no reason to be afraid to subscribe. The list is managed by <a href="http://www.gnu.org/software/mailman/mailman.html">mailman</a>, thus it is easy to unsubscribe in case you want. To ensure fairness, if you have problem unsubscribing later, drop a mail to me at <%tt peter AT verhas.com%> asking for removal and I will remove you without any further question.
+<P>
+The list delivers announcements from the developer, questions and answers from the users (and the developers).
+<P>
+Thus go to the list page and <%SUBSCRIBE <%tt subscribe%>%> to the list.
+<P>
+You may also be lucky to meet me on <a href="irc.html">IRC</a>, weekdays, worktime CET.
+<P>
+In case the informal open source support is not appropriate for your project and you need commercial support read on about <a href="suppro.html">Support+</a> services from EMMANET.
+<p>
+<FONT SIZE=1>
+If you want to become a sponsor of ScriptBasic drop a mail to 
+<a href="mailto:sponsor@scriptbasic.com"><%tt sponsor@scriptbasic.com%></a> and we will discuss the details. (Well no one mentioned it in a year so I think I was stupid printing it here. Now this line is a monument of my stupidity.)</FONT>
+<%END%>
+%file docformats.html.jam
+<%START Available documentation formats%>
+
+The documentation of ScriptBasic is available in various formats. These are the followings:
+
+<UL>
+
+<LI><B>HTML</B> Each document can be downloaded as a huge HTML file. Clicking on the HTML link you can see the documentation directly to your PC and saving it you can access it any time even when you are not online. You can easily search the document using your browser's search feature.
+
+<LI><B>HTML.GZ</B> This format is the compressed version of the HTML version. You can download this to save download time, especially if you are modem user. Note that some documentations are quite large. For example the developers' manual is half megabyte uncompressed and 117KB compressed. <%UNCOMPRESS%>
+
+<LI><B>HTML/SPLIT</B> This is the HTML format of the documentation split into several small HTML files. Each section is in a separate HTML file with excessive navigational links. This format fits the best the on-line reading.
+
+<LI><B>HTML.TGZ</B> This is the collection of the HTML/SPLIT files. You can download this single file for the documentation and extract it into a directory into several files. <%EXTRACT%>
+
+<LI><B>PDF</B> This is the Adobe PDF format of the documentation. This looks like the printed version of the document and can easily been seen on screen. Download this version in case you want to print the document or you prefer printed format documents on the screen. Note that PDF files contain several formatting information and thus are large. Consider downloading the compressed version.
+
+<LI><B>PDF.GZ</B> This is the Adobe PDF format of the document compressed. Download this version instead of the PDF in case you want to save bandwidth. This is important especially if you are modem user. <%UNCOMPRESS%>
+
+<LI><B>PS.GZ</B> This is the compressed PostScript version of the printed document. Download this version in case you want to print the document on a PostScript aware printer.
+
+
+<LI><B>TEXI</B> This is the original texi format of the documentation. This is more or less text format. You may need this in case you want to have the documentation in some format, which is not delivered on this site. There are numerous texi to XXXX converters. (for example makeinfo for Linux).
+
+<LI><B>TEXI.GZ</B> This is the compressed format of the texi file. Download this version instead of the texi file to save bandwith. <%UNCOMPRESS%>
+
+<LI><B>CHM</B> This format is Microsoft compiled HTML. This format is specific to Windows and may not be view-ed under Linux or other unices. This file contains the html files of the documentation compressed. Internet Explorer opens this document type.
+
+<LI><B>RTF</B> This format is Rich Text Format that can be loaded by many word processors, like Microsoft Word.
+
+<LI><B>RTF.GZ</B> This is gzip compressed Rich Text Format. Uncompress it using <%tt gunzip%> or <%tt WinZIP%> to get the RTF format.
+
+</UL>
+
+<a HREF="documentation.html">Back to documentation download</A>
+<%END%>
+
+%file doclist.html.jam
+<%START List of all files in the document directory%>
+
+<TABLE BORDER="0">
+<%@dir|texi|-o -f -Sn *|
+
+<TR>
+<TD><%tt <%$file$date%> <%$file$time%> %></TD>
+<TD><%tt <a href="<%$file$url%>"><%$file$name%></A>%></TD>
+<TD align="right"><%tt <%$file$size%>%></TD>
+</TR>
+%>
+<%@dir|texi|-o -d -. -Sn *|
+<TR><TD COLSPAN="3">
+Directory <%$file$name%>:</TD></TR>
+<%#dir|texi/<%$file$name%>|-o -f -Sn *|
+<TR>
+<TD><%tt <%@null <%@null <%$file$date%>%>%> <%@null <%@null <%$file$time%>%>%> %></TD>
+<TD><%tt <a href="<%@null <%@null <%$file$url%>%>%>"><%@null <%@null <%$file$name%>%>%></A>%></TD>
+<TD align="right"><%tt <%@null <%@null <%$file$size%>%>%>%></TD>
+</TR>
+%>
+%>
+</table>
+<%END%>
+%file documentation.html.jam
+<%START Documentation%>
+
+The documentation is available in several formats. For the short description of the available formats please <a href="docformats.html">read the details on documentation formats</a>. To get help to find the information on specific question in the documentation or just to get the answer right from the developers or the people using the list <%SUBSCRIBE subscribe%> to the list.
+<p>
+
+List of available documents:<BR>
+<FONT SIZE="1">The number following the link between parentheses indicates the size of the file in bytes.</A></FONT>
+
+
+
+<UL>
+<LI><FONT SIZE="+2">Basic Documentation Set</FONT>
+<UL>
+<%DOCUMENT|Users' Guide|ug|
+This is the official Users' Guide that defines the language. This is for those who want to write program in BASIC and run it using ScriptBasic.
+Special <A TARGET="_top" HREF="commands.html">command reference</A> is available separately as well in html format.
+%>
+
+<%DOCUMENT|Eszter SB Application Engine Users' Guide|eszterengine|
+The Eszter SB Application Engine is a multi-thread http server ScriptBasic that can be used to execute (optionally in cooperation with Apache) ScriptBasic web programs lightning fast.
+%>
+
+
+<%DOCUMENT|BASIC Samples|samplebas|
+Sample BASIC programs with documentation.
+%>
+<%DOWNLOADSAMPLES samples.tgz%>
+
+<%DOCUMENT|Using the Debugger|prep_dbg|
+This documentation describes how to debug command line, or CGI programs using the <%tt dbg%> debugger.
+%>
+
+<%DOCUMENT|Developers' Guide|devguide|
+This is the official guide for developers. The document describes the overall architecture of ScriptBasic and contains tutorials on how to write extension modules, how to write internal preprocessors and how to embed ScriptBasic.
+%>
+</UL>
+
+<LI><FONT SIZE="+2">Modules Documentation</FONT>
+<UL>
+
+<%DOCUMENT|CURL|mod_curl|
+This module allow the BASIC programmer to download and upload files to/from various URLs, including FTP, HTTP, HTTPS and other protocols.
+%>
+
+<%DOCUMENT|CGI|mod_cgi|
+This module eases CGI programming (true CGI as well as programs in Eszter SB Application Engine) handling CGI input and HTML template files.
+%>
+
+<%DOCUMENT|PNG Graphics Generation|mod_gd|
+This module implements BASIC interface for the the well known module GD allowing ScriptBasic programs to create PNG (Portable Network Graphics) format files programmatically.
+%>
+
+
+<%DOCUMENT|Regular Expression|mod_re|
+This module implements regular expression string pattern matching.
+%>
+
+<%DOCUMENT|Tools|mod_tools|
+This module implements various utility functions.
+%>
+
+<%DOCUMENT|HASH Module|mod_hash|
+
+This module implements powerful hash handling, which should be used instead of ScriptBasic associative arrays when large hashes are needed.
+%>
+
+<%DOCUMENT|MD5 calculation|mod_md5|
+This module is deprecated. The module "tools" contains the features of this module. This module delivers a function that calculates the MD5 of a string.
+%>
+
+<%DOCUMENT|Multi-thread Support|mod_mt|
+This module implements functions that delivers session handling and application and session data store in memory for any application that embeds ScriptBasic multi-thread. This module can be used in programs executed by the Eszter SB Application Engine to effectively keep track of sessions and volatile user data.
+%>
+
+<%DOCUMENT|MySQL|mod_mysql|
+Interface to the MySQL database. Using this module BASIC programs can access MySQL databases.
+%>
+
+<%DOCUMENT|<%Berkeley%> DB|mod_bdb|
+This module handles <%Berkeley%> databases. It includes database, record handling and transaction support.
+%>
+
+<%DOCUMENT|Windows NT|mod_nt|
+This module implements Windows NT specific functions that allows system managers to programmatically access certain features of the operating system.
+%>
+
+<%DOCUMENT|Console IO|mod_cio|
+This Windows only module manages the console allowing colored, positioned character output, control-C capture and many more.
+%>
+
+<%DOCUMENT|Module UNIX|mod_ux|
+This module implements Windows NT specific functions that allows system managers to programmatically access certain features of the operating system.
+%>
+
+<%DOCUMENT|Zlib Compresssion|mod_zlib|
+This module implements an interface to Zlib compression routines that allows the BASIC programs to access (read/write) compressed files.
+%>
+
+<%DOCUMENT|ODBC|mod_odbc|
+This module allows access to ODBC databases under Windows operating systems.
+%>
+
+</UL>
+
+<LI><FONT SIZE="+2">Auxiliary Documentations</FONT>
+<UL>
+
+<%DOCUMENT|Development Files|auxfiles|
+This documents lists the auxiliary development files used to automate ScriptBasic development under Windows NT and UNIX on the development station. This document is here for the sake of completeness.
+%>
+
+<%DOCUMENT|Documentation Methodology|docudoc|
+A partially ready document about the documentation methodology used for ScriptBasic development.
+%>
+
+<%DOCUMENT|Regression Test|regtest|
+Execution of several regression test programs. When this document is compiled several test programs are automatically executed vi a Jamal macros and the result is automatically compiled into this document.
+%>
+
+<%DOWNLOADSAMPLES regtest.tgz%>
+
+<%DOCUMENT|Source Code Documentation|source|
+This file contains the documentation embedded in the ScriptBasic source compiled into a single documentation. Note that most of the text of this document can be found in the Developers' Guide. 
+%>
+</UL>
+</UL>
+
+
+For reference purposes you can see an automatically generated list of <a href="doclist.html">all documentation files</a>. The listing is <%#dir|.|-o doclist.html|<%$file$size%>%> bytes long.
+<%END%>
+%file author.html.jam
+<%START Authors%>
+
+ScriptBasic is continuously developed by <a href="http://peter.verhas.com/indexe.html" target="_top">Peter Verhás</a>. 
+There is no institutional support of the development by now except that <a href="http://www.emma.hu" target="_blank">EMMAnet Bt.</a> provides web space.
+<P>
+You can write me mail at the address 'peter AT verhas.com' or you can try to contact me yia IRC using the Java applet on the <a href="irc.html">page here</a>.
+<%END%>
+%file future.html.jam
+<%START Future developments%>
+
+Here I list the features that I have in my mind to develop for ScriptBasic, but I do not know when and how I will have time for it. If you like some of the ideas drop me a mail. If some idea gets more mails than other I will likely develop the one sooner.
+<hr>
+I deliver lectures at the TU Budapest on the architecture of ScriptBasic. The students have to perform some home work. Some of them already volunteered to develop PostgreSQL, ORACLE interfaces, and to test fully the ODBC interface.
+<hr>
+A student accepted the development of C++ API, another Java API so ScriptBasic programs will be able to be started from Java applications via the Java Native Interface.
+<hr>
+TCP daemon version. This version is going to listen on several ports just as any usual daemon. When a Connection comes a basic program is started in the daemon process in a new thread an the program gets the Socket input on its standard input and the standard output is sent to the client.
+<hr>
+MySQL module that keeps connections alive to speed up database handling for multi-thread implementations.
+<%END%>
+
+%file news17.html.jam
+<%START What is new in ScriptBasic v1.0build 17%>
+
+This build achieves may new features:
+<ul>
+<li>For the Windows platforms there is an ISAPI version of the interpreter that delivers extreme
+speed. This version keeps the compiled intermediate code in memory and bypasses not only the
+reading, lexical, syntax analysys and building, but also the cache file loading. It just runs.
+<li>Extensions can now implement external commands, not only external functions. The external commands
+are more complex to program, but are more flexible and can do more things.
+<li>You can compile a version of ScriptBasic that unimplements some built-in commands. The new version
+
+remains compatible with the actual build, but does not contain the code for the functions you have
+excluded. This is needed for some implementations where ScriptBasic runs code loaded over the net.
+
+<li>You can <font size="3"><tt>import</tt></font> files instead of <font size="3"><tt>include</tt></font>. <font size="3"><tt>import</tt></font> is the same as <font size="3"><tt>include</tt></font> but does not
+load any file already included or imported.
+<li>Third party developers can write preprocessors for ScriptBasic. There is an experimental interface
+to preprocessors after the code has been loaded, before lexical analysis.
+</ul>
+
+<p>
+<%END%>
+%file news18.html.jam
+<%START What is new in ScriptBasic v1.0build18%>
+
+
+This build achieves many new features:
+<ul>
+<li>There are three new modules implemented. These are:
+<ul>
+  <li>Zlib module that can compress and uncompress any string or can handle
+      gzipped files.
+  <li>Hash module that allows the BASIC programmer to handle hashes in memory.
+  <li>GD module that helps you easily generate PNG pictures.
+</ul>
+
+
+<li>External preprocessors can be configured and are automatically executed
+    by ScriptBasic. In case you want to use this feature read the manual carefully
+    to learn how to configure the preprocessors. Internal preprocessors are still in
+    experimental state and will change in the future. However external preprocessors
+    are powerful and easy to implement. The example provided with the code allows you
+    to write HTML embedded basic code similar to Microsoft Active Server Pages basic scripts.
+    But it also works on any UNIX. The fine point is that the preprocessor is written in
+    ScriptBasic as well.
+
+<li>New string handling functions were introduced like Instr, Replace and so on.
+    Read the manual for further information.
+
+
+<li>Cache handling is fine tuned. Now you should be very unlucky to have two different files
+    with two different names using the same cache file. Old version cache files created by
+    earlier version of ScriptBasic do not cause problem any more.
+
+<li>The binary format files now inherit the start line under UNIX. This means that you can start
+    the internal binary format version without writing <%tt scriba%> in front of it. This
+    also means that you can deliver your CGI application without the source code.
+
+<li>Bug fixes. (If you know any more, please report.)
+</ul>
+
+Known bugs:
+
+<ul>
+<li><%tt syntaxer.pl%> creates defined symbols that contain the $ sign. This causes problem under Solaris as
+    it was reported by Martin Renner. We have incorporated his fix and will be available in build19. Until that
+    you can apply
+<%Example
+#diff syntaxer.pl syntaxer.pl_old
+
+595d594
+<     $kw =~ s/\$/S/g;
+%>
+   to <%tt syntaxer.pl%>
+<li><%tt scriba%> does not run on Windows 98/95. This is because the command <%tt set file owner%> uses
+    a Windows NT system call that Windows 98/95 do not implement. We are working on the solution and
+
+    a fix will be available in the next build.
+</ul>
+
+Report of any other bug is appreciated.
+
+<p>
+<ul>
+<li><a href="news17.html">news of build17</A>
+</ul>
+<%END%>
+%file license.html.jam
+<%START Licence conditions for ScriptBasic%>
+
+
+ScriptBasic is free software. You can use ScriptBasic under the conditions of the licence
+<B><a target="_top" href="http://www.gnu.org/copyleft/lesser.txt">GNU Lesser General Public License</a></B>
+<p>
+In short this means that you can use ScriptBasic free of charge and you can also embed it into
+proprietary, non-free software. For more information read the file <%tt LICENSE.TXT%> or read the
+original text of the license.
+<p>
+<B>Please note that some modules use libraries that have different licences!</b>
+
+<%END%>
+%file news30.html.jam
+<%START What is new in ScriptBasic v1.0build30%>
+Bug fixes and new features. 
+<P>
+<B>New Features</B><P>
+<ol>
+<li>Now you can have a SETUP.EXE for Windows to ease installation and also uninstall. 
+<li>On Linux and Windows you can compile your BASIC program into standalone executable without needing any C compiler. 
+<li>Source structure and compilation was refined to help compilation on platform where no precompiled binary is available. 
+<li>Compilation is driven by Jamal macro extended makefiles that let us use the same source for the makefiles on UNIX and on Windows. 
+<li>Allocation routines now allocate less gap in structures on 32bit systems. 
+<li>BASIC program source inclusion is limited to 1000 levels to avoid infinite loops in the reader. 
+<li>Modification of the Berkeley DB 4.1.24 are supported and the precompiled binaries include the 4.1.24 version of the DB. 
+<li>Under UNIX curses and PostgreSQL module is available. Also one may try to compile the ODBC module under UNIX supporting UnixODBC. (It was tested by a student and I could not recompile it on my Linux box. Maybe I need a different version of UnixODBC.) 
+</ol>
+<P>
+<B>Bug Fixes</B><P>
+<ol>
+<li>Allocation routines allocated a few bytes more than needed in earlier version. When this was corrected it turned out that a lot of places ScriptBasic C code indexes memory by one byte more than allocated. These were fixed. 
+<li>Memory allocation code myalloc.c merged the segments good, but the size of the merged segment was calculated bad. This was corrected in build30. 
+<li>Syntax analysis code used the memory allocation module erroneous and deallocated some memory block from a segment it did not belong to. This causes harm only if the deallocated block is the first one on the segment. This rarely happened for memory space allocated to store module name space string, but in some weird examples it caused segmentation fault on Linux and infinite loop on NT. Now this is corrected. 
+<li>Setting file time failed on directories and on read-only files. Now this succeeds. The second one may not have been a bug. 
+<li>Programs that contained no any string could be executed only from source and not from cache. Now this is corrected. 
+<li>Some Solaris users reported that alignment was not correct on their platform. Their code suggestion was incorporated into the code. 
+<li>The BASIC function ERROR() returned random value so long as long no error happened. Now it returns zero. 
+<li>The ScriptBasic source reader code could not include files that started with ../.. This was corrected. 
+</ol>
+<p>
+Still you may be interested reading the old news of previous builds.
+<ul>
+<li><a href="news29.html">news of build29</A>
+
+
+<li><a href="news28.html">news of build28</A>
+<li><a href="news27.html">news of build27</A>
+
+<li><a href="news26.html">news of build26</A>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file news29.html.jam
+
+<%START What is new in ScriptBasic v1.0build29%>
+
+Several bug fixes were performed on the core interpreter as well as on some modules and new features are introduced in build29.
+<P>
+<B>New Features</B><P>
+<ol>
+<li>Now you can declare global variables using the command <%tt global%>. This is required when the <%tt declare option DeclareVars%> compile time directive is used. This is extremely useful to find mistyped variable names during compilation time.
+
+<li>A new sample program <%tt queens.bas%> is in the examples. This program places 8 (or if you modify the source <%tt n%> queens on a chess table so that none threatens the other. Symmetric cases are eliminated.
+
+<li>New module interfacing the well known <a href="http://curl.haxx.se">CURL module</A> was introduced.
+
+</ol>
+
+<B>Bug Fixes</B><P>
+<ol>
+<li>In the module <%tt MT%> zero length session variable name caused general protection error. This was corrected.
+
+<li> In the module <%tt MT%> <%tt undef%> arguments were not handled properly.
+
+
+<li>The debugger preprocessor caused error when user commanded the debugger to quit some case when debugging CGI programs because the module error string pointer was not initialized. Now this is corrected.
+
+<li>The operator assignment commands, like <%tt +=, -=%> cause general protection fault when the left hand side variable was <%tt undef%>.
+
+<li>The file <%tt string.c%> was modified to suppress some compilation warning.
+
+<li>The command <%tt open directory%> collected all the directories not only the plain files into the file list, though it was not desired by default. Now directories are not collected into the file list.
+
+<li>There was a bug in the memory handling that caused general protection fault in some cases when reference variables were used.
+
+<li>The syntax analyzer accepted an expression list with a trailing comma. This is not that way anymore, this bug is fixed.
+
+<li>The variable <%tt pszModuleError%> was not initialized and thus it caused segmentation fault on Linux when using the debugger.
+
+<li>The function <%tt execute_DereferenceS%> was corrected and enhanced. It crashed if <%tt NULL%> variable was to be dereferenced (which is not needed anyway). The enhancement results returning <%tt NULL%> when the variable value is <%tt undef%> instead a variable with type <%tt VTYPE_UNDEF%>. This helps external modules to compare variables being <%tt undef%> and not caring referenced <%tt undef%>.
+
+<li>BASIC programs compiled to C and compiled to be standalone executable were not able to handle the command line parameters. This bug was corrected.
+
+<li>The CGI module was not prepared to handle <%tt HEAD%> requests. This was added. You have to explicitly allow the method in the CGI program using the command <%tt option%>.
+
+<li>The MySQL module did release the MySQL connection when a connection was closed by the BASIC program, but the handle pointer was not released only when the BASIC program finished. This bug was corrected now.
+</ol>
+
+
+
+<p>
+Still you may be interested reading the old news of previous builds.
+<ul>
+<li><a href="news28.html">news of build28</A>
+<li><a href="news27.html">news of build27</A>
+
+<li><a href="news26.html">news of build26</A>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file news28.html.jam
+<%START What is new in ScriptBasic v1.0build28%>
+
+<li><FONT SIZE="+1">ODBC module</FONT><BR>
+On Windows NT a new module was developed that supports ODBC database access.
+<P>
+<li><FONT SIZE="+1">BASIC to C compilation</FONT><BR>
+Now this is possible to compile the BASIC programs to C. Formerly this feature was defective. The Users' Guide details how to compile the resulted C file to exe under Linux and Windows NT. The binary packages also deliver the necessary library files. Under Windows NT both Visual C++ and Borland C compilers are supported.
+<P>
+
+<li><FONT SIZE="+1">FileCopy and Name</FONT><BR>
+Two new commands are implemented into the core of the BASIC language to copy and to rename a file.
+<P>
+
+<li><FONT SIZE="+1">Randomize</FONT><BR>
+A new command RANDOMIZE was introduced to seed the random number generator.
+<P>
+
+<li><FONT SIZE="+1">GTK Visio module and Socket programming module</FONT><BR>
+
+Peter Van Eerten developed two modules available from his homepage <a href="http://members.home.nl/peter.van.eerten"><%tt http://members.home.nl/peter.van.eerten%></A>
+<p>
+He is actively working on these modules, so it is worth looking at frequently.
+
+
+<p>
+Still you may be interested reading the old news of previous builds.
+<ul>
+<li><a href="news27.html">news of build27</A>
+<li><a href="news26.html">news of build26</A>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file news27.html.jam
+<%START What is new in ScriptBasic v1.0build27%>
+
+
+<li><FONT SIZE="+1">Bug Fixes</FONT><BR>
+Build 27 is a maintenance build that does not deliver new features, but rather incorporates all the bug fixes that have appeared since the previous build. For the list of bugs (14 all together for build26) detailed and precisely defined technologically see the <a href="xxxbuglist.html">buglist</a> page.
+<p>
+Still you may be interested reading the old news of previous builds.
+<ul>
+<li><a href="news26.html">news of build26</A>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file news26.html.jam
+<%START What is new in ScriptBasic v1.0build26%>
+
+<li><FONT SIZE="+1">Internal Preprocessor</FONT><BR>
+
+This version is highly extended over the previous. Now it is possible to write internal preprocessors for ScriptBasic. These are C programs compiled to a DLL or SO library that can be loaded by ScriptBasic during processing the source code. Such a program can alter the compilation behavior of ScriptBasic or can gain statistical information from the source.
+<p>
+This feature was planned for more than two years and was requested by many users.
+
+<p>
+<li><FONT SIZE="+1">Debugger</FONT><BR>
+The first ever sample preprocessor implements a command-line debugger. It allows the programmer to run a program in debugger mode. If you use the Eszter SB Application Engine in command line mode you can even debug CGI programs. Later versions will make possible to debug real CGI programs.
+
+<p>
+<li><FONT SIZE="+1">Enhanced Array Handling</FONT><BR>
+Now you can use multidimensional arrays in a new way. From now on the notation <%tt var[i1][i2]...[in%>] is also allowed. This is especially important when you want to handle a multidimensional array that has both normal and associative indices. For example <%tt a[3] <%@null {%>"peach"<%@null }%>%> is now possible.
+
+<p>
+<li><FONT SIZE="+1">Enhanced Var Memory Handling</FONT><BR>
+Former versions of ScriptBasic had problems when an array element was passed to a function or subroutine by reference and the array was released while the subroutine was active. This resulted memory fault. Now this is eliminated and a new command <%tt ref%> is introduced. For more information read the Users' Guide.
+
+<p>
+<li><FONT SIZE="+1">Renewed Documentation</FONT><BR>
+Documentation methodology and documentation format was changed. This will hopefully result more up-to-date documents and a wider variety of available format. These formats are: PostScript, PDF, html, split html, compiled html and some of these in compressed downloadable format.
+
+<p>
+
+
+The discovered bugs of the previous build were corrected.
+<p>
+
+<table border="0"><tr><td bgcolor="#CAC5AE"><FONT size="1">
+Jeff Ash at Charles Sturt University on <a target="_top" href="http://life.csu.edu.au/itc332/module3/topic3-2.html">page</a> wrote:
+<blockquote><i>
+Have a look at the ScriptBasic site which shows one example of a splash page. Notice how the image and content of the page is kept to a minimum to facilitate fast loading, yet its appearance catches the eye.
+
+</i></blockquote>
+<P>
+I am proud. Thank you.
+</FONT></td></tr></table>
+
+<ul>
+<li><a href="news25.html">news of build25</A>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+
+<p>
+<%END%>
+%file news25.html.jam
+<%START What is new in ScriptBasic v1.0build25%>
+<p>
+<%#define READON/MODULE=Read the <FONT COLOR="BLUE">documentation</FONT> for more information on this module.%>\
+<H3>Bug fixes</H3>
+
+Since build24 was released quite a number of bugs were reported by users. All these bugs 
+were corrected and some more.
+<p>
+<H3>Faster execution</H3>
+
+The code that implements mathematical functions and operators were reviewed and polished. The
+result is faster execution on one hand and <%tt OPTION%> driven behavior on the other. Up to build24
+division by zero resulted <%tt undef%> value. Now programs may set the option <%tt OPTION RaiseMathError%>
+to get an error instead of the <%tt undef%> value. For further information please read the users' guide.
+<p>
+<H3>JAPI=Graphical User Interface</H3>
+There is a new module <%tt japi%> that allows the ScriptBasic programmer to have graphical user interface.
+This is totally portable and runs fin on Windows NT as well as as under UNIX. To use the module the
+Java Runtime Environment has to be installed.
+<p>
+ScriptBasic developers actually did not develop the graphical user interface only the 
+interface functions that are calling the Java AWT functions, this there are not too much documentation
+about the module <%tt japi%> inside the ScriptBasic project. To get detailed information on the the graphical
+interface programming please visit the site <a href="http://www.japi.de"><%tt www.japi.de%></A> after
+reading the short documentation on the module. <%READON japi%>
+<p>
+<H3>More powerful NT module</H3>
+The module <%tt nt%> was developed further. The two new functions allow a program to shut down an 
+
+NT workstation or server and to get the list of the processes that currently run on the NT.
+<%READON nt%>
+<p>
+<H3>Module static linking</H3>
+Up to know special application of ScriptBasic required delivery of several files. Namely the
+interpreter and the external modules that the application uses in a well configured directory.
+
+Now you can compile ScriptBasic to link some of the modules static. This will allow you to deliver your
+application in a single executable without worriing about the external modules. For example the
+Eszter SB Application Engine is now delivered linked together with the CGI and the MT module.
+<p>
+Linking static modules eventually requires some alteration of the code. 
+For further information read the Users' guide.
+<p>
+
+<H3>Changed directory structure under UNIX</H3>
+The setup directories on Linux has been changed to accomodate the Linux conventions better. Putting
+all the stuff under the diretory <%tt /etc%> was a stupid choice of me clearly showing my poor Linux/UNIX
+experience.
+<p>
+<H3>Debian and RPM package</H3>
+The <FONT COLOR="BLUE" >DEBIAN</FONT> package now contains the binary for the
+interpreter variations as well as for the external modules.
+<p>
+You can access the ScriptBasic interpreter as RedHat package, <FONT COLOR="BLUE" >binary</FONT>
+and <FONT COLOR="BLUE">source</FONT>.
+<ul>
+<li><a href="news24.html">news of build24</A>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+
+<p>
+<%END%>
+
+%file news24.html.jam
+
+<%START What is new in ScriptBasic v1.0build24%>
+<p>
+There are new modules delivering even more functions.
+<%#define READON/MODULE=Read the <FONT COLOR="BLUE">documentation</FONT> for more information on this module.%>\
+<p>
+<%tt cio%> module supporting Console Input Output function for Windows NT console. Using this
+module you are able to write colored output, wait for single keystroke, capture CRTL-C pressed
+on the keyboard and many more functions. <%READON cio%>
+<p>
+The module <%tt nt%> has been developed. The new function allows the programmer to display
+a Windows standard message box on the screen and get the answer (YES/NO/OK/CANCEL...) from the
+client. <%READON nt%>
+<p>
+The module <%tt mt%> has been finished. In the current version you can use the module <%tt mt%>
+to write fully functional web programs, keeping session and application global variables in the
+application engine memory, handle session timeout.
+<%READON mt%>
+<p>
+A new module <%tt tools%> delivers handy functions under UNIX as well as Windows NT.
+<%READON tools%>.
+<p>
+The variation Eszter SB Application Engine was developed. Now it can be be started as a Windows NT
+service under Windows 2000 and can be used to execute BASIC programs in worker threads. These
+programs are started when the engine is started and can run as long as the engin runs. They can perform
+several tasks, like session timeout handling, various system management tasks and so on.
+<p>
+There was a slight bug fixed in the syntax analyzer that prevented the correct handling of
+module names of a single character.
+<p>
+The search algorithm that tries to find an external module was extended under Windows NT. Now if it
+does not finds a module in the configured 'modules' directory (most probably because there is no
+'modules' directory configured) then it tries to load the module from the same directory
+where the executable is and finally from the <%tt bin\..\modules%> directory. This greatly eases the
+delivery of standalone CD delivered applications that can be executed without any configuration
+or registry setting.
+<p>
+The DEBIAN package now contains the binary for the interpreter variations as well as for the external modules.
+<ul>
+<li><a href="news23.html">news of build23</A>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+
+%file news23.html.jam
+<%START What is new in ScriptBasic v1.0build23 patch 1%>
+There is a new patch available. <B>This is a feature patch only for W2K only 
+including no bug fixes.</B>
+<p>
+Downloading and installing this patch over the released version v1.0b23 will allow installing the <%tt sbhttpd%> Eszter SB Engine as a Windows NT service. For more information <FONT COLOR="BLUE">download</FONT> the patch and read the file <FONT COLOR="BLUE"><%tt scriba-v10b23p1-readme.txt%></FONT>.
+
+<H1>What is new in ScriptBasic v1.0build23</H1>
+New modules NT and UX that support Windows NT and UNIX specific functions. They are obviously not portable and are available only for the specific platform. (for, <%tt chmod%> for UNIX and registry editing for NT)
+<p>
+New built-in command EXECUTE that starts an external program and waits for its completion. You can specify maximum wait time, can access the exit code if the external program finished. If the program does not stop an error is raised that the program can catch using <%tt ON ERROR GOTO%> and the pid is accessible. (You can use the command <%tt KILL%> to kill the process or let it run.)
+<p>
+The command line version process exit code is the last non-caught error code.
+<p>
+New assignment commands <%tt +=%>, <%tt -=%>, <%tt *=%>, <%tt /=%>, <%tt \=%> and <%tt &amp;=%>. 
+<p>
+Greatly enhanced source documentation for external module writers.
+<p>
+Multi-thread extension support developed.
+<p>
+New module MT that supports multi-thread execution and provides "global" process variables,
+
+session handling, and locking mechanism. (Session timeout and session finalization scripts are
+not implemented yet.)
+<p>
+Makefile.nt supporting command line compilation under Windows NT using Visual C++ v6.0 (To create
+smaller source ZIP this makefile is included in the source ZIP instead of the workspace files.)
+<p>
+For Debian Linux user <FONT COLOR="BLUE">Debian package is available</FONT>.
+<p>
+Some bug fixes in command LIKE.
+<ul>
+<li><a href="news22.html">news of build22</A>
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+
+%file news22.html.jam
+
+<%START What is new in ScriptBasic v1.0build22%>
+
+
+<BIG><B>ScriptBasic is now integrated into its own webserver.</B></BIG><p>
+
+The new build22 delivers a new variation of ScriptBasic that is a 
+single process multi-thread web server application capable running
+BASIC scripts without the time consuming  new process forking of 
+usual CGI program execution.
+<p>
+<li>BUG FIXES OVER PREVIOUS BUILD
+<P>
+There was an error that prevented <%tt OPEN%> to handle the a file with mode <%tt Append%>.
+<p>
+There was a memory leak when the command <%tt OPTION%> is used in a BASIC program.
+<p>
+When reading the configuration <%tt RegOpenKeyEx%> wascalled but no call to <%tt RegCloseKey%>.
+This was loosing a single handle. Fixed.
+<p>
+The file <%tt thread.c%> contained code that lost handles when mutexes were used.
+<p>
+Tomasz.Lacki <%tt Tomasz.Lacki@primark.pl%> found a bug on 2001.01.11.<BR>
+<i>I've found and fixed a little bug in <%tt scriba_CallArgEx%> at the end there is a need for
+<%tt memory_ReleaseVariable(pProgram->pEXE->pMo,vReturn);%> otherwise memory leaks appear.</i>
+It has been fixed.
+<p>
+
+<p>
+<li>KNOWN BUGS
+<p>
+In this build the ISAPI version does not handle the cache.
+<p>
+ScriptBasic does not run on Windows95. Use Windows98 or NT. You may also try to copy the file
+<%tt ADVAPI32.DLL%> from a Win98 system to your Win95, but you do it at your own risk.
+<p>
+</UL>
+
+Report of any bug is appreciated.
+
+<ul>
+
+<li><a href="news21.html">news of build21</A>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+
+%file news21.html.jam
+<%START What is new in ScriptBasic v1.0build21%>
+
+There are two new modules in build21. These are Regular Expression module and MySQL interface module.
+<p>
+With the regular expression module you can compare strings against regular expressions and you can also
+
+perform regular expression search and replace, similar to the functionality of the Perl <%tt =~s%> operator.
+<p>
+With the MySQL module you can connect to MySQL databases from UNIX as well as from Windows NT.
+<p>
+The interpreter itself was not changed except some bug fixes and that the external module interface
+was extended supporting a lot of new call-back functions.
+<p>
+
+There is a new <a target="_top" href="commands.html">command reference</a> that can be used to easily look up commands
+and functions.
+<p>
+<li>BUG FIXES
+<p>
+<%tt include%> and <%tt import%> and <%tt module%> commands did not work well when there was more than one directory
+specified and the file was not found. They drove ScriptBasic into infinite loop. A similar bug was in the
+<%tt preload%> configuration command.
+<p>
+The configuration compiler has died when a key had zero string value.
+<p>
+When a module was loaded from binary format the file was not closed and this exhausted the operating
+system file handles in multi-thread implementations.
+<p>
+
+<p>
+<li>KNOWN BUGS
+
+<p>
+In this build the ISAPI version does not handle the cache.
+<p>
+There is an error that prevents <%tt OPEN%> to handle the a file with mode <%tt Append%>.
+<p>
+ScriptBasic does not run on Windows95. Use Windows98 or NT. You may also try to copy the file
+<%tt ADVAPI32.DLL%> from a Win98 system to your Win95, but you do it at your own risk.
+<p>
+There is a memory leak when the command <%tt OPTION%> is used in a BASIC program. This bug can
+usually be ignored by applications that use the standalone version.
+<p>
+When reading the configuration <%tt RegOpenKeyEx%> is called but no call to <%tt RegCloseKey%>. This is loosing a
+single handle. This should not cause problem even in multithread application. The only case is when a
+multithread implementation reads the configuration several times and only on Win32 platforms.
+<p>
+The file <%tt thread.c%> contains code that looses handles when mutexes are used. This may cause problem
+in multithread implementations only.
+<p>
+Tomasz.Lacki <%tt Tomasz.Lacki@primark.pl%> found a bug on 2001.01.11.<BR>
+<i>I've found and fixed a little bug in <%tt scriba_CallArgEx%> at the end there is a need for
+<%tt memory_ReleaseVariable(pProgram->pEXE->pMo,vReturn);%> otherwise memory leaks appear.</i>
+<p>
+</UL>
+
+Report of any bug is appreciated.
+
+<ul>
+<li><a href="news20.html">news of build20</A>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+
+%file news20.html.jam
+<%START What is new in ScriptBasic v1.0build20%>
+
+In addition to the usual bug fixes ScriptBasic v1.0build20 delivers a major new feature that should excite
+application developers. This is the new <a target="_top" href="texi/devguide.html">API</A> that makes
+it ScriptBasic more embeddable than ever before. Using this interface you can use ScriptBasic as a library
+in your program. You load and run a program with just a few function calls, re-run a program, read and set
+global variables, call ScriptBasic functions from C passing and retrieving arguments and function return value.
+<p>
+As a sample application to this interface the <%tt scribacmd.c%> main program file has replaced the old
+<%tt basiccmd.c%> one and the command line version of ScriptBasic is built on the top of this interface.
+<p>
+There is no change in the language or new modules in this build.
+<p>
+<li>BUG FIXES
+<p>
+In addition to the bugs already fixed in b19patch1 and 2 two more bugs are fixed. One bug forced ScriptBasic into
+an infinite loop when you wanted to include a module header file that did not exist. Another bug created the
+cache file name erroneous that somewhat increased the possibility of file name collision.
+<p>
+<li>KNOWN BUGS
+<p>
+Nothing. (Known at least.)
+<p>
+</UL>
+
+Report of any bug is appreciated.
+
+<ul>
+<li><a href="news19.html">news of build19</A>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+
+
+%file news19.html.jam
+<%START What is new in ScriptBasic v1.0build19%>
+
+<a href="download.html">RedHat RPM packages are available</A><p>
+<FONT COLOR="BLUE"><B>PATCH 10b19p2</B></FONT> should solve the segfault issue when no configuration file is present. Download the kit, install it and then download this patch and replace the original files with the ones included in
+the ZIP. On UNIX do not forget to convert the CR/LF to LF and do not use the Win32 EXE files.
+<p>
+We compiled ScriptBasic using gcc version 2.95.2 20000313 (Debian GNU/Linux) with no problem. However some users using RedHat Linux reported
+compilation problem. This is most probably caused by the fact that some of the C programs contain CR/LF line separators. Convert them to normal
+UNIX LF characters and try to compile again. We try to locate the issue and release a new build soon.
+<UL>
+<li>CONFIGURATION FILE
+<p>
+The major change from buil18 to 19 is the configuration file format. The old configuration file is very simple and the new features could not fit into the structure. The new configuration file handling module handles structured configuration keys that will result higher freedom for module developers and also will reduce key name conflicts.
+<p>
+The bad news is that you have to upgrade your old configuration file manually.
+<p>
+The module handles binary configuration files. This is good and bad at the same time. On one hand the configuration file processing taking place before starting the ScriptBasic interpreter is much faster. This is a great speed-up for CGI programs. On the other hand you have to compile your configuration file using the configuration file compiler (delivered with ScriptBasic). We are sure that many time you will just edit the text file and forget to recompile it. Sorry. We are sure that the compiled binary format fast loading pays back.
+<p>
+<li>PACK and UNPACK
+<p>
+There is a function PACK and a command UNPACK implemented. These command implements a functionality similar to Perl pack and unpack although much simpler. If you have special requests these commands can be extended with further formatting characters.
+<p>
+<li>ASSOCIATIVE ARRAYS
+<p>
+The next build will let you write:
+<p>
+a{"help"} = 123
+<p>
+or
+<p>
+a{143.12} = 123
+<p>
+or even
+<p>
+a{undef} =66
+<p>
+This is a simple implementation of associative array handling. Note that the implementation is simple, and is not a high performance hash handling mechanism. For large hashes you still have to use the hash module. But it eases life in case you need something like an array.
+<p>
+We further work on issues that are not implemented in the current version like a[13]{"key"} constructs.
+<p>
+<li><%Berkeley%> DB new version
+<p>
+The new <%Berkeley%> DB released by Sleepy Cat is incorporated into the DB module of ScriptBasic. Older builds of ScriptBasic will not support this or later version of <%Berkeley%> DB and this and later builds of ScriptBasic will not support older <%Berkeley%> DB versions.
+<p>
+<li>BUG FIXES
+<p>
+
+There are some bugs in build18. For example:
+<p><%Example
+sub q(f)
+for f=1 to 10
+' do nothing
+next f
+end sub
+
+t=100
+q(t)
+%>
+will just print 100 in build18, because the implicit assignment in the "for" loop did not care the variable as passed by reference.
+<p>
+<li>CODE DEVELOPMENT
+<p>
+There are some developments in some modules that have no effect in ScriptBasic. This is the memory handling module that can now be used in a multi-thread program where the same memory segment is used for allocation concurrently. ScriptBasic does not use this feature.
+<p>
+<li>KNOWN BUGS
+<p>
+The <%tt myalloc.c%> module has a bug that prevents its usage in a real multithread environment. It does 
+
+not effect ScriptBasic.
+<p>
+</UL>
+
+Report of any other bug is appreciated.
+
+<ul>
+<li><a href="news18.html">news of build18</A>
+<li><a href="news17.html">news of build17</A>
+</ul>
+
+<p>
+<%END%>
+%file win98setup.html.jam
+<%@comment%>
+<%START SETUP.EXE bug under Win95/98/ME%>
+There is a known bug in the <%tt SETUP.EXE%> program of ScriptBasic v1.0build30 that prevents the automated installation of the interpreter. The setup program for some reason can not find the system variable <%tt PATH%> during step 8 of the installation process and fails. There is no reason to retry the installation, it will deterministically fail.
+<P>
+A typical installation error output may look like this
+<%Example
+SETUP caused an invalid page fault in
+module SETUP.EXE at 0167:004020c3.
+Registers:
+
+EAX=00000000 CS=0167 EIP=004020c3 EFLGS=00010202
+EBX=00000000 SS=016f ESP=0065e3f0 EBP=0065fe38
+ECX=00000000 DS=016f ESI=00000000 FS=1847
+EDX=bffc9490 ES=016f EDI=00000001 GS=0000
+Bytes at CS:EIP:
+8a 06 83 c4 10 33 ff 84 c0 74 12 8b ff 3c 3b 75 
+Stack dump:
+0041bbc0 0041bbc0 00413c48 00000000 00000001
+00000000 00000000 00000000 18010c00 0d560050
+00000c00 1fc60000 00000050 00010d56 00300400
+00001fc6 
+%>
+
+The contents of the LOG file are something like:
+
+<%Example
+---------------------------------------------------
+Starting installation-log, hr=6, min=58, sec=19, msec=880.
+  ScriptBasic installation was started--Commandline=''
+--Temppath: 'c:\win98\temp\'
+--Currentpath: 'c:\my documents\my zips\unzip2\'
+--Installed: ScriptBasic version is 1.0b30
+--Install path='c:\scriptbasic\'--Progress: 'Registering uninstall- program'
+--Progress: 'Adding defaults to registry.'
+--Timestamp: hr=6, min=58, sec=33, msec=780
+--Progress: 'Registering version in registry'
+--Progress: 'Registering build number in registry'
+--Progress: 'Registering file extension.'
+--Timestamp: hr=6, min=58, sec=47, msec=20
+--Progress: 'Registering application type'
+--Progress: 'Registering application name'
+
+--Progress: 'Registering icon'
+--Timestamp: hr=6, min=59, sec=0, msec=200
+--State: Current PATH=(null)
+%>
+<P>
+In such cases the installation of ScriptBasic has to be performed manually. You have to download the precompiled binary package of the program.  
+<P>
+There are two binary file versions of ScriptBasic for Windows in the download directory. They contain the same version of the interpreter. The difference is only the packaging. One is the version with the <%tt setup.exe%> This is the one you have already downloaded. The other one from the URL
+
+<A HREF=http://scriptbasic.com/download/scriba-v1.0b30-bin.zip><%tt http://scriptbasic.com/download/scriba-v1.0b30-bin.zip%></A>
+
+contains the files that you need to install ScriptBasic by manually.
+<P>
+To install ScriptBasic manually follow the steps:
+<UL>
+<LI>Extract the content of the ZIP file into a directory where you want ScriptBasic to be installed. Note that the ZIP file contains the directory names and all files in the ZIP file are in the subdirectory <%tt ScriptBasic%>. Therefore if you want to install ScriptBasic into <%tt C:\ScriptBasic%> you have to extract the ZIP file into <%tt C:\%>, or if you want to install ScriptBasic into <%tt C:\Program Files\ScriptBasic%> then you have to extract the content of the ZIP file into <%tt C:\Program Files%>. Pay attention to have the check box “Use folder names” checked! Also crosscheck that you extract “All files” and not only “Selected files”! At this very point do the ZIP extraction.
+<LI>If you do not like the directory name <%tt ScriptBasic%> rename it after the content of the ZIP file was extracted. You can for example rename <%tt C:\Program Files\ScriptBasic%> to <%tt C:\Program Files\scriba%>. From now on I assume that the installation directory is <%tt C:\Program Files\ScriptBasic%>
+<LI>Alter your system variable <%tt PATH%> so that it includes <%tt C:\Program Files\ScriptBasic\bin%>. Win98 may need logout/login or reboot to get this change in effect.
+<LI>After your system variable <%tt PATH%> is changed start a command prompt.
+<LI>Type in <%tt scriba%> without any argument. It should print out the ScriptBasic usage screen.
+<LI>Change the current working directory to <%tt C:\Program Files\ScriptBasic\%>
+<LI>Start <%tt notepad scriba.conf.lsp%>
+<LI>The distributed configuration file is tuned for an installation that was installed in <%tt t:\MyProjects\ScriptBasic\%>. You have to alter all occurrences of the string <%tt t:\\MyProjects\\ScriptBasic\\%> to your installation location. Note that the path separator back-slash is doubled in the configuration file.
+<LI>Save the changes you made to the configuration file and exit NOTEPAD.
+<LI>At the command prompt type <%tt scriba –k scriba.conf.lsp%>. This command compiles the configuration file into an internal format.
+<LI>Start Explorer and select the directory <%tt C:\Program Files\ScriptBasic\doc%>. Using the right mouse button (or the left if your mouse is set for left-handed people) and drag the file <%tt ug.chm%> to the desktop and select “Create shortcut(s) here” when you release the icon.
+<LI>Double click the created short-cut and read the ScriptBasic Users’ Guide.
+<LI>Start using ScriptBasic.
+</UL>
+
+<%END%>
+%file xxxbuglist.html.jam
+<%@comment the name of this file has to be later in the alphabet than "bug" to have all the files in the
+output directory when the command dir is executed%>
+<%START List of Reported Bugs%>
+
+This is the list of reported bugs. To get information on discovered bugs as soon as possible <%SUBSCRIBE subscribe%> to the ScriptBasic mailing list.
+<P>
+Most of the reports bear historical value. Reports are generated by the developers and tend to be precise. Bug reports coming from the users to the ScriptBasic developers are informal, and sometimes not precise. On the other hand these reports have practical value suggesting patching the actual source or workaround in case the user is not able to recompile the code. If the original bug report was created by external user the report has an acknowledgement section.
+
+<P>
+User generated bug reports are handled usually within a week. The response is a bug report giving patch instructions and workaround. In case the bug is serious regarding security or basic interpreter functions a new release is built as soon as possible.
+<P>
+You may face some of these bugs if you use an older version of ScriptBasic. Please do not! Upgrade!
+<P>
+<LI><B>List of Bugs</B>
+<P>
+<%@dir|.|-o -h -Sn bug*.html|
+<%tt <a href="<%$file$url%>"><%$file$name%></A>%><BR>
+%>
+<P>
+The name of the file is built up the following way:
+<P>
+<%tt bugYYMMDDVVBBRR.html%>
+<BR>
+<UL>
+<LI><%tt bug%> is constant string to denote this is a bug report.
+<LI><%tt YY%> is the year minus 2000. Bug reports after 2100 will start with the letters <%tt buh%> to code the century.
+<LI><%tt MM%> is the month of the bug report.
+<LI><%tt DD%> is the day of the bug report.
+<LI><%tt VV%> is the version of ScriptBasic the bug is related to. If there are more versions that are affected by this bug then the latest version affected by the bug at the date the bug is discovered.
+<LI><%tt BB%> is the build of ScriptBasic the bug is related to. If there are more builds that are affected by this bug then the latest build affected by the bug at the date the bug is discovered.
+<LI><%tt RR%> is the serial number of the bug. If there are more than 99 bug reports on a given day concerning the same version and build, then ScriptBasic development team releases a new maintenance build.
+</UL>
+
+<%END%>
+
+%file dummy.txt
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/09/23-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+
+~
+<%@comment Bug Description%>\
+
+~
+<%@comment Bug reason, what causes the bug%>\
+
+~
+<%@comment solution%>
+
+~
+<%@comment workaround%>\
+
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug011021102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/21-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+ScriptBasic programs using external modules implementing external commands may use excess memory while running the interpreter.
+<P>
+<B>NOTE:</B> This use of excess memory is released when the interpreter finishes program execution, thus this is not a serious memory leak. This bug does not effect severely the memory management of variations of ScriptBasic embedding the interpreter into multi-thread environment.
+~
+
+<%@comment Bug reason, what causes the bug%>\
+When an external command is used the pointer <%tt pEo->pGlobalMortalList%> is set to point to <%tt NULL%> erroneously. This causes all temporary variable allocated in the external command unreleased when the external command returns.
+~
+<%@comment solution%>\
+
+The function <%tt COMMAND_EXTERNAM%> in file <%tt commands/external.c%> has to be altered from
+
+<%Example
+pEo->pGlobalMortalList = NULL;
+%>
+to
+<%Example
+pEo->pGlobalMortalList = &_ThisCommandMortals;
+%>
+
+set the variables correct.
+
+
+~
+<%@comment workaround%>\
+There is no workaround. 
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has discovered this bug.
+%>
+
+
+
+%file bug011019102606.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br06~
+<%@comment Affected versions=%>\
+v1.0b26 Solaris only ~
+<%@comment Severity%>\
+High
+~
+<%@comment Bug Description%>\
+ScriptBasic does not link on Solaris, the linker complains about missing function <%tt COMMAND_SEC%>.
+~
+<%@comment Bug reason, what causes the bug%>\
+The BASIC function <%tt SEC%> is implemented using the macro <%tt COMMAND(SEC)%>. When this macro is invoked the string literal <%tt COMMAND_%> and the macro argument <%tt SEC%> is supposed to be concatenated by the C macro preprocessor. Unfortunately on Solaris the macro <%tt SEC%> is defined in <%tt sys/time.h%> and thus the macro <%tt COMMAND%> is invoked with the argument: <%tt COMMAND(1)%>. Finally the function <%tt COMMAND_1%> is defined by the C compiler erroneously.
+~
+<%@comment solution%>
+In the file <%tt commands/time.c%> the line
+
+<%Example
+#undef SEC
+%>
+
+has to be inserted before the definition of the macro <%tt TIMEFUN%>.
+~
+<%@comment workaround%>\
+There is no workaround, the patch has to be applied in order to successfully compile the program under Solaris.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug011019102605.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br05~
+<%@comment Affected versions=%>\
+v1.0b26 Solaris only~
+<%@comment Severity%>\
+High
+~
+<%@comment Bug Description%>\
+ScriptBasic built on Solaris crashes for any program.
+~
+<%@comment Bug reason, what causes the bug%>\
+
+The string table contains <%tt long%> values storing the length of the individual strings. These values are not aligned. The <%tt gcc%> compiler creates code accessing these variables that causes the Bus error on Solaris.
+~
+<%@comment solution%>
+There are three locations where modification of code has to be applied.
+<p>
+In the file <%tt builder.c%> the line 275
+
+<%Example
+lLen = * ((long *)(pBuild->StringTable + ulIndex));
+%>
+
+has to be altered to 
+
+<%Example
+memcpy( &lLen, pBuild->StringTable + ulIndex , sizeof(long));
+%>
+<p>
+In the file <%tt execute.c%> the line 901
+
+<%Example
+slen = *((long *)(s-sizeof(long)));
+%>
+
+has to be altered to
+
+<%Example
+memcpy(&slen, s-sizeof(long), sizeof(long));
+%>
+<p>
+In the file <%tt memory.c%> the definition of the structure <%tt struct _FixSizeMemoryObject%> has to be changed to
+
+<%Example
+typedef struct _FixSizeMemoryObject {
+
+  union _fsmoval{
+    PBYTE pValue; // the value of the object
+    long lValue;  // the long value of the object
+    double dValue;// the double value of the object
+    struct _FixSizeMemoryObject **aValue;
+    } Value;
+. . . rest of the definition is not altered
+%>
+
+to name the <%tt union%>. Later in the code the line 1068
+
+<%Example
+
+mypVar->Value = pVar->Value;
+%>
+has to be altered to
+<%Example
+memcpy(&(mypVar->Value),&(pVar->Value),sizeof(union _fsmoval));
+%>
+~
+<%@comment workaround%>\
+There is no workaround, the patch has to be applied in order to successfully compile the program under Solaris.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug011019102604.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br04~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+High
+~
+<%@comment Bug Description%>\
+When ScriptBasic builds up a string table it stores strings only once, even if the string appears in the source code more than once. When the string table storage was altered from zero terminated strings to length coded and zero terminated a programming error was made that causes ScriptBasic storing multiplied strings more than once. On some architectures this bug also caused the interpreter to crash. (Solaris)
+~
+<%@comment Bug reason, what causes the bug%>\
+When the string table is built up in function <%tt build_StringIndex%> the counter stepping along the string table is incremented by the length of the actual string but the extra terminating zero character was not counted.
+~
+<%@comment solution%>
+The extra line:
+<%Example
+    ulIndex += lLen;
+    ulIndex++; /* step over the extra zchar at the end of the string */
+%>
+has to be inserted into the end of the loop in function <%tt build_StringIndex%>.
+~
+<%@comment workaround%>\
+On Linux and Windows NT there is no need for workaround. On other platforms, like Solaris the patch has to be applied and the program recompiled. Note that the patch described in 2001/10/19-v1.0b26-br05, and 2001/10/19-v1.0b26-br06 also have to be applied.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug011019102603.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br03~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+The function <%tt OCT%> converts its argument to LONG if this is a variable. For example the following program:
+<%Example
+varReal = 60.5e0
+print Oct(varReal), " ",varReal, "\n"
+%>
+prints the following
+
+<%Example
+101 60
+%>
+~
+<%@comment Bug reason, what causes the bug%>\
+The implementation of the function OCT uses the macro <%tt _EVALUATEEXPRESSION%> instead of <%tt EVALUATEEXPRESSION%> The macro starting with the <%tt _%> character evaluates the function argument resulting the argument without creating a copy of it. This optimizes code in case the command or function does not alter the argument/parameter value. This is not the case in the implementation of the function OCT. OCT converts the argument value to LONG.
+~
+<%@comment solution%>
+The following line in the <%tt COMMAND(OCT)%> should be updated:
+<%Example
+Op = _EVALUATEEXPRESSION(CAR(PARAMETERLIST));
+%>
+to:
+<%Example
+Op = EVALUATEEXPRESSION(CAR(PARAMETERLIST));
+%>
+~
+<%@comment workaround%>\
+Do not pass a variable to the function OCT, use the <%tt ByVal%> operator to protect the argument.
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has discovered the same bug in the function HEX.
+%>
+
+
+%file bug011019102602.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br02~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+
+The function <%tt HEX%> converts its argument to LONG if this is a variable. For example the following program:
+<%Example
+varReal = 60.5e0
+print Hex(varReal), " ",varReal, "\n"
+%>
+prints the following
+
+<%Example
+3C 60
+%>
+~
+<%@comment Bug reason, what causes the bug%>\
+The implementation of the function HEX uses the macro <%tt _EVALUATEEXPRESSION%> instead of <%tt EVALUATEEXPRESSION%> The macro starting with the <%tt _%> character evaluates the function argument resulting the argument without creating a copy of it. This optimizes code in case the command or function does not alter the argument/parameter value. This is not the case in the implementation of the function HEX. HEX converts the argument value to LONG.
+~
+<%@comment solution%>
+The following line in the <%tt COMMAND(HEX)%> should be updated:
+<%Example
+Op = _EVALUATEEXPRESSION(CAR(PARAMETERLIST));
+%>
+to:
+<%Example
+Op = EVALUATEEXPRESSION(CAR(PARAMETERLIST));
+%>
+~
+<%@comment workaround%>\
+Do not pass a variable to the function HEX, use the <%tt ByVal%> operator to protect the argument.
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has discovered this bug. 
+%>
+
+%file bug011019102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/19-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+The STR function does not handle DOUBLE and STRING variables correctly.
+The following program produces incorrect results:
+<%Example
+varstring = "a string"
+varReal = 60.5e0
+varInteger = 60
+varZerp = 0
+varNegReal = -60.5e0
+
+print "'", varstring, "'\t'", Str(varstring), "'\n"
+print "'", varInteger, "'\t'", Str(varInteger), "'\n"
+print "'", varReal, "'\t'", Str(varReal), "'\n"
+print "'", varNegInteger, "'\t'", Str(varNegInteger), "'\n"
+print "'", varNegReal, "'\t'", Str(varNegReal), "'\n"
+%>
+
+The following results are produced:
+<%Example
+'a string'       '0'
+'60'     '60'
+'60.500000'      '60'
+'-60'    '-60'
+'-60.500000'     '-60'
+%>
+~
+<%@comment Bug reason, what causes the bug%>\
+The STR function converts the operator to a LONG prior to converting to STRING.
+~
+<%@comment solution%>
+The following line in the <%tt COMMAND(STR)%> should be updated:
+
+<%Example
+RESULT = CONVERT2STRING(CONVERT2LONG(Op));
+%>
+to:
+<%Example
+RESULT = CONVERT2STRING(Op);
+%>
+~
+<%@comment workaround%>\
+Do not use the function <%tt STR%> for string or double arguments. Write <%tt var&""%> instead in case the variable <%tt var%> is double.
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has discovered this bug and proposed the fix.
+%>
+
+
+%file bug011012102601.html.jam
+<%BUGREPORT~
+
+<%@comment Bug report id=%>\
+2001/10/12-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+The program
+
+<%Example
+for i = "0" to "10" step "1"
+	print i
+next
+%>
+does not iterate through the cicle but prints <%tt 0%> and stops.
+~
+<%@comment Bug reason, what causes the bug%>\
+The command implementing the stepping part of the loop ignores string values instead of converting it to numeric value.
+~
+<%@comment solution%>
+The code in the file <%tt commands/while.c%> implementing the command named <%tt FORTO%> has to be changed. The lines:
+
+<%Example
+  EndExpressionResult = EVALUATEEXPRESSION(PARAMETERNODE);
+  ASSERTOKE;
+  NEXTPARAMETER;
+%>
+
+following the <%tt COMMAND(FORTO)%> declarations has to be altered to
+
+<%Example
+  EndExpressionResult = EVALUATEEXPRESSION(PARAMETERNODE);
+  ASSERTOKE;
+  if( EndExpressionResult && TYPE(EndExpressionResult) == VTYPE_STRING ){
+    if( ISSTRINGINTEGER(EndExpressionResult) )
+      EndExpressionResult=CONVERT2LONG(EndExpressionResult);
+    else
+      EndExpressionResult=CONVERT2DOUBLE(EndExpressionResult);
+    }
+  NEXTPARAMETER;
+%>
+
+The next release will deliver the corrected code.
+~
+<%@comment workaround%>\
+In case you can not recompile the program from source code avoid using expressions resulting a string at the end value of a foor loop.
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has reported the bug. Thanks.
+%>
+
+%file bug011011102601.html.jam
+<%BUGREPORT~
+
+<%@comment Bug report id=%>\
+2001/10/11-v1.0b26-br01~
+<%@comment Affected versions=%>\
+
+v1.0b26 ~
+<%@comment Severity%>\
+Severe
+~
+<%@comment Bug Description%>\
+The program
+
+<%Example
+for i = "0" to 9
+ print i
+next i
+%>
+
+fails to run and crashes the interpreter process. 
+~
+<%@comment Bug reason, what causes the bug%>\
+The code implementing the loop FOR assigns a variable to the loop variable but this value is converted to immortal before the conversion from string to integer takes place. When the execution of the statement is finished the mortal variables are released and the loop variable holds a value, which is already released.
+~
+<%@comment solution%>
+In the source file <%tt commands/while.c%> implementing all the loop commands the function <%tt COMMAND(FOR)%> has to be altered. The original code fragment:
+
+<%Example
+  NEXTPARAMETER;
+  StartExpressionResult = EVALUATEEXPRESSION(PARAMETERNODE);
+  ASSERTOKE;
+  if( StartExpressionResult )IMMORTALIZE(StartExpressionResult);
+  if( StartExpressionResult && TYPE(StartExpressionResult) == VTYPE_STRING ){
+        if( ISSTRINGINTEGER(StartExpressionResult) )
+          StartExpressionResult = CONVERT2LONG(StartExpressionResult);
+        else
+          StartExpressionResult = CONVERT2DOUBLE(StartExpressionResult);
+
+    }
+
+%>
+
+has to be changed to 
+
+<%Example
+  NEXTPARAMETER;
+  StartExpressionResult = EVALUATEEXPRESSION(PARAMETERNODE);
+  ASSERTOKE;
+
+  if( StartExpressionResult && TYPE(StartExpressionResult) == VTYPE_STRING ){
+        if( ISSTRINGINTEGER(StartExpressionResult) )
+          StartExpressionResult = CONVERT2LONG(StartExpressionResult);
+        else
+          StartExpressionResult = CONVERT2DOUBLE(StartExpressionResult);
+    }
+
+  if( StartExpressionResult )IMMORTALIZE(StartExpressionResult);
+%>
+
+The bug will be corrected in the next release build of ScriptBasic.
+~
+<%@comment workaround%>\
+Do not use strings as FOR loop initialization constants.
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] provided this bug report along with the solution. Thanks.
+%>
+
+%file bug011010102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/10/10-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 all variations~
+<%@comment Severity%>\
+Severe
+~
+<%@comment Bug Description%>\
+The program
+
+
+<%Example
+function f
+  local fv
+  fv = 1
+  f = fv
+end function
+
+print f()
+%>
+
+fails to run and crashes the interpreter process. 
+~
+<%@comment Bug reason, what causes the bug%>\
+In the file <%tt command/function.c%> the implementation of the command "function return value assignment" is erroneous. When a value belonging to a local variable is assigned as return value to the function name the value is referenced by the function return value directly instead of making a copy of the value. When the function finishes the function return with a result stored on a memory location, which is already released.
+<p>
+In debug compiled version of the interpreter this results an error message and exists with the code <%tt 666%>. In non-debug compilation of the program various crash effect is the result. 
+
+~
+<%@comment solution%>
+In the function <%tt commands/function.c%> the implementation of the command <%tt FLET%> has to be altered. The following line has to be inserted:
+
+<%Example
+  if( ItemResult && TYPE(ItemResult) == VTYPE_ARRAY )ERROR(COMMAND_ERROR_NOARRAY);
+
+  ItemResult = memory_DupMortalize(pEo->pMo,ItemResult,_pThisCommandMortals,&iErrorCode);
+
+  if( pEo->pFunctionResult )
+%>
+
+The middle call to <%tt memory_DupMortalize%> with the given parameters is to be inserted.
+<p>
+scriba v1.0b27 will deliver the corrected interpreter in the binaries as well.
+
+~
+<%@comment workaround%>\
+You may use the build25, which should not face this bug. If you are using features that are specific to build26 and you are not able to recompile the altered source code then you can alter your program so that the right side of any function result assignment is an expression containing something more than just a variable. For example
+
+<%Example
+function f
+  local fv
+  fv = 1
+  f = fv+0
+end function
+
+print f()
+%>
+does not produce the bug.
+
+~
+<%@comment acknowledgement%>
+Mitchell Greess [m.greess@solutions-atlantic.com] has reported this problem on the very date when I discovered it.
+%>
+%file bug011001102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+
+2001/10/01-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 dpkg and rpm packages only~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+The Debian and RedHat packages do not contain the ScriptBasic configuration compiler. This configuration compiler is needed whenever there is some configuration change of ScriptBasic.
+~
+<%@comment Bug reason, what causes the bug%>\
+Just a bug. I forgot to put it into the package.
+~
+<%@comment solution%>
+The next release will deliver the corrected packages.
+~
+<%@comment workaround%>\
+Because this is not a programming error, but a packaging error you can get the compiler downloading the source package and compiling it.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug010927102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/09/27-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 all variations and presumably all earlier versions~
+
+<%@comment Severity%>\
+Severe
+~
+<%@comment Bug Description%>\
+ScriptBasic handles real number constants having no exponential part erroneous.
+~
+<%@comment Bug reason, what causes the bug%>\
+When a constant is a real number but does not have exponential part the internal variables in the lexical analyzer that should hold the exponent sign and value are not initialized, but used to put calculate the value of the number.
+<P>
+On some platforms this error does not manifest because the default value for these variables were zero or small.
+~
+
+<%@comment solution%>
+
+The next release will deliver a corrected version. Due to the severity of the error a maintenance build, v1.0b27 should be expected.
+<p>
+For those, who are able to edit the source and recompile the code the following patch should be applied:
+
+<%Example
+# diff lexer.c lexer_v1.0b25.c
+1040,1041d1039
+<       exppart = 0.0;
+<       esig = 1;
+%>
+
+In other words the two above lines have to be inserted before the line 1040. The corrected code fragment with three lines before and after the inserted two lines:
+
+<%Example
+        for( ch = GETC() ; isdigit(ch) ; ch = GETC() )
+          fracpart += (man *= 0.1) * (ch-'0');
+        }
+<FONT COLOR="RED">      exppart = 0.0;
+
+      esig = 1;</FONT>
+      if( ch == 'E' || ch == 'e' ){
+        i = 0; /* this is not an integer anymore if it has exponential part */
+        ch = GETC(); /* step over the character E */
+%>
+~
+<%@comment workaround%>\
+Whenever there is a need for a real number constant in the code use exponential part. For example write <%tt 1.0e0%> instead of <%tt 1.0%>.
+~
+<%@comment acknowledgement%>
+Merten Joost [evol@uni-koblenz.de] recognized the error and he also pointed out the bug location and he proposed the solution. Because the variables were automatically initialized to very small values on both Windows NT and on Debian Linux the developers used, the error was not reproducible.
+%>
+
+%file bug010923102601.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/09/23-v1.0b26-br01~
+<%@comment Affected versions=%>\
+v1.0b26 MySQL module ~
+<%@comment Severity%>\
+Low
+~
+<%@comment Bug Description%>\
+Opening configured MySQL connections allocates memory, which is reallocated only when the interpreter finishes.
+~
+<%@comment Bug reason, what causes the bug%>\
+The implementation of the function <%tt mysql::Connect%> allocates memory to store the name of the connection zchar terminated and does not release this memory. This means that each time you call <%tt mysql::Connect%> the interpreter looses <%tt n+1%> bytes of memory, where <%tt n%> is the number of characters in the name of the connection. This is quite a few bytes, but repetitive connection to mysql may sum up.
+<P>
+The memory lost during the interpreter execution is automatically released when the interpreter finishes even if there are other interpreters running in the same process.
+<P>
+The bug may affect applications where a BASIC program runs extremely long time, uses MySQL and periodically opens and closes the MySQL connection.
+~
+<%@comment solution%>
+The next release of the MySQL module will correct this bug.
+~
+<%@comment workaround%>\
+Do not excessively open and close MySQL connections using the function <%tt mysql::Connect%>. Use <%tt mysql::RealConnect%> instead if you open and close MySQL connection in your program more than a few thousand times.
+<P>
+In usual programs there is no need to apply any workaround, the lost memory is not significant.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug010909102601.html.jam
+<%BUGREPORT~
+2001/09/09-v1.0b26-br01~
+v1.0b26 only Eszter SB Application Engine
+~
+<%@comment Severity%>\
+Low
+~
+In some configuration the Eszter SB Application serves the connection even when the client is not within the allowed IP domain.
+~
+The engine check the allowed and denied IP parameters only if there are at least one allowed AND at least one denied parameter. This is due to a simple programming mistake in the source file <%tt httpd.c%> line 755 that reads
+
+<%Example
+  if( pHT->cAllowed && pHT->cDenied ){
+%>
+~
+Patch the source file <%tt httpd.c%>:
+
+<%Example
+755c755
+<   if( pHT->cAllowed && pHT->cDenied ){
+---
+>   if( pHT->cAllowed || pHT->cDenied ){
+%>
+
+The next release will contain the correction. In the meantime anyone can alter the source and recompile the program or use the workaround (see below).
+~
+If you happen to have a special configuration that has only allowed or only denied ip specification include a dummy allowed or denied specification as well that allows/denies nobody having no other effect but overcoming the bug mentioned in this report. For example:
+
+
+<%Example
+allowed "0.0.0.0/0.0.0.0"
+
+%>
+or
+<%Example
+denied "0.0.0.0/0.0.0.0"
+%>
+~
+N/A
+%>
+%file bug010716102501.html.jam
+<%BUGREPORT~
+2001/07/16-v1.0b25-br01~
+v1.0b25 all variations ~
+<%@comment Severity%>\
+Low
+~
+The interpreter reports syntax error for all constant definitions where the constant value is positive and is written with a plus sign starting it. For example:
+
+<%Example
+const C= +1
+%>
+
+reports syntax error.
+
+The interpreter process causes segmentation fault for invalid constant declarations. For example the following program causes the interpreter crash:
+
+<%Example
+const C=then
+print C
+%>
+~
+
+There are programming bugs in the code that defines constants. It allows any lexical token to be assigned to a constant and later usage of constants assumes that the token represents a number or a string and crashes.
+~
+Until the next available release the source code has to be modified and recompiled.
+
+In expression.c search the line
+
+<%Example
+        if( LexemeType == LEX_T_NSYMBOL && ( LexemeCode == CMD_MINUS ||
+LexemeCode == CMD_MINUS ) ){
+%>
+
+and alter it to
+<%Example
+        if( LexemeType == LEX_T_NSYMBOL && ( LexemeCode == CMD_MINUS ||
+LexemeCode == CMD_PLUS ) ){
+%>
+A few lines later search for
+<%Example
+        pConstValue = pEx->pLex->pLexCurrentLexeme;
+%>
+and insert lines so that the check is done:
+<%Example
+        if(  LexemeType != LEX_T_DOUBLE && 
+             LexemeType != LEX_T_LONG && 
+             LexemeType != LEX_T_STRING )ABORT;
+        pConstValue = pEx->pLex->pLexCurrentLexeme;
+%>
+After the modification recompile the code.
+~
+In case you can not alter and recompile the code avoid using signed positive constants. Use the implicit positive value, like:
+
+<%Example
+const C=1
+%>
+Avoid programs that make the interpreter crash in production environment.
+~
+N/A
+%>
+%file bug010825102501.html.jam
+<%BUGREPORT~
+
+2001/08/25-v1.0b25-br01~
+v1.0b25 all variations ~
+<%@comment Severity%>\
+High
+~
+The following example:
+
+<%Example
+sub test(a)
+ undef q
+ print a
+end sub
+q[1] = 1
+test q[1]
+%>
+
+Causes memory fault.
+~
+When ScriptBasic passes global variables to function it creates a reference variable that references the original variable. This means that changing or accessing the argument changes or accesses the global variable. In the example the argument <%tt a%> is the same as <%tt q[1%>]. When the subroutine undefines the array of which the first element in the example is passed to the function by value the argument variable <%tt a%> still references the original location of <%tt q[1%>] which is at this time is already released and is not a valid memory location.
+~
+There is no other solution than to wait for the next available release. The bug correction requires deep reorganization of ScriptBasic internal variable handling.
+~
+Do not <%tt undef%> any global variable in functions.
+~
+N/A
+%>
+
+%file bug010829102501.html.jam
+<%BUGREPORT%
+2001/08/29-v1.0b25-br01%
+v1.0b25 scriba.dll Windows platform only%
+<%@comment Severity%>\
+Medium
+%
+The delivered <%tt scriba.dll%> on the Windows platform does not export the ScriptBasic API and therefore is not usable.%
+The ScriptBasic file <%tt scriba.dll%> was compiled erroneous.%
+
+To get a correct DLL run the following Perl script names <%tt mkscribadef.pl%>
+
+<%Example
+open(F,"scriba.c") or die "Can not open scriba.c";
+open(OUT,"&gt;scriba.def") or die "Can not output scriba.def";
+print OUT &lt;&lt;END;
+LIBRARY     scriba
+DESCRIPTION "ScriptBasic Library"
+EXPORTS
+
+END
+
+while( defined( $line = &lt;F&gt;) ){
+  if( $line =~ /\/\*FUNCTION\*\// ){
+    $line = &lt;F&gt;;
+    $line =~ /\w+\s+(\w+)/;
+    print OUT "            $1\n";
+    }
+  }
+close OUT;
+close F;
+%>
+This will generate a DEF file. Alter the <%tt Makefile.nt%> to contain the code:
+
+<%Example
+scriba.dll : $(OBJS) $(COBJS) lmt_none.obj scriba.def
+	$(LD) $(LDOPTIONS) /Fescriba.dll $(OBJS) $(COBJS) $(LIBS) _
+lmt_none.obj /link /DEF:scriba.def 
+
+scriba.def : scriba.c
+	perl mkscribadef.pl
+
+%>
+
+
+Delete all versions of <%tt scriba.dll%> and recompile it using the <%tt Makefile.n%>,
+or type
+
+<%Example
+        cl /LD /nologo  /Fescriba.dll builder.obj conftree.obj dynlolib.obj _
+execute.obj expression.obj filesys.obj getopt.obj lexer.obj match.obj _
+memory.obj myalloc.obj options.obj reader.obj report.obj sym.obj _
+syntax.obj errcodes.obj hookers.obj modumana.obj extops.obj _
+uniqfnam.obj epreproc.obj md5.obj ipreproc.obj scriba.obj _
+environ.obj external.obj file.obj function.obj goto.obj if.obj _
+let.obj mathfunc.obj mathops.obj print.obj string.obj time.obj _
+while.obj logger.obj thread.obj hndlptr.obj mygmtime.obj _
+basext.obj ws2_32.lib advapi32.lib _
+lmt_none.obj /link /DEF:scriba.def
+%>
+
+To check that the resulted file contains all exported functions type
+<%Example
+Dumpbin /exports scriba.dll
+%>
+The next version of ScriptBasic will deliver the correct DLL.%
+
+There is no workaround.%
+
+FALKINDER,DAVID (HP-UnitedKingdom,ex2)
+%>
+%file bug011223102701.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/12/23-v1.0b27-br01~
+<%@comment Affected versions=%>\
+v1.0b27 and previous versions ~
+<%@comment Severity%>\
+High
+~
+<%@comment Bug Description%>\
+ScriptBasic programs compiled to C and linked together with the ScriptBasic run time crash.
+~
+<%@comment Bug reason, what causes the bug%>\
+The ScriptBasic C runtime was not developed to use the new ScriptBasic API.
+~
+<%@comment solution%>
+The next release will deliver a corrected version.
+~
+<%@comment workaround%>\
+Because this needs a total rewrite of the file <%tt basic.c%> there is no workaround.
+~
+<%@comment acknowledgement%>
+Chris Wilson [cwilson@pcnetworks.org] reported the error.
+%>
+%file bug011223102702.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2001/12/23-v1.0b27-br02~
+<%@comment Affected versions=%>\
+v1.0b27 and previous versions ~
+<%@comment Severity%>\
+Low~
+<%@comment Bug Description%>\
+The Eszter SB Application Engine (<%tt sbhttpd%>) can not find and execute BASIC programs that are located in subdirectories of the configured web server home directory or execute the programs having the same name in the home directory.
+~
+<%@comment Bug reason, what causes the bug%>\
+If the URL contains file path and not only a plain path the program starts to search a matching virtual directory. If there is none it uses the web server home directory. After the home or a virtual directory path gets into the appropriate variable the program appends the file name from the URL. This is erroneous in case of the web server home directory, because in this case the full path has to be appended.
+~
+<%@comment solution%>
+The next release will deliver a corrected version. The modification to the file <%tt variations/https/websrv.c%> needed:
+
+<%Example
+1100c1100
+<   if( s )
+---
+>   if( s ){
+1102c1102,1103
+<   else
+---
+>     strcat(szInputFile,sn);
+
+>     }else{
+1104c1105,1108
+<   strcat(szInputFile,sn);
+---
+>     s = pT->pszQueryString;
+>     if( *s == '/' )s++;
+>     strcat(szInputFile,s);
+
+>     }
+%>
+~
+<%@comment workaround%>\
+Define a virtual directory for each subdirectory that is below the web server home directory having the same virtual name as the physical directory.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug020224102801.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2002/02/24-v1.0b28-br01~
+<%@comment Affected versions=%>\
+v1.0b28 and previous versions ~
+<%@comment Severity%>\
+Low~
+<%@comment Bug Description%>\
+The ScriptBasic interpreter does not recognize syntax error when an expression list is finished with a trailing comma. For example
+<%Example
+print "hello",
+%>
+is accepted by the interpreter and is executed as the trailing comma was not there.
+~
+<%@comment Bug reason, what causes the bug%>\
+Coding error in the syntax analysis of expression lists. The code returns error if there is an error in the first expression but does not if there is an error in any of the following expressions.
+~
+<%@comment solution%>
+The next release will deliver a corrected version. The modification to the file <%tt expression.c%> needed:
+
+<%Example
+1475a1476
+>     if( r->rest == NULL )return NULL;
+%>
+~
+<%@comment workaround%>\
+There is no need for workaround.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+
+%file bug020225102801.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2002/02/25-v1.0b28-br01~
+<%@comment Affected versions=%>\
+v1.0b28 ~
+<%@comment Severity%>\
+Low~
+<%@comment Bug Description%>\
+BASIC programs compiled to executable via the C format do not handle the command line arguments.
+~
+<%@comment Bug reason, what causes the bug%>\
+The <%tt main()%> code of the variation that handles the standalone version BASIC program does not handle the command lines. This piece of code is missing.
+~
+<%@comment solution%>
+The next release will deliver a corrected version. The modification to the file <%tt variations/standalone/libscriba.c%> needed:
+
+<%Example
+102c102
+< #define FULL_PATH_BUFFER_LENGTH 256
+---
+> #define FULL_PATH_BUFFER_LENGTH 1024
+104a105,111
+>   int i;
+>   
+>   CmdLinBuffer[0] = (char)0;
+>   for( i=1 ; i < argc ; i++ ){
+>     strcat(CmdLinBuffer,argv[i]);
+>     if( i < argc-1 )strcat(CmdLinBuffer," ");
+>     }
+%>
+~
+<%@comment workaround%>\
+Those, who wish to use this feature may have some experience in compiling C programs, and can try to recompile the <%tt libscriba.lib%> or <%tt libscriba.a%> file with the modified source.
+~
+<%@comment acknowledgement%>
+Peter van Eerten <%tt [peter.van.eerten@home.nl] %> recognized this error.
+%>
+%file bug020303102801.html.jam
+<%BUGREPORT~
+<%@comment Bu report id=%>\
+2002/03/03-v1.0b28-br01~
+<%@comment Affected versions=%>\
+v1.0b28 and previous versions where REF is available~
+<%@comment Severity%>\
+Medium~
+<%@comment Bug Description%>\
+Some BASIC programs using reference variables cause the interpreter to crash. For example the code:
+<%Example
+P1 = 3
+REF P2 = P1
+REF P3 = P2
+undef P2
+undef P1
+%>
+
+causes segmentation fault/access violation.
+~
+<%@comment Bug reason, what causes the bug%>\
+The memory management module contains an error that mess up pointers.
+~
+<%@comment solution%>
+The next release will deliver a corrected version. The modification to the file <%tt memory.c%> needed:
+
+<%Example
+
+
+350c350
+<   if( p->State == STATE_IMMORTAL && p->link.rprev ){
+---
+>   if( p->State == STATE_IMMORTAL && p->link.rprev && p->vType != VTYPE_REF){
+
+%>
+~
+<%@comment workaround%>\
+Whenever reference variables are released the program should avoid releasing a variable using the command <%tt undef%>, which is a reference itself.
+~
+<%@comment acknowledgement%>
+N/A
+%>
+%file faq.html.jam
+<%#define QA/QUESTION/ANSWER=
+<DT><FONT SIZE="+1">Q:</FONT> <B>QUESTION</B></DT>
+<DD><FONT SIZE="+1">A:</FONT> ANSWER</DD>
+%>\
+<%START Frequently Asked Questions%>
+
+On this page I tried to gather the questions and the answers that were raised by more than one person.
+
+<%QA
+How can I handle COM port?
+<%tt OPEN "/dev/ttyS0" FOR RANDOM AS #1%><BR>
+Then use <%tt LINE INPUT#1%> and <%tt PRINT#1%> to read and write to the ports.<BR>
+To set the baudrate in Linux you could try the following:<BR>
+<%tt pid = SYSTEM("setserial /dev/ttyS0 baud_base 115200")%>
+
+%>
+<%QA
+Can I use sbhttpd to handle SSL?
+Yes, but you need Apache to be installed.
+%>
+<%END%>
+
+%file irc.html.jam
+<%START Connecting ScriptBasic developers via IRC%>
+Using this page you can connect to the IRC server where you can meet Peter Verhas.
+This Java applet will automatically connect you to the server. If
+you can not connect then I am NOT connected to the system. The IRC server via
+this machine can only be reachedble when I am logged in.
+<p>
+If you can not connect that may also happen if you are behind a firewall.
+This JavaApplet can only connect to the server if the TCP port 6667 can be reachable
+from your client.
+<p>
+After you are connected change your nick from 'guest' to some more meaningful name.
+<P>
+<TABLE BORDER="1"><TR><TD BGCOLOR="BLACK">
+<applet code="/ircjava/Jicra.class" width="703" height="410">
+<param name="nick" value="guest">
+<param name="realname" value="Anonymous Jicra User">
+<param name="channel" value="#ScriptBasic">
+<param name="port" value="6667">
+<param name="user" value="jicra">
+Sorry, you don't seem to have Java 1.1 compatible browser.
+</applet>
+</TD></TR></TABLE>
+<%END%>

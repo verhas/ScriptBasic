@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=md5]]]
+[[[#define FILE=md5interf.c]]]
+[[[#include skeleton.jim]]]

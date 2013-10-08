@@ -1,0 +1,38 @@
+{@comment
+Convert this makefile.jam into makefile.vc7, makefile.bcc and to makefile 
+using the setup.pl script configure --module=re
+}
+{#define MODULE=re}
+
+all : {CreLib re} {CreDll re} {CreTexiDocument}
+
+{#include libraries.jim}
+{CreLib re} : {CreSObj interface} {CreObj regcomp} {CreObj regerror} {CreObj regex_test} {CreObj regexec} {CreObj regfree} 
+	{lib} {LibOptOutput {CreLib re}} {LibOptInput {CreSObj interface}} {LibOptInput {CreObj regcomp}} {LibOptInput {CreObj regerror}} {LibOptInput {CreObj regex_test}} {LibOptInput {CreObj regexec}} {LibOptInput {CreObj regfree}}  {LibNeededLibraryFiles}
+
+{CreDll re} : {CreObj interface} {CreObj regcomp} {CreObj regerror} {CreObj regex_test} {CreObj regexec} {CreObj regfree} 
+	{ld} {LdOptOutput {CreDll re}} {LdOptInput {CreObj interface}} {LdOptInput {CreObj regcomp}} {LdOptInput {CreObj regerror}} {LdOptInput {CreObj regex_test}} {LdOptInput {CreObj regexec}} {LdOptInput {CreObj regfree}} {LdNeededLibraryFiles}
+
+{CreObj interface} : interface.c regex.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj interface}} {CcOptInput interface.c}
+
+{CreSObj interface} : interface.c regex.h 
+	{cc} {CcOptDefine STATIC_LINK=1} {CcOptCompile} {CcOptOutput {CreSObj interface}} {CcOptInput interface.c}
+
+{CreObj regcomp} : regcomp.c cclass.h regex2.h regex.h utils.h cname.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj regcomp}} {CcOptInput regcomp.c}
+
+{CreObj regerror} : regerror.c regex.h utils.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj regerror}} {CcOptInput regerror.c}
+
+{CreObj regex_test} : regex_test.c regex.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj regex_test}} {CcOptInput regex_test.c}
+
+{CreObj regexec} : regexec.c regex2.h regex.h utils.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj regexec}} {CcOptInput regexec.c}
+
+{CreObj regfree} : regfree.c regex2.h regex.h utils.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj regfree}} {CcOptInput regfree.c}
+
+{CompileTexiDoc}
+

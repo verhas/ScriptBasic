@@ -1,0 +1,6 @@
+ScriptBasic v1.0
+Variation >>STANDARD<< build 23
+Magic value 859004722
+Node size is 16
+Extension interface version is 9
+Compilation: Apr 22 2001 19:26:48

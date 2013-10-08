@@ -1,0 +1,49 @@
+{@define bin={osbin}}
+
+{#define DS=/}
+{#define LibraryExtension=.a}
+{#define DllExtension=.dylib}
+{#define ObjectExtension=.o}
+{#define ExeExtension=}
+
+{#include make_common.jim}
+
+{@comment define where the extension SOs are generated}
+{#define moddlldir={moddir}dll{DS}}
+
+{@comment OPERATING SYSTEM COMMANDS
+}
+
+{@define mkdir/X=mkdir X || echo }
+
+{@comment define the command that starts make with C compiler}
+{#define make=make}
+
+{@comment
+Define where the include files and the libraries are. Use the ? because
+setup.pl may already correctly define it in configure.jim if the
+borland compiler is in the path.
+}
+
+{@comment
+The C compiler is 'cc' in Apple's developer tools
+-I where the include directories are
+-L where the libraries are
+}
+{#define cc=cc -w -g -D__DARWIN__}
+{#define CcOptOutput/X=-o X}
+{#define CcOptInput/X=X}
+{#define CcOptCompile=-c}
+{#define CcOptDefine/X=-DX}
+
+{@comment }
+{#define lib=ar}
+{#define LibOptOutput/X=-r X}
+{#define LibOptInput/X=X}
+
+{#define ld=ld -dylib -noprebind /usr/lib/dylib1.o -lc}
+{#define LdOptOutput/X=-o X}
+{#define LdOptInput/X=X}
+
+{@comment the standard libraries that we need}
+{#define StandardLibraries=-all_load -lc -lm -lpthread}

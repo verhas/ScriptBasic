@@ -1,0 +1,23 @@
+{@comment
+Convert this makefile.jam into makefile.vc7, makefile.bcc and to makefile 
+using the setup.pl script configure --module=zlib
+}
+{#define MODULE=zlib}
+
+all : {CreLib zlib} {CreDll zlib} {CreTexiDocument}
+
+{#include libraries.jim}
+{CreLib zlib} : {CreSObj interface} 
+	{lib} {LibOptOutput {CreLib zlib}} {LibOptInput {CreSObj interface}}  {LibNeededLibraryFiles}
+
+{CreDll zlib} : {CreObj interface} 
+	{ld} {LdOptOutput {CreDll zlib}} {LdOptInput {CreObj interface}} {LdNeededLibraryFiles}
+
+{CreObj interface} : interface.c zlib.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj interface}} {CcOptInput interface.c}
+
+{CreSObj interface} : interface.c zlib.h 
+	{cc} {CcOptDefine STATIC_LINK=1} {CcOptCompile} {CcOptOutput {CreSObj interface}} {CcOptInput interface.c}
+
+{CompileTexiDoc}
+

@@ -1,0 +1,479 @@
+' #! no sb line, this should not run under UNIX
+' FILE: install.sb
+'
+' Use this file to install ScriptBasic when compiled from
+' source into the installation directory on Win32.
+' This program is only for the Win32 platform.
+' Under UNIX you have to use install.sh
+'
+
+ConfigurationText = """
+; install.conf.txt
+; ScriptBasic sample configuration file
+;
+; Note that this configuration file format is from v1.0b19 or later and has to be compiled
+; to internal binary format before starting ScriptBasic
+
+; this is the extension of the dynamic load libraries on this system
+dll ".dll"
+
+; where the modules are to be loaded from
+module "ROOTDIRmodules\\\\"
+
+; where to search system and module include files
+; trailing / or \\ is needed
+\include "ROOTDIRinclude\\\\"
+
+; this is where modules should install their documentation
+docu "ROOTDIRdoc\\\\"
+
+; the maximum number of includes that script basic processes
+; this will stop the reading when the programmer makes error
+; and includes files recursively. 1000 is the default value
+maxinclude 100
+
+;
+; define preprocessors
+;
+preproc (
+
+; define the debugger internal preprocessor
+  internal (
+    dbg "ROOTDIRmodules\\\\dbg.dll"
+    )
+
+; extensions that external preprocessors are to be applied on
+  extensions (
+; here the key is the file name extension and the value is the symbolic name of the external preprocessor
+; for example
+;    lsp "lisp"
+; would say that all input that has the file name extension '.lsp' should be preprocessed using the external
+; preprocessor named 'lisp'. The commad line to start this preprocessor has to be defined a few lines below
+; saying:
+;   lisp (
+;     executable "command line"
+;      directory "directory for the temporary files after preprocessing"
+;    )
+; Note that this is only an example, there is no 'lisp' preprocessor for ScriptBasic or at least I do not know any.
+;
+     heb "heb"
+     )
+; the external preprocessors
+  external (
+    heb (
+      executable "ROOTDIRbin\\\\scriba.exe ROOTDIRsource\\\\heber.bas"
+      directory "ROOTDIRhebtemp\\\\"
+      )
+    )
+  )
+
+;
+; LIMIT VALUES TO STOP INIFINITE LOOP
+;
+
+; the maximal number of steps allowed for a program to run
+; comment it out or set to zero to have no limit
+maxstep 0
+
+; the maximal number of steps allowed for a program to run
+; inside a function.
+; comment it out or set to zero to have no limit
+maxlocalstep 0
+
+; the maximal number of recursive function call deepness
+; essentially this is the "stack" size
+maxlevel 300
+
+
+; the maximal memory in bytes that a basic program is allowed to use
+; for its variables
+maxmem 0
+
+;
+; ScriptBasic loads the modules before starting the code
+; in the order they are specified here
+;
+;preload "ext_trial"
+
+;
+; This is the directory where we store the compiled code
+; to automatically avoid recompilation
+;
+cache "ROOTDIRcache\\\\"
+
+cgi (
+;
+; These are the keys used by the CGI module
+;
+  debugfile "ROOTDIRcgidebug.txt"
+  )
+
+;
+; berkeley db config
+;
+bdb (
+
+ ; directories where to store the 
+ dir (
+   home "ROOTDIRsampledb" ; the home directory of operation of the Berkerley DB
+   data "db"  ; database files
+   log  "log" ; log files
+   temp "tmp" ; temporary files
+   )
+
+; ScriptBasic extension modules can access only string configuration values
+; therefore you have to specify these numbers within quotes (later versions will change it)
+;  limits (
+;    lg_max "1024000"
+;    mp_mmapsize "0000"
+;    mp_size "000"
+;    tx_max "000"
+;    lk_max "000"
+;    )
+
+  ; what lock strategy to use
+  ; it can be any of the followings
+  ; default oldest random youngest
+  lockstrategy default
+
+  flags (
+    ; set the value to yes or no
+    lock_default no
+    init_lock yes
+    init_log yes
+    init_mpool yes
+    init_txn yes
+    create yes
+    )
+  )
+
+;
+; MySQL configuration
+;
+mysql (
+  connections (
+    test (        ; the name of the connection
+	  host "127.0.0.1" ; the host for the connection
+	  db "test"   ; database for the connection
+	  user "root" ; user for the connection
+	  password "" ; password for the connection
+	  port 0      ; the port to use
+	  socket ""  ; the name of the socket or ""
+	  flag 0      ; the client flag
+	  clients 10  ; how many clients to serve before really closing the connections
+	  )
+    auth  (
+	  host "127.0.0.1" ; the host for the connection
+	  db "auth"   ; database for the connection
+	  user "root" ; user for the connection
+	  password "" ; password for the connection
+	  port 0      ; the port to use
+	  socket ""   ; the name of the socket or ""
+	  flag 0      ; the client flag
+	  clients 10  ; how many clients to serve before really closing the connections
+          )
+    )
+  )
+
+odbc (
+  connections (
+    test (        ; the name of the connection
+	  dsn "test" ; data source name
+	  user "" ; user for the connection, to test we use MS-Access thus there is no user or passwd
+	  password "" ; password for the connection
+	  )
+    )
+  )
+
+;
+; This type of internal preprocessor was experimental and is not supported by ScriptBasic
+; since build v1.0b26
+; Configure the sample preprocessor
+;
+; preproc$sample_uppercase "D:/MyProjects/sb/Debug/preproc.dll"
+;
+;break
+
+;
+; Configure the simple ScriptBasic httpd daemon
+;
+; Note that scripts may change the working directory therefore
+; all directories should be specified here full path. For example
+; the directory names here do not include the drive c: or e:
+; because I develop it on two machines and it was inconvenient
+; to alter and recompile the config file each time I moved the
+; source to the other machine. When I run a script that changes
+; the drive the http daemon stops in a few seconds because the
+; guard thread do not find the pid file and therefore tells the
+; engine to stop.
+;
+servers (
+  server (
+    port 8080
+    protocol http
+    ip "127.0.0.1"
+    )
+  threads 20
+  listenbacklog 30
+  home "ROOTDIRsource\\\\examples\\\\"
+  proxyip 0 ; set it true if you use Eszter engine behind Apache rewrite and proxy modules
+
+  pid (
+    file "ROOTDIRhttpdlog\\\\pid.txt"
+    delay 10 ; number of seconds to sleep between the examination of the pid file if that still exists
+    wait ( 
+      period 10 ; number of times to wait for the threads to stop before forcefully exiting
+      length 1  ; number of seconds to wait for the threads to stop (total wait= period*length)
+      )
+    )
+
+  vdirs (
+    dir "/user/:ROOTDIRsource\\\\examples\\\\user\\\\"
+    dir "/cgi-bin/:ROOTDIRsource\\\\examples\\\\cgi-bin\\\\"
+    )
+  client (
+    allowed "127.0.0.1/255.255.255.255"
+    allowed "16.94.58.4/0.0.0.0"
+
+;    denied "127.0.0.1/0.0.0.0"
+;    denied "16.192.68.5/255.255.0.0"
+    )
+  run (
+;    start   "ROOTDIRsource\\\\examples\\\\runstart.bas" ; start the program in an asynchronous thread
+;    restart "ROOTDIRsource\\\\examples\\\\runrestart.bas" ; same as start, but when the program terminates start it again
+    )
+  errmsgdest 3
+  nolog 0 ; set this true not to use logs or ignore erroneouslog configuration
+  log (
+    panic ( file "ROOTDIRhttpdlog\\\\panic.log" )
+    app   ( file "ROOTDIRhttpdlog\\\\app.log" )
+    err   ( file "ROOTDIRhttpdlog\\\\err.log" )
+    hit   ( file "ROOTDIRhttpdlog\\\\hit.log" )
+    stat  ( file "ROOTDIRhttpdlog\\\\stat.log" )
+    )
+  ; the error page when a page is not found
+msg404 \"\"\"
+<HTML>
+<HEAD>
+<TITLE>Error 404 page not found</TITLE>
+</HEAD>
+<BODY>
+<FONT FACE="Verdana" SIZE="2">
+<H1>Page not found</H1>
+We regretfully inform you that the page you have requested can not be found on this server.
+<p>
+In case you are sure that this is a server configuration error, please contact
+<FONT SIZE="3"><TT>root@localhost</TT></FONT>
+</FONT>
+</BODY>
+</HTML>
+ \"\"\"
+  code404 "200 OK" ; the http error code for page not found. The default is 404
+  ; the program to run when a page is not found
+  ;run404 "ROOTDIRsource\\\\examples\\\\run404.bas"
+  mt (
+    sleep 55
+    )
+  )
+"""
+
+Desktop_ini = """[.ShellClassInfo]
+IconFile=bin\\scriba.ico
+IconIndex=0
+InfoTip="ScriptBasic for WindowsNT/2K/XP"
+"""
+
+InstallDirectory = command()
+
+if InstallDirectory = "" Then
+print """
+type install.cmd to install ScriptBasic
+you have to type:
+
+            install.cmd directory
+
+where directory is where ScriptBasic is going
+to be installed. For example:
+
+            install.cmd C:\\ScriptBasic
+
+It is recommended that you specify the full
+path to the directory including the drive letter!
+
+The default directory when starting this program
+HAS TO BE the ScriptBasic source root directory
+(called 'source' in the distribution).
+
+This ScriptBasic program can be used ONLY to
+- install ScriptBasic compiled from source
+- on Windows platform
+
+This is NOT to install on UNIX or install
+ScriptBasic from binary distribution.
+
+You have to use install.cmd to start this program and *NOT*
+        scriba install.sb
+because the latter may start (and also lock)
+earlier version of the interpreter, which is
+actually to be replaced by this program and
+installation may fail.
+"""
+STOP
+end if 
+
+SPLIT InstallDirectory BY " " TO InstallDirectory,CompilerType
+
+RootDir = Replace(InstallDirectory,"\\","\\\\")
+
+ConfigurationText = Replace(ConfigurationText,"ROOTDIR",RootDir & "\\\\")
+
+deltree InstallDirectory 
+
+print "creating directories\n"
+mkdir InstallDirectory
+mkdir InstallDirectory & "\\bin"
+mkdir InstallDirectory & "\\lib"
+mkdir InstallDirectory & "\\doc"
+mkdir InstallDirectory & "\\include"
+mkdir InstallDirectory & "\\modules"
+mkdir InstallDirectory & "\\httpdlog"
+mkdir InstallDirectory & "\\source"
+mkdir InstallDirectory & "\\hebtemp"
+mkdir InstallDirectory & "\\cache"
+mkdir InstallDirectory & "\\sampledb"
+mkdir InstallDirectory & "\\sampledb\\db"
+mkdir InstallDirectory & "\\sampledb\\log"
+mkdir InstallDirectory & "\\sampledb\\tmp"
+
+' create a sample log file, because if the directory is empty then
+' setup packing does not create the directory and thus httpd can
+' not start because it can not open the panic.log
+open InstallDirectory & "\\httpdlog\\app.log" for OUTPUT as 1
+print#1, "Eszter SB Engine was installed.\n"
+close 1
+
+'
+' Create the desktop.ini file that will alter the directory icon
+' in explorer
+'
+open InstallDirectory & "\\Desktop.ini" for OUTPUT as 1
+print#1, Desktop_ini
+close 1
+
+open InstallDirectory & "\\scriba.conf.txt" for OUTPUT as 1
+print#1, ConfigurationText 
+close 1
+
+print "installing LGPL licence text file\n"
+FileCopy "license.txt", InstallDirectory & "\\license.txt"
+
+print "installing executables\n"
+FileCopy "bin\\"&CompilerType&"\\exe\\scriba.exe", InstallDirectory & "\\bin\\scriba.exe"
+FileCopy "bin\\"&CompilerType&"\\exe\\sbhttpd.exe", InstallDirectory & "\\bin\\sbhttpd.exe"
+
+print "installing libraries\n"
+FileCopy "bin\\"&CompilerType&"\\lib\\libscriba.lib", InstallDirectory & "\\lib\\libscriba.lib"
+
+print "installing include files\n"
+open directory "include" _
+     pattern ""          _
+     option SbCollectFiles and SbSortByNone _
+     as 1
+
+FileName = NextFile(1)
+while IsDefined(FileName)
+  FileCopy "include\\" & FileName, InstallDirectory & "\\include\\" & FileName
+  print "copiing ","include\\" & FileName, " to ",InstallDirectory & "\\include\\" & FileName,"\n"
+  FileName = NextFile(1)
+wend
+close directory 1
+
+print "installing heber.bas sample external preprocessor\n"
+FileCopy "heber.bas" , InstallDirectory & "\\source\\heber.bas"
+
+print "installing documentation\n"
+DocumentationWasInstalled = False
+
+ON ERROR GOTO DocInstalled
+open directory "..\\html\\texi" _
+     pattern ""                 _
+     option SbCollectRecursively and SbCollectFullPath and SbCollectFiles and SbSortByNone _
+     as 1
+
+FileName = NextFile(1)
+while IsDefined(FileName)
+  ToFile = replace(InstallDirectory & FileName , "..\\html\\texi","\\doc")
+  FileCopy FileName, ToFile
+  FileName = NextFile(1)
+wend
+
+close directory 1
+
+DocInstalled:
+if not DocumentationWasInstalled then _
+  print "The documentation was not installed as it seems to be not compiled.\n"
+
+on error goto ConfigurationCompilationTimeOut
+print "Executing:\n","bin\\"&CompilerType&"\\exe\\scriba -f " & InstallDirectory & "\\bin\\scriba.conf -k " & InstallDirectory & "\\scriba.conf.txt\n"
+ExitCode = execute("bin\\"&CompilerType&"\\exe\\scriba -f " & InstallDirectory & "\\bin\\scriba.conf -k " & InstallDirectory & "\\scriba.conf.txt",30,pid_v)
+print
+print
+print "The exit code is ",ExitCode,"\n"
+on error goto null
+goto ConfigurationCompilationDone
+
+ConfigurationCompilationTimeOut:
+print "The configuration compilation timed out.\n"
+print "The error message is: ",ERROR$(),"\n"
+ExitCode = kill(pid_v)
+
+ConfigurationCompilationDone:
+ON ERROR GOTO NULL
+
+PRINT "installing basic compile cmd files\n"
+OPEN InstallDirectory & "\\bin\\bascl.cmd" FOR OUTPUT AS 1
+PRINT#1, format("""REM @echo off
+REM
+REM compile a BASIC program to exe using the Visual C compiler
+REM The argument has to be the basic program w/o the .bas extension
+REM
+scriba -n -Co %%1.c %%1.bas
+cl /Ox /GA6s /DWIN32 /MT /nologo /W0 /c /Fo%%1.obj %%1.c
+cl /Ox /GA6s /DWIN32 /MT /nologo /W0 /Fe%%1.exe %%1.obj %s\\lib\\libscriba.lib ws2_32.lib advapi32.lib
+""",InstallDirectory)
+close 1
+
+OPEN InstallDirectory & "\\bin\\basbcc32.cmd" FOR OUTPUT AS 1
+PRINT#1, format("""REM @echo off
+REM
+REM compile a BASIC program to exe using the Borland Free bcc32 compiler
+REM The argument has to be the basic program w/o the .bas extension
+REM
+scriba -n -Co %%1.c %%1.bas
+bcc32 -5 -c -o%%1.obj %%1.c
+bcc32 %%1.obj %s\lib\libscriba_omg.lib
+""",InstallDirectory)
+close 1
+
+PRINT "installing README.TXT\n"
+FileCopy "readme.nt"    , InstallDirectory & "\\readme.txt"
+
+OPEN DIRECTORY "extensions" PATTERN "" OPTION SbSortByNone and SbCollectDirectories AS 1
+WHILE NOT EOD(1)
+  Module$ = NextFile(1)
+  IF Module$ = "CVS" OR Module$ = "." OR Module$ = ".." THEN GOTO END_OF_MODINST_LOOP
+  IF FileExists("extensions" & Module$ & "/unixonly.txt" ) THEN GOTO END_OF_MODINST_LOOP
+  IF IsFile("extensions/" & Module$) THEN GOTO END_OF_MODINST_LOOP
+  print "changing cwd to ","extensions/" & Module$,"\n"
+  CHDIR "extensions/" & Module$
+  ExecString = InstallDirectory & "\\bin\\scriba -n -f " & InstallDirectory & "\\bin\\scriba.conf" & " install.sb"
+  print "Executing:\n", ExecString, "\n"
+  ExitCode = execute(ExecString,30,pid_v)
+  CHDIR "../.."
+
+  END_OF_MODINST_LOOP:
+WEND
+CLOSE DIRECTORY 1
+
+print "Now check that ScriptBasic and all modules were installed correct!\n"
+

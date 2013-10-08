@@ -1,0 +1,704 @@
+%file macros.jim
+{#define ttsize="3"}
+{#define FontFace=Verdana, Arial}
+{#define tt/x=<font size={ttsize}><tt>x</tt></font>}
+{#define SetFont=<FONT SIZE=2 FACE="{FontFace}" COLOR="BLACK">}
+{#define FRAMECOLOR=#FFAAA5}
+{#define BODYCOLOR=#FFFFFF}
+{#define LINEC=#FFAAA5}
+{#define SEPLINEC=#FD805B}
+{#define ExampleColor=#0000AA}
+{#define ExampleFrameColor=#0000CC}
+{#define OutputColor=#AA0000}
+{#define OutputFrameColor=#CC0000}
+{#define BoxWidth=550} Example and Output box widths
+
+{#define Example/file=<p><table border=0 bgcolor="{ExampleFrameColor}"><tr>
+<td><table border=0 bgcolor="{BODYCOLOR}"><tr><td width={BoxWidth} border=0>\
+<FONT COLOR="{ExampleColor}"><PRE>{@null {#include pre "progs/file.bas"}}</PRE></FONT></td></tr></table></td></tr></table><p>}
+
+{#define Output/file=<p><table border=0 bgcolor="{OutputFrameColor}"><tr>
+<td><table border=0 bgcolor="{BODYCOLOR}"><tr><td width={BoxWidth} border=0>\
+<FONT COLOR="{OutputColor}"><PRE>{@null {#include pre "output/file.txt"}}</PRE></FONT></td></tr></table></td></tr></table><p>}
+
+{#define InlineExample/text=<p><table border=0 bgcolor="{ExampleFrameColor}"><tr>
+<td><table border=0 bgcolor="{BODYCOLOR}"><tr><td width={BoxWidth} border=0>\
+<FONT COLOR="{ExampleColor}"><PRE>text</PRE></FONT></td></tr></table></td></tr></table><p>}
+
+{#define START/X=<HTML>
+<HEAD>
+<TITLE>X</TITLE>
+</HEAD>
+<BODY BGCOLOR="{BODYCOLOR}" ALINK="BLACK" LINK="BLUE" VLINK="GREEN">
+<FONT FACE="{FontFace}" SIZE=6 COLOR="BLACK"><B>X</B></FONT>
+<HR align=left>
+<FONT size="2" face="{FontFace}">
+}
+
+{#define END=<p><A HREF="index.html"><B><SMALL>back to toc</SMALL></B></A>
+</BODY></HTML>}
+
+{#define Chapter/X=chapter <a href="X.html">X</a>}
+
+{#define Next/X=<p>Go onto the <a href="X.html">next</A> chapter.</A>}
+
+%file index.html.jam
+{#define Ex/fn/tit=<LI><a href="fn.html">tit</a>}
+{START ScriptBasic by examples}
+
+This document introduces you the ScriptBasic programming language via examples.
+This documentation was created using
+<p>
+<TABLE BORDER="0"><TR><TD><PRE>
+{#include pre buildinfo.txt}
+</PRE></TD></TR></TABLE>
+<p>
+Examples:<p>
+
+{Ex hello Hello World, the simplest ever example}
+{Ex greet A slightly more serious program}
+{Ex var More about variables}
+{Ex mod Modules and name spaces}
+{Ex exp Expressions}
+{Ex string Handling strings}
+{Ex array Arrays}
+{Ex if Conditional execution}
+{Ex loop Loops, repetitive execution}
+{Ex fun Functions and subroutines}
+{Ex math Mathematical functions}
+{Ex file Handling files}
+{Ex dir Handling directories}
+{Ex pack Packing and unpacking}
+{Ex sys System functions}
+{Ex ext Using external modules}
+
+{END}
+{@comment ------------------------------------------------------------------------------------}
+%file hello.html.jam
+{START Hello World}
+
+The simplest ever example that you can ever find in any programming language.
+This is quite simple in BASIC. The most frequesntly used statement is the {tt PRINT}
+command. This simply prints its arguments to the standard output, which is usually
+the screen.
+
+{Example hello1}
+
+prints obviously
+
+{Output hello1}
+
+The first line of the program is a comment line. Any line starting with an apostrophe or
+with the keyword {tt REM} is a comment line. 
+<p>
+The speciality of ScriptBasic is that the command {tt PRINT} without arguments prints a
+new line. Therefore
+
+{Example hello2}
+
+will print
+
+{Output hello2}
+{Next greet}
+{END}
+%file progs/hello1.bas
+' The simplest ever ScriptBasic program
+PRINT "HELLO!"
+%file progs/hello2.bas
+PRINT "HELLO!"
+PRINT
+PRINT "HELLO AGAIN!"
+%file greet.html.jam
+{@comment ------------------------------------------------------------------------------------}
+{START Some more serious program}
+After you have seen how to write to the screen this is the next step to read from the keyboard.
+
+{Example greet1}
+
+will print
+
+{Output greet1}
+
+in case your name is Peter and you typed it at keyboard when the program questioned.
+<p>
+The command {tt LINE INPUT} reads a line from the standard input. This is usually the
+keyboard. The line is put into a variable, that is named {tt Name} in our example. Notice that
+the whole line, including the terminating new line is put into the variable. In case you want to
+get rid of that you can use the function {tt CHOMP}.
+
+
+{Example greet2}
+
+will print
+
+{Output greet2}
+
+The fucntion {tt CHOMP} removes the trailing new-line characters from the end of a string and returns
+the string without them.
+<p>
+Here is a small place to stop. In our examples we use capital letters for the command names, and lower
+case letters, or mixed case letters for variables. This is just to help readability. ScriptBasic itself is
+case insensitive, just like other BASIC languages.
+{Next var}
+{END}
+%file progs/greet1.bas
+PRINT "What is your name?"
+PRINT
+LINE INPUT Name
+PRINT "HELLO ",Name," my deer"
+%file progs/greet2.bas
+PRINT "What is your name?"
+PRINT
+LINE INPUT Name
+Name = CHOMP(Name)
+PRINT "HELLO ",Name," my deer"
+%file progs/greet1.txt
+Peter
+
+%file progs/greet2.txt
+Peter
+
+%file var.html.jam
+{@comment ------------------------------------------------------------------------------------}
+{START More on variables}
+Variables in ScriptBasic store values. These values can be integer, real or string values.
+The variables are not bound to any type. A variable can hold one type of value at a time and a
+different on at other types. That is why ScriptBasic is called typeless.
+<p>
+Variables are referenced by their names. These names should start with an alpha character, underscore, colon,
+or dollar sign and may continue with these characters and numbers. A variable can have any length and
+all characters are significant. However variable names, just like any other symbol in ScriptBasic are
+case insensitive. Thus {tt FOO}, {tt Foo}, {tt fOO} and {tt foo} mean the same.
+<p>
+The following examples are legal variable names:
+<p>
+{InlineExample
+A
+B2
+ThisIsAVariable
+This_Is_also:a$variable
+$perl_style_variable
+a$
+main::here
+}
+
+The alpha characters and the {tt : _} and {tt $} characters are equivalent in the sense that
+their usage does not reflect the type or any other feature of the variable. In BASIC languages
+string variables are usually denoted with a trailing {tt $} character. ScriptBasic does not require
+this. You can name any variable as you like and store string, integer or real value in that.
+<p>
+A variable can even be an array that holds several variables indexed. These are discussed in {Chapter array}.
+<p>
+There is a special value that a variable can hold and this is {tt undef}. An {tt undef} value means that
+the variable does not hold any value, in other words it is undefined.
+<p>
+When a variable holds a value and is used in an environment where a different type is expected the value is
+automatically converted. For example the program
+
+{Example var1}
+
+will print
+
+{Output var1}
+
+On the line, where addition is used the string value is automatically converted to numeric and the addition
+was performed on integer values. The variable {tt B} will hold an integer value.
+<p>
+Before second {tt PRINT} lines the variable {tt B} gets a new value again. The operation in this case is
+concatenation. Because concatenation is a string operation both arguments are converted to be string. The
+variable {tt A} is already a string so there is no need to convert it. The variable {tt B} is an integer. This
+value, and not the variable itself is converted to string and the values are put together.
+<p>
+The variables in ScriptBasic can be local and global. Global variables can be used anywhere in the program, while
+local variables are available only in the function where they are defined.
+<p>
+There is a simple name space management in ScriptBasic that helps to avoid name collisions when more than one prgrammers
+work on a project. This is detailed in {Chapter mod}.
+{Next string}
+{END}
+%file progs/var1.bas
+A = "123"
+B = A + 1
+PRINT B
+PRINT
+B = A & B
+PRINT B
+PRINT
+%file string.html.jam
+{START String handling}
+Strings are easily handled in ScriptBasic. A string starts with a {tt "} character and stops
+with another one. For example
+
+{InlineExample
+A="This is a single line string"
+B="Strings may contain \" characters backslash quoted"
+C="""Multiline strings should start with three " and
+may contain single or double " characters, like "" without backslash"""
+}
+
+Whenever you want to store a string in a variable it is automatically handled. ScriptBasic automatically
+allocated space to store the string and reuses the memory not needed anymore. You can use single line strings
+just as well as multiline strings. Multiline strings should start and end with three {tt "} characters.
+<p>
+Strings can contain any character with the code between zero and 255 and can be any length limited by available 
+memory only. Thus you can store arbitrary binary data as string in variables. You can easily type binary data,
+because any {tt \} character inside a string may be followed by the code of the character. For example you
+can write
+
+{InlineExample
+"\32is just a space"
+}
+
+If the first number following the {tt \} character is zero then the code is calculated as octal.
+<p>
+There are other characters that can be typed using the {tt \} character. For example:
+
+{InlineExample
+"\n is a new-lien character"
+"\r is a carriage return character"
+"\t is a tabulator character"
+"\" is a double apostrophe character"
+"\\ oh! This is a back-slash character"
+}
+
+Finally there is a very special type of string in ScriptBasic and this is the binary multi-line string.
+A binary multi-line string should be used to specify binary data that is long and may not fit into a single line
+if you want to specify it using {tt \000} characters.
+<p>
+To specify a binary multi-line string you have to start your string with the four characters {tt """&}. This will
+instruct the ScriptBasic reader to neglect all new-line characters inside the 
+string unless they are explicitely denoted using {tt \n}.
+<p>
+This way you can specify any string and still keep your source code editable with moderated line lengths. For example:
+
+{Example string1}
+
+prints
+
+{Output string1}
+
+Of course this is not the usual usage of this type of string, but is a more or less readable example.
+{END}
+
+%file progs/string1.bas
+PRINT """&This is a multiline 
+
+string with a single\nnewline in it."""
+%file mod.html.jam
+{@comment ------------------------------------------------------------------------------------}
+{START Modules and name spaces}
+ScriptBasic does not have real name spaces to separate modules from each other. 
+There are no such things as public and private variables of modules or classes. Whenever 
+you develop a module you have to trust the user of the module that he or she will use the 
+module in the way it is intended and the way you hopefully documented. A programmer 
+should not use the internal variables of a module not because he can not but because 
+he is supposed not to.
+<p>
+ScriptBasic name spaces only help the programmers to avoid accidental name collisions. 
+When you develop a module you start it saying
+
+{InlineExample
+Module MyModule
+}
+
+After this line until the end of the module which is noted by the line
+
+{InlineExample
+End Module
+}
+
+will belong to the specific module and all global variables will belong to that module.
+<p>
+However all these module and name space handling is done on low level altering the names of 
+the variables and functions. When you start to write a program and you write:
+
+{InlineExample
+A = 3
+print A
+}
+you actually use the variable {tt main::A}. This is because the default name space is {tt main},
+and if there is no name space defined in a variable its name is altered so that the variable will
+belong to the current name space. Try the following:
+
+{Example mod1}
+
+It prints 
+
+{Output mod1}
+
+Surprising? Try the following:
+
+{Example mod2}
+
+It will print 
+
+{Output mod2}
+
+This is because {tt main::A} is {tt 5}, {tt boo::A} is {tt 3} and the variable name {tt main::A}
+is not converted to {tt boo::main::A}, because it is explicitly denoted to belong to the name space {tt main}.
+<p>
+Name spaces can be nested. You can write:
+<p>
+{Example mod3}
+
+which will print
+
+{Output mod3}
+
+To ease the nesting of modules you can write the same code as
+
+{Example mod4}
+
+When the module name in the module declaration starts with double colon ScriptBasic knows that 
+the module is to be nested into the current module. The variable name {tt _::A} means: 
+the variable {tt A} of the surrounding name space. This is the same as the operating 
+system directories. You can think of name spaces as directories and variables as files. Whenever you write
+<p>
+{tt ../../mydir/file.c}
+<p>
+a similar construct may say
+<p>
+{tt _::_::mynamespace::variable}
+<p>
+When the parser sees the end module statement it always returns to the previous name space. 
+You can start and close modules many times, ScriptBasic will not complain that the module 
+was already defined. You can even totally neglect the module statement and you can write
+the above program as
+
+{InlineExample
+main::A=1
+boo::A= 2
+boo::baa::A= 3
+print boo::baa::A
+print boo::A
+print main::A
+}
+This is a bit less readable. Name spaces can serve another purpose. See the following code:
+
+{InlineExample
+string = "AF"
+hex = 0
+while string <> ""
+ chr = mid(string,1,1)
+ string = mid(string,2)
+ hex = hex*16 + asc(chr) - asc("A")
+wend
+print hex
+}
+
+when you try to compile you will probably get many errors. Why? Because string, {tt chr} and {tt hex}
+are predefined functions and can not be used as variable names. What to do then? You can use them 
+as variable names when you specify that they are variables:
+
+{InlineExample
+::string = "AF"
+::hex = 0
+while ::string <> ""
+ ::chr = mid(::string,1,1)
+ ::string = mid(::string,2)
+ ::hex = ::hex*16 + asc(::chr) - asc("A")
+wend
+print ::hex
+}
+
+When you write {tt ::string}, {tt ::chr} or {tt ::hex} ScriptBasic will know that they are variables 
+belonging to the current name space. This is a bit weird, so better avoid using function names 
+and predefined function names as variable names.
+
+{Next array}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+%file progs/mod1.bas
+A = 3
+print main::A
+%file progs/mod2.bas
+A=5
+module boo
+A=3
+print main::A
+end module
+%file progs/mod3.bas
+A=1
+module boo
+ A= 2
+ module boo::baa
+ A= 3
+ print A
+ print boo::A
+ print main::A
+end module
+end module
+%file progs/mod4.bas
+A=1
+module boo
+ A= 2
+ module ::baa
+ A= 3
+ print A
+ print _::A
+ print main::A
+end module
+end module
+%file array.html.jam
+{START Array variables}
+ScriptBasic can handle arrays. Practically any variable can be an array, just like interger, real or string.
+Array is a variable type when a variable holds not only one, but many values and these values can be
+accessed using the variable name and an index value.
+<p>
+In ScriptBasic arrays are automatically created. There is no statement like {tt DIM}. All you have to do
+is to use the variable like an array. Array subscripts are written using square brackets. This is usually 
+the convention in PASCAL and in C. Other BASIC languages use normal parentheses to index arrays.
+However that confuses the reader as well as the parser, because function call looks the 
+same as array access. Therefore ScriptBasic uses the square brackets.
+<p>
+There is no limit on the number of indices. You can use many as you like. Also there is no limit 
+on the index values. Positive, negative or zero integers can play 
+the role of an index. Whenever you access an array element or assign a value to that ScriptBasic automatically 
+checks if the referenced array element exists or not and adjusts the array if necessary. For example:
+
+{Example array1}
+
+is perfectly legal and prints
+
+{Output array1}
+
+Arrays are handled quite liberal. You are not required to declare the index bounds, 
+you need not declare the number of indices. As a matter of fact you can have different number of 
+indices at different points in the array. For example the following code is also legal:
+
+{InlineExample
+a[1] = 3
+a[5,3]=4
+print a[1],"\n",a[5,3]
+}
+
+You can even write:
+
+{InlineExample
+a[1] = 3
+a[5,3,1,6,5,4,3,6,4,3,2222]=4
+print a[1],"\n",a[5,3,1,6,5,4,3,6,4,3,2222]
+}
+
+if you wish. But what happens if you write:
+
+{Example array2}
+
+it will print
+
+{Output array2}
+
+or some similar message. What has happened? To understand we have to explain how ScriptBasic stores the arrays.
+<p>
+An array in ScriptBasic is stored as a list of C pointers. When a ScriptBasic variable first time 
+used as an array a new array of a single element is created. It has 
+one element assigned to the index that was referenced.
+{InlineExample
+VARIABLE[6] = 555
+}
+
+Later, when other elements are referenced the array is automatically extended. 
+For example if the array was first time referenced using the index 6 and it 
+was accessed second time using the index 11 ScriptBasic automatically extends the array 
+to contain six elements, the elements indexed with the values 6,7,8,9,10 and 11.
+
+{InlineExample
+VARIABLE[11] = "a string"
+}
+
+This means that an array can consume significant memory even if only a few indices are used.
+<p>
+When an array element, let’s say index 10 is used with a second index, let’s say with 3 a new
+
+{InlineExample
+VARIABLE[10,3] =6.24E3
+}
+
+one-element array is created. Later this new array is treated the same as the one assigned to 
+the variable itself, and when the element
+
+{InlineExample
+VARIABLE[10,6] = 55
+}
+
+is set it is enlarged to be able to hold all values between and including indices 3 and 6.
+<p>
+When the variable in our example named VARIABLE gets a new value, like
+
+{InlineExample
+VARIABLE = "NEW VALUE"
+}
+
+the arrays are released automatically.
+<p>
+When accessing an array element, which is an array itself ScriptBasic tries to do its best. 
+However the result may not be what you expect. The following program:
+
+{Example array3}
+
+prints 
+
+{Output array3}
+
+in current version of ScriptBasic, but this may change later. That is because the expression
+{tt a[5]} that we try to assign to the variable {tt c} is an array itself. However ScriptBasic
+does not support the assignment of whole arrays. Therefore ScriptBasic tries to calculate the
+integer, double or string value that the programmer wanted to assign to {tt c}.
+<p>
+In other BASIC implementations you have to use the declaration {tt DIM} and after that you have
+the array and you know the index limits of the array. In ScriptBasic there is no limit on the indices.
+Somehow you still may want to know the smallest and the largest index values used.
+<p>
+For the purpose there are two functions named {tt lbound} and {tt ubound}. For example
+
+{Example array4}
+
+prints
+
+{Output array4}
+
+As you can see the argument to these functions can be a variable that has array value 
+or an expression that has an array value. (Such an expression is likely to be an array 
+element, which is an array by itself.)
+
+
+
+{Next exp}
+{END}
+%file progs/array1.bas
+a[1] = 3
+a[5]=4
+for i=1 to 5
+print a[i]
+print
+next
+%file progs/array2.bas
+a[1] = 3
+a[5,3]=4
+print a[1],"\n",a[5]
+%file progs/array3.bas
+a[1]=1
+a[5,3]=4
+c = a[5]
+a[5,3]=2
+print a[5,3]," ",c
+%file progs/array4.bas
+a[1] = undef
+print lbound(a)," ",ubound(a)
+print
+a[2,-3] = "whoops"
+print lbound(a)," ",ubound(a)
+print
+print lbound(a[2])," ",ubound(a[2])
+print
+%file exp.html.jam
+{@comment ------------------------------------------------------------------------------------}
+{START Expressions}
+Up to know you have already seen some simple examples of expression. However before
+going on it is a wise choice to get into more deatils regarding them.
+<p>
+When you see the example
+{InlineExample
+A = 3
+}
+
+the number {tt 3} on the right hand side is an expression. This is actually the simples
+expression ever containing a single integer number.
+<p>
+Speaking generally an expression is made of integers, reals and strings connected together
+with operators and groupped using parentheses. You can add numbers, substract and so on. The
+operators that you can use are:
+{InlineExample
+^    power, for example 2^3 = 8      (8)
+*    multiply                        (7)
+/    divide                          (7)
+\    integer divide                  (7)
+%    modulo operator                 (7)
++    addition                        (6)
+-    substraction                    (6)
+&    string concatenation            (5)
+like string like operator            (4)
+=    test equality                   (3)
+<    test less-than                  (3)
+<=   test less-then-or-equal         (3)
+>    test greater-then               (3)
+>=   test greater-than-or-equal      (3)
+<>   test non-equality               (3)
+and  bitwise AND operator            (2)
+or   bitwise OR operator             (1)
+xor  bitwise XOR operator            (1)
+}
+
+The operators have a precedence value. This value is given in parentheses above.
+When an expression is evaluated the higher precedence operators are evaluated
+before the lower precedence operators unless parentheses group the expression
+different.
+<p>
+For example:
+
+{Example expression1}
+
+prints
+
+{Output expression1}
+
+
+
+{Next if}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+%file progs/expression1.bas
+print 2+3*6
+%file if.html.jam
+{START Conditional execution}
+{Next loop}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file loop.html.jam
+{START }
+{Next fun}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file fun.html.jam
+{START Functions and subroutines}
+{Next math}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file math.html.jam
+{START }
+{Next file}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file file.html.jam
+{START }
+{Next dir}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file dir.html.jam
+{START }
+{Next pack}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file pack.html.jam
+{START Packing and unpacking}
+{Next ext}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file sys.html.jam
+{START }
+{Next ext}
+{END}
+{@comment ------------------------------------------------------------------------------------}
+
+%file ext.html.jam
+{START }
+
+{END}
+{@comment ------------------------------------------------------------------------------------}

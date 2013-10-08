@@ -1,0 +1,2 @@
+{#define LdNeededLibraryFiles=-lc -lpng -lz -lgd}
+{#define LibNeededLibraryFiles=}

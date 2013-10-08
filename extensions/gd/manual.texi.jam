@@ -1,0 +1,469 @@
+{#sep/[[[/]]]}
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename mod_bdb
+@settitle Using the module GD
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title Using the module GD
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+
+@chapter Introduction
+
+This document describes how to install and use the module GD developed to help programmers creating PNG files in ScriptBasic.
+
+There are separate documents that describe the language (Users’ Guide), the major architecture of the source code (Source Guide).
+
+This document describes the version 1.0 of the module.
+
+This module is an interface to the module GD. The GD module provides functions callable from C. This module provides an interface to a reasonable subset of the C callable functions. The documentation does not describe the original modules in details, but rather focuses on the ScriptBasic level. In other words we describe, how to install and use the module on the ScriptBasic level, but do not repeat the documentation of the original GD module.
+
+@chapter Acknowledgements
+
+The module is an interface to the GD module that also uses the zlib and pnglib modules.
+
+@chapter Installing the module
+
+The module comes in source form or as compiled binary. Binary is usually available for the Win32 platforms only. The compilation of the source code is simple. Compile the source files to a .dll or to .so shared library. When installing the standard ScriptBasic package the make file does not create nor installs this module. You have to go into the directory of the extension, usually
+
+@example
+/home/user/scriba/extensions/dg
+@end example
+
+and you should run the script install.sh typing:
+
+@example
+# sh install.sh
+@end example
+
+Note that you have to run the script with root privileges to be able to copy the resulting gd.so file to its final location. To successfully install this module you have to have the modules, gd, png and z installed.
+
+The compiled module contains a dynamically load binary file and a basic include file named gd.bas. The include file gd.bas should be placed in a module include directory file configured in the configuration file. The configuration file usually named scriba.conf should include a line
+
+@example
+include /etc/scriba/include/
+@end example
+
+defining the include files location for the modules and other generally used include files. The actual directory can be different.
+
+The binary part of the module should be placed in another directory specified in the configuration file, like
+
+@example
+module /usr/scriba/lib/
+@end example
+
+There can be more than one include and module statement in the configuration file. In that case the interpreter searches the directories in the order they are specified until the include file or the module is found.
+
+@chapter Compiling the module
+
+You may want to recompile the module for some reason. On Windows there is a compiled distribution. On Linux we may later provide packages. The current version of ScriptBasic v1.0b18 does not support Linux packages. If you try to use the GD module on UNIX you have to compile it.
+
+To successfully compile the module and get the .so file you have to install the zlib and libpng packages. These are free source code programs that you can download from 
+
+GD source code from http://www.boutell.com/gd 
+LIBPNG source code from http://www.cdrom.com/pub/png
+ZLIB source code from http://www.cdrom.com/pub/infozip/zlib/
+
+The Windows source package ZIP file includes the non-debug version of libraries needed to link the module GD. The source file for the GD module is gdinterf.c. The Windows source package also contains the include files from the gd C package that are needed to compile the ScriptBasic interface.
+
+@chapter Configuration
+
+The module is not configurable. In other words there is no need to configure the module.
+
+@chapter Using the module
+
+To use the module the basic program should include the file gd.bas. To do this the program should contain the line
+
+@example
+include gd.bas
+@end example
+
+somewhere at the start of the code. Note that there are no double quote characters before and after the file name. This tells the interpreter that the include file is located in a module include directory. This include file contains all the declarations that are needed to use the GD module.
+
+The program using the module should call the functions declared in the include file. The binary library file is loaded when the first function call is executed.
+
+The functions and the constants are defined in the following sections. Note that all the constants and functions are declared to belong to the name space gd:: and should be used with the prefix gd::. For example the function Create should be used as gd::Create from outside of the module gd.
+
+@section Create
+
+@example
+Image = gd::Create(x,y)
+@end example
+
+This function creates a new image. The size of the image is given by the arguments. The returned value is a string, which should not be altered by the ScriptBasic program, but should rather be used to reference the created image in subsequent calls. The value of the string can be passed to functions and subroutines, but should not be altered in any way.
+
+@section CreateFromPng
+
+@example
+Image = gd::CreateFromPng("filename")
+@end example
+
+This function loads a PNG image. You should use this function if you want to create a picture that exists already initialized on disk.
+
+The returned value is a string, which should not be altered by the ScriptBasic program, but should rather be used to reference the created image in subsequent calls. The value of the string can be passed to functions and subroutines, but should not be altered in any way.
+
+@section Destroy
+
+@example
+gd::Destroy Image
+@end example
+
+This subroutine destroys the image stored in memory and releases the memory it occupied. This function does not destroy any image on disk. The argument of the function should be the unaltered string returned by the functions Create or CreateFromPng.
+
+@section SavePng
+
+@example
+gd::SavePng Image,"filename"
+@end example
+
+This function can be used to save the picture in PNG format to a file.
+
+@section Png
+
+@example
+String = gd::Png(Image)
+@end example
+
+This function can be used retrieve the binary, png format of the picture. The return value is a string that contains the entire png file. You may need this function to output the picture to the standard output from a CGI program. Do not forget to call binmode output to set the output to binary mode after the CGI header has been sent.
+
+@section Color
+
+@example
+Color = gd::Color(Image,red,green,blue)
+@end example
+
+Allocate a new color in the image. The PNG images handled by the module may contain up to 256 colors. The image is colored using a color table. This color table tells for at most 256 color indices the actual red, green and blue components. To use colors the color table should be set up first. Calling this function the program can allocate colors specifying the components.
+
+The first color specified will be the background color.
+
+@section Line
+
+@example
+gd::Line Image,Xs,Ys,Xe,Ye,[color]
+@end example
+
+Use this subroutine to draw a line from the point (Xs,Ys) to (Xe,Ye). The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor. 
+
+If the color value is specified and is undef the styled line definition is used to draw the line. This can be used to draw dashed and other styled lines.
+
+@section Point
+
+@example
+gd::Point Image,x,y,[color]
+@end example
+
+Use this function to set a point. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section SizeX
+
+@example
+X = gd::SizeX(Image)
+@end example
+
+Returns the horizontal size of the image.
+
+@section SizeY
+
+@example
+Y = gd::SizeY(Image)
+@end example
+
+Sets the vertical size of the image.
+
+@section Rectangle
+
+@example
+gd::Rectangle Image,xs,ys,xe,ys,[color]
+@end example
+
+Use this function to draw a rectangle. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section FilledRectangle
+
+@example
+gd::FilledRectangle Image,xs,ys,xe,ys,[color]
+@end example
+
+Use this function to draw a filled rectangle. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section Poly
+
+@example
+gd::Poly Image,x,y[color]
+@end example
+
+Use this subroutine to draw a polygon. The arguments x and y should be array of the same length and of the same index values. In other words if x is indexed from 13 to 26 then y should also be indexed from 13 to 26.
+
+The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section FilledPoly
+
+@example
+gd::FilledPoly Image,x,y[color]
+@end example
+
+Use this subroutine to draw a filled polygon. The arguments x and y should be array of the same length and of the same index values. In other words if x is indexed from 13 to 26 then y should also be indexed from 13 to 26.
+
+The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section Arc
+
+@example
+gd::Arc Image, CenterX,CenterY,width,height,StartAngle,EndAngle,[color]
+@end example
+
+Use this subroutine to draw an arc. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section Fill
+
+@example
+gd::Fill Image,x,y,[color]
+@end example
+
+Use this subroutine to fill a region. A region is an area of the same color of adjacent pixels. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section FillToBorder
+
+@example
+gd::FillToBorder Image,x,y,border,[color]
+@end example
+
+Use this subroutine to fill an area surrounded by a border. All different colors in the area are replced by the color specified.
+
+The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section SetBrush
+
+@example
+gd::SetBrush image,brush
+@end example
+
+Set the brush image to be used for brushed lines. Does not seem to work properly in the current version.
+
+@section SetTile
+
+@example
+gd::SetTile image,brush
+@end example
+
+Set the tile image for tiled fills. Does not seem to work properly in the current version.
+
+@section LineStyle
+
+@example
+gd::LineStyle image,LineStyle
+@end example
+
+Set the style for styled lines. The argument LineStyle should be an array of integer values. Each integer value should specify a color index. These color values are taken one after the other looping when a styled line is drawn. Using undef for an array element means that the line at that point is not drawn and the original color of the picture is left intact. This can be used to draw dashed lines.
+
+@section GetColorComponent
+
+@example
+q = gd::GetColorComponent(Image,color,component)
+@end example
+
+You can use this function to get the color component value of a color. The component value is 1,2 or 4 for red, green and blue respectively.
+
+@section IsXYInside
+
+@example
+T = gd::IsXYInside(Image,x,y)
+@end example
+
+This function returns true if the point (x,y) is inside the Image boundaries.
+
+@section SetFont
+
+@example
+gd::SetFont Image,Type[,direction,[ptsize]]
+@end example
+
+Use this subroutine to set the font to be used for subsequent gd::print subroutine calls. The argument Type can be integer between 1 to 5 or a string. The integer values 1 to 5 indicate the built-in fonts, FontTiny, FontSmall, FontMedium, FontLarge, FontGiant. For these values you have these symbolic constants in the file gd.bas defined.
+
+If the font type is string it has to specify the full path to the True Type Font to be used.
+
+The direction is the angle of the subsequent prints. For built-in fonts it can only be 0 for normal or 270 for upward printing.
+The last parameter specifies the size of the True Type Font in points as a real number.
+
+WARNING:
+Note that the True Type Font handling was developed but was never tested. You can set the font to be True Type, but the next gd::print subroutine will fail raising error.
+
+@section SetColor
+
+@example
+gd::SetColor Image,color
+@end example
+
+Use this subroutine to set the default color.
+
+@section SetTransparentColor
+
+@example
+gd::SetTransparentColor Image,color
+@end example
+
+Use this subroutine to set the transparent color. This color will be displayed transparent by Web browsers.
+
+@section Print
+
+@example
+gd::print Image,x,y, print_list
+@end example
+
+Use this subroutine to print strings, integer and real values into the picture at the position x,y. The color and font used is the one set in the subroutines SetColor and SetFont. The argument print_list can be one or more expressions. Note that new-line and other special characters will appear as special characters and do not perform their usual control.
+
+@section GetRedComponent
+
+@example
+c = gd::GetRedComponent(Image,color)
+@end example
+
+Get the red component of the color.
+
+@section GetGreenComponent
+
+@example
+c = gd::GetGreenComponent(Image,color)
+@end example
+
+Get the green component of the color.
+
+@section GetBlueComponent
+
+@example
+c = gd::GetBlueComponent(Image,color)
+@end example
+
+Get the blue component of the color.
+
+@section Circle
+
+@example
+gd::Circle Image,x,y,r,[color]
+@end example
+
+Use this subroutine to draw a circle. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+
+@section Ellipse
+
+@example
+gd::Ellipse Image,x,y,w,h,[color]
+@end example
+
+Use this subroutine to draw an ellipse. The color value is optional. If this is missing the default color is used set by the subroutine gd::SetColor.
+@chapter Sample code
+
+This sample code was used (among other scripts) to test the functionality of the module. You can find this or some version of this sample code in the directory examples of ScriptBasic distribution. You can see that some lines are commented out. Tile filling caused stack overflow on a well-configured Windows NT and brushed drawing did not work correct during out test. Due to license issues the True Type Font support is not included in the GD module. However you can try to compile the libraries to use the True Type Font support and it may work. We did not test so far.
+
+@example
+import gd.bas
+
+brush = gd::Create(10,10)
+white = gd::Color(brush,255,255,255)
+black = gd::Color(brush,0,240,0)
+gd::Line brush,0,0,10,10,black
+gd::Line brush,0,10,10,0,black
+
+gd::SavePng brush,"brush.png"
+
+image = gd::Create(400,300)
+
+white = gd::Color(image,255,255,255)
+gd::SetTransparentColor image,white
+black = gd::Color(image,0,0,0)
+red =  gd::Color(image,255,0,0)
+blue =  gd::Color(image,0,0,255)
+green = gd::Color(image,0,255,0)
+
+gd::Point image,0,0,black
+
+gd::Rectangle image,200,50,250,100,red
+gd::FilledRectangle image,225,75,275,125,green
+
+gd::Rectangle image,324,190,376,290,black
+gd::SetTile image,brush
+' caused stack overflow on a fine NT? Should be some poor implementation
+'gd::FillToBorder image,325,191,black,gd::Tiled
+
+gd::Circle image,350,50,40,blue
+gd::FillToBorder image,350,50,blue,green
+gd::Fill image,201,51,blue
+
+gd::SetBrush image,brush
+gd::Line image,300,200,300,350,gd::Brushed
+
+gd::SetColor image,black
+
+gd::SetFont image,gd::FontTiny
+gd::print image,0,0,"THIS PICTURE WAS CREATED FROM ScriptBasic USING THE MODULE GD/PNG"
+gd::print image,0,10,"x=",gd::SizeX(image)," y=",gd::SizeY(image)
+gd::print image,100,100,"Tiny ",12*3+55
+
+gd::SetFont image,gd::FontSmall
+gd::print image,100,120,"Small ",55*63
+
+gd::SetFont image,gd::FontMedium
+gd::print image,100,150,"Medium ",24/19
+
+gd::SetFont image,gd::FontLarge
+gd::print image,100,190,"Large ",sin(3.1)
+
+gd::SetFont image,gd::FontGiant
+gd::print image,100,240,"Giant ",log(1000)
+
+
+for i=0 to 65 step 5
+  gd::Line image,i,20,65-i,75
+next i
+
+LineStyle[0] = black
+LineStyle[1] = black
+LineStyle[2] = undef
+LineStyle[3] = undef
+LineStyle[4] = red
+LineStyle[5] = green
+LineStyle[6] = blue
+LineStyle[7] = undef
+LineStyle[8] = red
+LineStyle[9] = red
+
+gd::LineStyle image,LineStyle
+
+gd::Line image,0,90,100,90,undef
+
+for i=0 to 65 step 5
+  gd::Line image,i,100,65-i,165,undef
+next i
+
+
+ImagePng = gd::Png(image)
+
+gd::Destroy image
+
+fn = 0
+open "test.png" for output as fn
+binmode fn
+print#fn,ImagePng
+undef ImagePng
+close#fn
+@end example
+
+@chapter Future development, aims
+
+Any requirements? Mail to @mail{scriptbasic@basic.hu}.

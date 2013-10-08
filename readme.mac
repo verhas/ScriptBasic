@@ -1,0 +1,72 @@
+This is extra information for ScriptBasic when building and running on Apple
+Macintosh platforms.
+
+The Apple Macintosh can be considered as two distinct platforms: MacOS and
+Darwin.  I use MacOS to refer to Mac "classic", that is: versions 9 and below
+of the Macintosh OS.  Darwin is OS X, treated as a flavour of Unix, and
+ScriptBasic builds as a command-line tool just like any other Unix.
+
+The Macintosh builds are not as complete as the builds for Unix and Windows, in
+that only thoses extension modules which build without third party libraries
+will build (currently), and on MacOS, no support for threads or sockets has
+been included.
+
+On OS X, the state of the third party libraries is currently in a state of
+flux. There is a project called 'Fink' (available from Sourceforge) which is in
+the process of integrating into OS X all the common Unix facilities that are
+missing, and this is probably the best place to get the additional libraries. 
+However, some of those libraries have also been ported independently (e.g.
+MySQL).  When this situation has settled down, then the the remaining
+ScriptBasic extension modules will be integrated in (volunteers welcome).
+
+On MacOS, there are even fewer extension modules built, and it is a much
+greater task to port them over, and for any this is unlikely to happen. 
+MacOS's lack of a command line means that ScriptBasic is only really useful for
+embedding in another program, although the build does create a program which,
+when run, prompts you for command-line parameters, and displays its output in a
+window.
+
+Sockets and threads are a particular issue on MacOS, and this is done very
+differently.  Firstly, Apple 'threads' are co-operative and not pre-emptive,
+which leads to immediate incompatibilities, which is why threads and sockets
+are omitted from the standard MacOS build.  At some point, it may be desirable
+to integrate GUSI (the Grand Unified Sockets Interface) into the build.  GUSI
+maps Unix sockets and pthreads onto the MacOS API, and so building should be
+relatively straightforward.  GUSI is available form SourceForge, but bear in
+mind the threads are co-operative, so this may turn out to be of lesser value.
+
+The build facilities (using setup.pl) only work on OS X, although it also
+targets MacOS.  For the Darwin build, you will need the Apple Developer Tools,
+available for free download from the Apple developer site.  This builds Mach-O
+binaries, and the extension modules build as dylibs.  For the MacOS, you will
+need Metrowerks CodeWarrior (I use v8, so I can't speak for earlier versions).
+The set-up facility uses the OS X command line compiler and linker, and relies
+on having the correct environment variables set up.  Setup.pl detects whether
+you are building for MacOS or Darwin by the presence of the CodeWarrior
+environment variables.  You can override and build for Darwin using the
+--darwin option on setup.pl.  However, you can't have the two build existing
+simultaneously in the same copy of the source tree.
+
+Note: the MacOS build creates PEF exectuables and dynamic shared libraries for
+the Code Fragment Manager (CFM).  It is independent of Carbon, which means that
+it can be used in classic and Carbon builds, and a Carbon build will run
+natively under OS X, although it will only link to shared libraries in PEF
+format (not Mach-O).
+
+If you wish to create project files (e.g. under CodeWarrior), run the setup.pl
+first anyway, because the some of the source code is generated dynamically from
+other files.
+
+The ScriptBasic interpreter is licenced LGPL. The text of the licence can be found
+in the file
+
+            INSTALLDIRECTORY\license.txt
+
+Some of the modules use code from different projects thus they may be licensed different.
+
+The homepage of the ScriptBasic interpreter is
+
+            http://scriptbasic.com
+
+Budapest December 1, 2002
+Peter Verhas

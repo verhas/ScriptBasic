@@ -1,0 +1,50 @@
+{@define bin={osbin}}
+
+{#define macos=nogusi}
+{#define DS=/}
+{#define LibraryExtension=.a}
+{#define DllExtension=}
+{#define ObjectExtension=.o}
+{#define ExeExtension=}
+
+{#include make_common.jim}
+
+{@comment define where the extension SOs are generated}
+{#define moddlldir={moddir}dll{DS}}
+
+{@comment OPERATING SYSTEM COMMANDS
+}
+
+{@define mkdir/X=mkdir X || echo }
+
+{@comment define the command that starts make with C compiler}
+{#define make=make}
+
+{@comment
+Define where the include files and the libraries are. Use the ? because
+setup.pl may already correctly define it in configure.jim if the
+borland compiler is in the path.
+}
+
+{@comment
+The C compiler is 'mwpefcc' for Metrowerks CodeWarrior CFM output
+-I where the include directories are
+-L where the libraries are
+}
+{#define cc=mwpefcc -w off -g -relax_pointers -convertpaths -cwd include -D__NO_SOCKETS__ -D__NO_THREADS__}
+{#define CcOptOutput/X=-o X}
+{#define CcOptInput/X=X}
+{#define CcOptCompile=-c}
+{#define CcOptDefine/X=-DX}
+
+{@comment }
+{#define lib=mwpefld -library}
+{#define LibOptOutput/X=-o X}
+{#define LibOptInput/X=X}
+ 
+{#define ld=mwpefld -shared -export pragma -lr "/Applications/Metrowerks CodeWarrior 8.0/Metrowerks CodeWarrior" -lMSL_All_Carbon.lib -lCarbonLib}
+{#define LdOptOutput/X=-o X}
+{#define LdOptInput/X=X}
+
+{@comment the standard libraries that we need}
+{#define StandardLibraries=-sizemin 512 -sizemax 16384}

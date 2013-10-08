@@ -1,0 +1,76 @@
+{#sep/[[[/]]]}
+[[[#use esd]]]
+[[[#esd::command 1 s{\/\*FUNCTION\*\/}{\@example}]]]
+[[[#esd::command 2 s{\/\*noverbatim}{\@end example}]]]
+[[[#esd::command 3 s{^\s*\)\{\s*$}{);}]]]
+[[[#esd::command 4 s/=verbatim/\@example/]]]
+[[[#esd::command 5 s/=noverbatim/\@end example/]]]
+[[[#esd::command 6 s/=itemize/\@itemize/]]]
+[[[#esd::command 7 s/=noitemize/\@end itemize/]]]
+[[[#esd::command 8 s/=item/\@item/]]]
+[[[#esd::command 9 s/T<(.*?)>/\@code\{$1\}/g]]]
+[[[#esd::command A s/B<(.*?)>/\@b\{$1\}/g]]]
+
+
+[[[#esd::command B s/I<(.*?)>/\@emph\{$1\}/g]]]
+[[[#esd::command C s/R<(.*?)>/\@xref\{$1\}/g]]]
+[[[#esd::command D s/=H(.*)$/\@subsection $1/]]]
+[[[#esd::command E s/=section.*$//]]]
+[[[@define SourceFile/FILE_NAME=
+@section FILE_NAME
+[[[#esd::include ../../../FILE_NAME /*POD CUT*/]]] ]]]
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename source
+@settitle ScriptBasic Source Files
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title ScriptBasic Source Files
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+This file contains the source code documentation. Most of this information is also compiled into
+the developers guide or into other documentation.
+
+[[[SourceFile scriba.c]]]
+[[[SourceFile basext.c]]]
+[[[SourceFile memory.c]]]
+[[[SourceFile epreproc.c]]]
+[[[SourceFile ipreproc.c]]]
+[[[SourceFile command.c]]]
+[[[SourceFile lexer.c]]]
+[[[SourceFile expression.c]]]
+[[[SourceFile builder.c]]]
+[[[SourceFile reader.c]]]
+[[[SourceFile myalloc.c]]]
+[[[SourceFile match.c]]]
+[[[SourceFile sym.c]]]
+[[[SourceFile execute.c]]]
+[[[SourceFile dynlolib.c]]]
+[[[SourceFile conftree.c]]]
+[[[SourceFile filesys.c]]]
+[[[SourceFile modumana.c]]]
+[[[SourceFile hookers.c]]]
+[[[SourceFile options.c]]]
+[[[SourceFile report.c]]]
+[[[SourceFile logger.c]]]
+[[[SourceFile thread.c]]]
+[[[SourceFile hndlptr.c]]]
+[[[SourceFile httpd.c]]]
+
+

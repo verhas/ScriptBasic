@@ -1,0 +1,27 @@
+REM This program checks the depth of the interpreter process stack
+REM to determine the safe configuration setting for ScriptBasic
+REM value 'maxlevel'
+REM
+REM This program will call the subroutine RECURSE infinitely until
+REM segmentation fault occures. In each call it prints a dot into
+REM the file 'depth.txt'. When the program dies the length of the
+REM file can be used to determine the maximal deepness of the stack
+REM that this compilation of ScriptBasic can handle.
+REM
+REM This program is started by install.sb under Windows
+REM and by uxstall.sb under UNIX
+
+IF FILEEXISTS("depth.txt") THEN DELETE "depth.txt"
+
+CALL RECURSE
+
+REM THIS WILL NEVER RETURN HERE
+
+SUB RECURSE
+
+  OPEN "depth.txt" FOR APPEND AS 1
+  PRINT#1,"."
+  CLOSE 1
+  CALL RECURSE
+
+END SUB

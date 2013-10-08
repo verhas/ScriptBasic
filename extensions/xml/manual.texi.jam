@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=xml]]]
+[[[#define FILE=interface.c]]]
+[[[#include ../../html/texi/skeleton.jim]]]

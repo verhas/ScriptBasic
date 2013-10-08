@@ -1,0 +1,114 @@
+{@comment
+
+This macro file defines Jamal macros that are commonly used by all makefiles. These macros
+help makefile maintainers to separate the OS and compiler specific options of the make
+operations in a separate file and the compilation logic in in a single common macro file.
+
+This file is included by the OS dependent macro files, make_unix.jim and make_nt.jim, which are
+indeed included by the compiler specific include files make_vc7.jim, make_bcc.jim and make_gcc.jim.
+
+}
+
+{@comment ------------------------------------------------------------------------------ }
+{@comment                  D E F I N E   D I R E C T O R I E S                           } 
+{@comment ------------------------------------------------------------------------------ }
+
+{#include configure.jim}
+
+{@comment define where the generated files' root directory is
+This can be specified by the OS or the compiler specific macro file as well.
+}
+{#define osbin={SourceRoot}bin{DS}}
+{#define ? bin=bin{DS}}{@comment DS is the directory separator specified by make_'OS'.jim this is either \ or / }
+
+{@comment define the directory where object files are to be stored}
+{#define objdir={bin}obj{DS}}
+
+{@comment define where the library files are stored}
+{#define libdir={bin}lib{DS}}
+
+{@comment define where the exe files are generated}
+{#define exedir={bin}exe{DS}}
+
+{@comment define where the make files are generated}
+{#define makedir={bin}make{DS}}
+
+{@comment define where the module compilation has to generate the module header file(s)}
+{#define includedir={bin}include{DS}}
+
+{@comment define where the variations generate their object files
+ NOTE: that each variation has to create a subdirectory under this
+}
+{#define vardir={bin}var{DS}}
+
+{@comment define where the extension compilation intermediate files go
+ NOTE: that each module has to create a subdirectory under this
+}
+{#define moddir={bin}mod{DS}}
+
+{@comment define where the module compilation has to generate the module static version lib file}
+{#define modlibdir={moddir}lib{DS}}
+
+{@comment define where the module compilation has to generate the module object files}
+{#define modobjdir={moddir}obj{DS}}
+
+{@comment define where the TEXI files are to be stored after Jamal has processed the texi.jam file}
+{#define texidir={osbin}texi{DS}}
+
+{@comment ------------------------------------------------------------------------------ }
+{@comment                  COMMANDS THAT CAN BE USED IN MAKEFILES                        } 
+{@comment ------------------------------------------------------------------------------ }
+{#define JAMAL=perl {SourceRoot}jamal.pl}
+{#define T2H=perl {SourceRoot}t2h.pl}
+{#define HHC=hhc}
+
+{@comment ------------------------------------------------------------------------------ }
+{@comment                  MACROS TO BE USED IN MODULE MAKEFILES                         } 
+{@comment ------------------------------------------------------------------------------ }
+
+{@comment CreLib = created library file}
+{@define CreLib/X={modlibdir}X{LibraryExtension}}
+
+{@comment CreDll = created DLL or SO file}
+{@define CreDll/X={moddlldir}X{DllExtension}}
+
+{@comment CreObj = created object file}
+{@define CreObj/X={modobjdir}{MODULE}{DS}X{ObjectExtension}}
+
+{@comment CreSObj = created static module interface, and object
+          that was compiled using -D STATIC=1 to link with the
+          ScriptBasic variation statically}
+{@define CreSObj/X={CreObj s_X}}
+
+{@comment the created texi document}
+{@define CreDocuTag={texidir}mod_{MODULE}}
+{@define CreTexiDocument={CreDocuTag}.texi}
+
+{@comment On windows this is defined to generate the MS compiled help files.}
+{@define ? CompileTexiDoc={CreTexiDocument} : manual.texi.jam
+	{JAMAL} manual.texi.jam {CreTexiDocument}
+	{T2H} {CreTexiDocument}
+}
+
+{@comment ------------------------------------------------------------------------------ }
+{@comment                  MACROS TO BE USED IN MAIN MAKEFILE                            } 
+{@comment ------------------------------------------------------------------------------ }
+
+{@comment MainObj = main object file created when the main program is compiled}
+{@define MainObj/X={objdir}X{ObjectExtension}}
+
+{@comment MainLib = main library file created when the main program is compiled}
+{@define MainLib/X={libdir}X{LibraryExtension}}
+
+{@comment MainExe = executable file created during compile}
+{@define MainExe/X={exedir}X{ExeExtension}}
+
+{@comment VarObj = variation object file, an object file that was compiled from a variation specific source file}
+{@define VarObj/X={vardir}{VARIATION}{DS}X{ObjectExtension}}
+
+{@comment VarC = variation source C file}
+{@define VarC/X=variations{DS}{VARIATION}{DS}X.c}
+
+{@comment ------------------------------------------------------------------------------ }
+{@comment                  MACROS TO BE USED IN MAIN MAKEFILE                            }
+{@comment ------------------------------------------------------------------------------ }

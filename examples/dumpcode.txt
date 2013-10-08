@@ -1,0 +1,120 @@
+Start node is 3
+1   EXTERNAL
+2 , COMMAND ARG 16 -> 0
+3 List node
+ car=1
+ cdr=6
+4   EXTERNAL
+5 , COMMAND ARG 36 -> 0
+6 List node
+ car=4
+ cdr=9
+7   EXTERNAL
+8 , COMMAND ARG 54 -> 0
+9 List node
+ car=7
+ cdr=12
+10   EXTERNAL
+11 , COMMAND ARG 72 -> 0
+12 List node
+ car=10
+ cdr=15
+13   EXTERNAL
+14 , COMMAND ARG 95 -> 0
+15 List node
+ car=13
+ cdr=18
+16   EXTERNAL
+17 , COMMAND ARG 115 -> 0
+18 List node
+ car=16
+ cdr=23
+19   CALL
+20 User function
+ Starts at node 18
+ Actual argument list root node 22
+21 global variable serial=1
+22 List node
+ car=21
+ cdr=0
+23 List node
+ car=19
+ cdr=30
+24   FOR
+25 global variable serial=2
+26 , COMMAND ARG 27 -> 0
+27   LBOUND
+28 global variable serial=1
+29 List node
+ car=28
+ cdr=0
+30 List node
+ car=24
+ cdr=37
+31   FORTO
+32   UBOUND
+33 global variable serial=1
+34 List node
+ car=33
+ cdr=0
+35 , COMMAND ARG 30 -> 36
+36 , COMMAND ARG 69 -> 0
+37 List node
+ car=31
+ cdr=42
+38   FOR
+39 global variable serial=3
+40 , COMMAND ARG 41 -> 0
+41  Long value 0
+42 List node
+ car=38
+ cdr=47
+43   FORTO
+44  Long value 8
+45 , COMMAND ARG 42 -> 46
+46 , COMMAND ARG 62 -> 0
+47 List node
+ car=43
+ cdr=59
+48   PRINT
+49 Array access
+50 List node
+ car=51
+ cdr=53
+51 global variable serial=1
+52 global variable serial=2
+53 List node
+ car=52
+ cdr=55
+54 global variable serial=3
+55 List node
+ car=54
+ cdr=0
+56 List node
+ car=49
+ cdr=58
+57  Constant string node id=122
+58 List node
+ car=57
+ cdr=0
+59 List node
+ car=48
+ cdr=62
+60   NEXTI
+61 , COMMAND ARG 47 -> 0
+62 List node
+ car=60
+ cdr=66
+63   PRINT
+64  Constant string node id=140
+65 List node
+ car=64
+ cdr=0
+66 List node
+ car=63
+ cdr=69
+67   NEXTI
+68 , COMMAND ARG 37 -> 0
+69 List node
+ car=67
+ cdr=0

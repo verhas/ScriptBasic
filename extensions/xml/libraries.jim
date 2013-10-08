@@ -1,0 +1,2 @@
+{#define LdNeededLibraryFiles=-lxml2}
+{#define LibNeededLibraryFiles=}

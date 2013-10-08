@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=cio]]]
+[[[#define FILE=cio.c]]]
+[[[#include skeleton.jim]]]

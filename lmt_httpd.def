@@ -1,0 +1,7 @@
+#
+# This file defines the external modules that are statically linked to the
+# file sbhttpd
+#
+cgi
+mt
+

@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=odbc]]]
+[[[#define FILE=odbcinterf.c]]]
+[[[#include skeleton.jim]]]

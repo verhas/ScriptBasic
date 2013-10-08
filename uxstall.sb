@@ -1,0 +1,277 @@
+REM Note that there is NO '#! /usr/bin/scriba' in the first line
+REM because that interpreter may be an old one that we just want
+REM to replace
+
+REM """
+
+This is the UNIX install script for ScriptBasic source. This
+program can be used to install ScriptBasic after it was compiled.
+
+
+"""
+
+CONFIGDIR="/etc/scriba"
+INCLUDE="/usr/share/scriba/include"
+SOURCE="/usr/share/scriba/source"
+MODULEDIR="/usr/local/lib/scriba"
+LIBDIR="/usr/local/lib"
+CACHE="/var/cache/scriba/cache"
+HEBTEMP="/var/cache/scriba/hebtemp"
+BIN="/usr/bin"
+LOGDIR="/var/log/scriba"
+ETC="/etc/init.d"
+
+' get the command line arguments
+' into the array CommandArguments
+SPLITA COMMAND() BY " " TO CommandArguments
+
+' convert the array to hash
+FOR I=LBOUND(CommandArguments) TO UBOUND(CommandArguments)
+  SPLIT CommandArguments[I] BY "=" TO KEY,VALUE
+  ARGOPTION{KEY} = VALUE
+NEXT I
+
+IF NOT ISDEFINED(LBOUND(ARGOPTION)) THEN
+  PRINT """Usage:
+sh ./install.sh 'arguments'
+
+This program can be used to install ScriptBasic
+after it was compiled from source under UNIX. This
+program can NOT be used to install ScriptBasic under
+Windows or to install ScriptBasic from any binary
+distribution.
+
+Command arguments all should have the form:
+
+            --option=value
+
+Available options:
+"""
+  STOP
+ENDIF
+
+
+' Identify the maxlevel keyword safe value on this
+' platform
+SCRIBAEXE = "./bin/vc7/exe/scriba.exe"
+IF FILEEXISTS(SCRIBAEXE) THEN GOTO EXE_FOUND
+PRINT SCRIBAEXE," does not exist. I am going on trying to find the interpreter executable.\n"
+SCRIBAEXE = "./bin/bcc/exe/scriba.exe"
+IF FILEEXISTS(SCRIBAEXE) THEN GOTO EXE_FOUND
+PRINT SCRIBAEXE," does not exist. I am going on trying to find the interpreter executable.\n"
+SCRIBAEXE = "./bin/exe/scriba"
+IF FILEEXISTS(SCRIBAEXE) THEN GOTO EXE_FOUND
+PRINT SCRIBAEXE," does not exist. I am going on trying to find the interpreter executable.\n"
+
+PRINT "I can not find the ScriptBasic interpreter, giving up.\n"
+
+EXE_FOUND:
+PRINT "The ScriptBasic interpreter is ",SCRIBAEXE,"\n"
+PRINT """Now I start the program infrec.sb in a separate process
+to determine the possible largest safe configuration value 'maxlevel'
+"""
+' execute and wait max 20 sec
+ON ERROR GOTO NOTRETURNED
+EXITCODE = EXECUTE(SCRIBAEXE & " infrec.sb", 5 , PID)
+ON ERROR GOTO NULL
+GOTO DEPTH_DETERMINED
+  NOTRETURNED:
+  ' It may happen that the function EXECUTE does not return when
+  ' the sub process terminates with segfault
+  NEWDEPTH = FILELEN("depth.txt")
+  REPEAT
+    SLEEP 2
+    OLDDEPTH = NEWDEPTH
+    NEWDEPTH = FILELEN("depth.txt")
+  UNTIL OLDDEPTH = NEWDEPTH
+DEPTH_DETERMINED:
+
+MAXLEVEL = FILELEN("depth.txt")
+
+PRINT "The maxlevel is ",MAXLEVEL,"\n"
+IF MAXLEVEL < 50 THEN
+  PRINT "'maxlevel' is ridiculusly low, no reason to install ScriptBasic.\n"
+  STOP
+ENDIF
+
+FOR I=LBOUND(ARGOPTION) TO UBOUND(ARGOPTION)
+  PRINT ARGOPTION[I],"\n"
+NEXT I
+
+REM """
+ERRCOUNT=0
+{@define ERROR/X=\
+ echo "###ERROR X"
+ let ERRCOUNT=$ERRCOUNT+1
+}\
+{@define CreateDirectory/DIR/PERMISSION=\
+if [ -e DIR ] ; then
+  echo "DIR already exists"
+else
+  echo "DIR creating"
+  mkdir -p DIR 2>/dev/null
+  if [ $? -ne 0 ] ; then
+   {ERROR creating directory DIR}
+  fi
+  chmod PERMISSION DIR 2>/dev/null
+  if [ $? -ne 0 ] ; then
+   {ERROR setting the permission on DIR to value PERMISSION}
+  fi
+fi
+}
+{@define CopyFile/FILE/TO/OWNER/PERMISSION=\
+# if it existed and had some restrictive permission then we
+# have to alter the permission to be able to overwrite it
+# during copy
+chmod 777 TO 2>/dev/null
+cp FILE TO 2>/dev/null
+if [ $? -ne 0 ] ;then
+  {ERROR copying the file FILE to TO}
+fi
+
+chown OWNER:OWNER TO 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR setting the owner of the file FILE to OWNER}
+fi
+
+chmod PERMISSION TO 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR changing the permission of TO to PERMISSION}
+fi
+}
+{@define CopyFiles/FILE/DESTINATION/TOFILS/OWNER/PERMISSION=\
+# if it existed and had some restrictive permission then we
+# have to alter the permission to be able to overwrite it
+# during copy
+chmod 777 TOFILS 2>/dev/null
+cp FILE DESTINATION 2>/dev/null
+if [ $? -ne 0 ] ;then
+  {ERROR copying the file FILE to DESTINATION}
+fi
+
+chown OWNER:OWNER TOFILS 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR setting the owner of the file TOFILS to OWNER}
+fi
+
+chmod PERMISSION TOFILS 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR changing the permission of TOFILS to PERMISSION}
+fi
+}
+
+{CreateDirectory $LOG 666}
+{CreateDirectory $CONFIGDIR 555}
+{CreateDirectory $INCLUDE 555}
+{CreateDirectory $SOURCE 555}
+{CreateDirectory $MODULE 555}
+{CreateDirectory $LIB 655}
+
+
+#
+# clean old cache files that may 
+# have been created by previous version
+#
+if [ -e $CACHE ] ; then
+ echo "purging old cache files from $CACHE"
+ rm -rf $CACHE/*
+else
+ echo "creating cache directory $CACHE"
+ mkdir -p $CACHE
+fi
+echo "setting permission 777 to $CACHE"
+chmod 777 $CACHE 2>/dev/null
+if [ $? -ne 0 ] ; then
+ {ERROR setting the permission of the directory $CACHE to 777}
+fi
+
+if [ -e $HEBTEMP ] ; then
+ rm -rf $HEBTEMP/*
+fi
+mkdir -p $HEBTEMP
+chmod a+rw $HEBTEMP
+
+cp ./scriba $BIN/scriba
+chown root:root $BIN/scriba
+chmod a+rx $BIN/scriba
+
+cp ./cftc $BIN/cftc
+chown root:root $BIN/cftc
+chmod a+rx $BIN/cftc
+
+
+echo "Now I stop the Eszter SB Engine."
+if [ -e /etc/init.d/sbhttpd ] ; then
+  /etc/init.d/sbhttpd stop >/dev/null 2>/dev/null
+fi
+killall sbhttpd 2> /dev/null
+
+echo "copying the file sbhttpd binary executable to $BIN"
+{CopyFile ./sbhttpd $BIN/sbhttpd root 555}
+echo "copying the file sbhttpd shell script to $ETC"
+{CopyFile ./etc-init.d-sbhttpd $ETC/sbhttpd root 555}
+
+cat <<'END'
+************************************************************
+The Eszter SB Application Engine (if it was running) was
+stopped to allow upgrade. It may happen that it was not
+running at all though. No problem.
+
+Due to security reasons the installation process does not
+start or in case it was already running restart the server.
+
+If you need Eszter SB Application Engine running then please
+start it saying:
+
+/etc/init.d/sbhttpd start
+************************************************************"
+END
+
+# this is commented out because we do not want to install
+# and start a http daemon on any system so that the system
+# manager may not be aware of it
+#/etc/init.d/sbhttpd start
+
+echo "copy all the shared object modules"
+{CopyFiles ./*.so $MODULE $MODULE/*.so root 555}
+echo "copy all the .bas include files"
+{CopyFiles ./include/*.bas $INCLUDE $INCLUDE/*.bas root 444}
+echo "copy the scriba library file"
+{CopyFile ./libscriba.a $LIB/libscriba.a root 444}
+echo "copy the example preprocessor to the source directory"
+{CopyFile ./heber.bas $SOURCE/heber.bas root 444}
+
+chmod u+rw $CONFIGDIR/basic.conf 2>/dev/null
+./cftc scriba.conf.unix.lsp $CONFIGDIR/basic.conf 2>/dev/null
+if [ $? -ne 0 ] ; then
+{ERROR creating the default configuration file}
+fi
+cat <<END
+************************************************************
+The ScriptBasic configuration file was updated using the
+default sample configuration file. In case you have already
+a configuration file that you have used reinstall it
+using the configuration compiler program saying:
+
+/usr/bin/cftc your_old_config_file $CONFIGDIR/basic.conf
+
+If you did not have a configuration from an older installation
+then start using the default configuration and save the text
+version of the default config file at a location you wish.
+The text version of the default configuration is stored in
+the file scriba.conf.unix.lsp
+************************************************************
+END
+
+if [ $ERRCOUNT -eq 0 ] ; then
+ echo "It seems that the installation was sucessful"
+else
+ if [ $ERRCOUNT -eq 1 ] ; then
+  echo "There was one error during installation."
+ else
+  echo "There were $ERRCOUNT errors during installation."
+ fi
+fi
+echo
+echo "DID YOU READ ALL THE MESSAGES ABOVE? THEY ARE IMPORTANT!"
+"""

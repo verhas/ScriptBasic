@@ -1,0 +1,2 @@
+{#define LdNeededLibraryFiles=-lbdb}
+{#define LibNeededLibraryFiles=}

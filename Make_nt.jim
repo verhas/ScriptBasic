@@ -1,0 +1,29 @@
+{@comment
+
+This jamal macro file is included when the Win32 specific makefiles are generated. This macro includes
+make_common.jim to get the common files.
+
+}
+{#define DS=\}
+{#define LibraryExtension=.lib}
+{#define DllExtension=.dll}
+{#define ObjectExtension=.obj}
+{#define ExeExtension=.exe}
+
+{@define ? CompileTexiDoc={CreTexiDocument} : manual.texi.jam
+	{JAMAL} manual.texi.jam {CreTexiDocument}
+	{T2H} {CreTexiDocument}
+	{HHC} {CreDocuTag}.hhp & set ERRORLEVEL=0
+}
+
+
+{#include make_common.jim}
+
+{@comment define where the extension DLLs are generated}
+{#define moddlldir={moddir}dll\}
+
+{@comment OPERATING SYSTEM COMMANDS
+}
+
+{@define mkdir/XXX=IF NOT EXIST "XXX" mkdir "XXX"}
+

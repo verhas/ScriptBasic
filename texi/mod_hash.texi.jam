@@ -1,0 +1,371 @@
+{#sep/[[[/]]]}
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename mod_bdb
+@settitle Using the module HASH
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title Using the module HASH
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+
+@chapter Introduction
+
+
+This document describes how to install and use the module HASH for ScriptBasic.
+
+There are separate documents that describe the language (Users’ Guide), the major architecture of the source code (Source Guide).
+
+This document describes the version 1.0 of the module.
+A hash is a set of key value pairs. Each value appearing in a hash is assigned to a key when entered into the hash and can be retrieved knowing the key. The hash module implements a fast and effective hash handling. Hashes of the module are stored in memory. The memory is allocated when the hash is created, when new key/value pairs are entered into the hash and is released when a key or the hash is destroyed.
+
+The hash implemented in this module is a complex data structure. You can do the following operations using the hash:
+
+@itemize
+@item Create a hash.
+@item Delete a hash entirely also releasing all memory allocated to store keys and values.
+@item Add a new key/value pair to the hash.
+@item Get a value for a given key.
+@item Delete a key/value pair from the hash based on the key.
+@item Iterate forward and backward on the values in a loop in the order the pairs were inserted.
+@end itemize
+
+The key and the value can be anything that ScriptBasic allows except arrays. A key can be a string, integer value, real value or even @code{undef}. The same is true for the value part of the pairs.
+
+The module implements functions that are easy to use for the novice programmer, and other functions that require more knowledge to use, but deliver higher performance eliminating possible repeated searches in the hash table.
+
+The internal data structure used by the module is a hash table of 211 elements each element storing the values in a binary tree. To iterate over the elements the table also maintains a double linked list.
+
+@chapter Acknowledgements
+
+The module uses the same hash algorithm as the ScriptBasic symbol table handling routine. This is routine comes from the page 436 of the dragon book.
+
+@example
+The dragon book:
+Aho-Sethi-Ulman : Compilers
+     Principles, techniques, and Tools
+Addison-Wesley Publishing Company 1986
+@end example
+
+@chapter Installing the module
+
+The module comes in source form or as compiled binary. Binary is usually available for the Win32 platforms only. The compilation of the source code is simple. Compile the source files to a @code{.dll} or to @code{.so} shared library. When installing the standard ScriptBasic package the make file creates and installs this module.
+
+The compiled module contains a dynamically load binary file and a basic include file named @file{hash.bas}. The include file @file{hash.bas} should be placed in a module include directory file configured in the configuration file. The configuration file usually named @file{scriba.conf} should include a line
+
+@example
+include /etc/scriba/include/
+@end example
+
+defining the include files location for the modules and other generally used include files. The actual directory can be different.
+
+The binary part of the module should be placed in another directory specified in the configuration file, like
+
+@example
+module /usr/scriba/lib/
+@end example
+
+There can be more than one @code{include} and @code{module} statement in the configuration file. In that case the interpreter searches the directories in the order they are specified until the include file or the module is found.
+
+@chapter Configuration
+
+The module is not configurable. In other words there is no need to configure the module.
+
+@chapter Using the module
+
+To use the module the basic program should include the file @file{hash.bas}. To do this the program should contain the line
+
+@example
+import hash.bas
+@end example
+
+somewhere at the start of the code. Note that there are no double quote characters before and after the file name. This tells the interpreter that the file is located in a module include directory. This include file contains all the declarations that are needed to use the module HASH.
+
+In the following sections we list the functions that the module delivers.
+
+@section New
+
+@example
+h = hash::New()
+@end example
+
+Create a new hash. The handle to the new hash is returned by the function and should be stored in a variable. The type of the handle is string, but you should not try to alter this value. The sole usage of this value is to pass it to the hash handling functions as argument. You can also assign this value to other variables or pass as argument to user defined function and move the value around in variables.
+
+Do not forget to release the hash after it is not needed anymore. If your program looses the value of the handle to a hash there is no way to access key/value pairs from the hash and the memory allocated for the hash is kept allocated until the interpreter finishes executing the basic program.
+
+(Note that the memory is released when the interpreter finishes the execution of the actual program even is the interpreter is implemented in a multi-thread environment and the interpreter itself remains in memory running in a process.)
+
+
+@section SetValue
+
+@example
+hash::SetValue h,key,value
+@end example
+
+You have to call this subroutine to set the value associated with a given key. If the key did not exist in the hash before it is inserted. If the key existed in the cache the value associated with the key is replaced by the new value.
+
+@section Value
+
+@example
+q = hash::Value(h,key)
+@end example
+
+This function should be used retrieve the value associated with a given key.  If the key did not exist in the hash the return value is @code{undef}. The hash iteration pointer is modified by this function setting it to point to the found pair.
+
+A key may present in the hash and have an associated value of @code{undef}. To separate the two cases you can use the function @code{hash::Exists(h,key)}.
+
+@section Exists
+
+@example
+hash::Exists(h,key)
+hash::Exists(h)
+@end example
+
+This function should be used to get the information if a given key exists in the hash. This is different than checking the value assigned to the key comparing against @code{undef}, because the key may exist and have an assigned value of @code{undef}. The function returns true if the key exists in the hash and returns false if the function does not exist in the hash.
+
+If the function is used with a single argument representing the handle to the hash the function checks that the iteration pointer is pointing to an existing key. This feature should be used to check the end of an iteration.
+
+@example
+import hash.bas
+
+h = hash::New()
+
+for i=1 to 10
+hash::SetValue h,"q"&i,i
+next i
+
+hash::Start h
+while hash::Exists(h)
+  print hash::ThisKey(h)," ",hash::ThisValue(h)
+  print
+  hash::Next h
+wend
+
+hash::Release h
+@end examoke
+
+@section Delete
+
+@example
+hash::Delete h,key
+@end example
+
+Delete a key/value pair from the hash based on the key. This function deletes the key and the associated value from the hash h for which the key is given. If the key does not exist in the hash the function returns with the hash unaltered.
+
+If a key was successfully deleted the command sets the hash iteration pointer to undefined.
+
+@section Start
+
+@example
+hash::Start h
+@end example
+
+Start iteration setting the iteration pointer to the start of the hash list. 
+
+The hash structure implemented in this module maintains a linked list that allows the programmer to iterate over all elements of the hash in the order they were entered into the hash in both directions. To maintain iteration state there is an iteration pointer for each hash. There can only be a single iteration over a hash at a time. The iteration pointer can be set to the start, to the end of the list and can be moved one element forward and backward. The key and value pairs can also be retrieved pointed by the iteration pointer. The ordering of the elements in the hash are guaranteed to follow the time order the pairs were entered into the hash. The first element returned by the iteration pointer is the pair entered first in to the hash.
+
+This function sets the iteration pointer to the start of the list.
+
+@section End
+
+@example
+hash::End h
+@end example
+
+This function sets the iteration pointer to the end of the list. 
+
+For more information on iteration over hash elements see the section @xref{start}
+
+@section Next
+
+@example
+hash::Next h
+@end example
+
+This function moves the iteration pointer forward one element.
+[[[#define ITPNDEF=
+If the iteration pointer is not defined the use of the function will raise an error @code{hash::ErrorNoThisKey}. The constant for the error code is defined in the module file @file{hash.bas}.]]]
+[[[ITPNDEF]]]
+
+The return value of the function is the key of the element pointed by the iteration pointer after the step or @code{undef} if the iteration passed the last element. Note that the key may also be @code{undef}, therefore checking the return value of this function can only be used in situation when the @code{undef} value is guaranteed not be used as key and the hash is not empty. To check the end of an iteration use the function @code{hash::Exists}.
+
+For more information on iteration over hash elements see the section @xref{start}
+
+@section Prev
+
+@example
+hash::Prev h
+@end example
+
+This function moves the iteration pointer backward one element.
+
+[[[ITPNDEF]]]
+
+The return value of the function is the key of the element pointed by the iteration pointer after the step or @code{undef} if the iteration passed the first element. Note that the key may also be @code{undef}, therefore checking the return value of this function can only be used in situation when the @code{undef} value is guaranteed not be used as key and the hash is not empty. To check the end of an iteration use the function @code{hash::Exists}.
+
+For more information on iteration over hash elements see the section @xref{start}
+
+@section ThisKey
+
+@example
+k = hash::ThisKey(h)
+@end example
+
+Get the key of the pair pointed by the iteration pointer.
+
+[[[ITPNDEF]]]
+
+For more information on iteration over hash elements see the section @xref{start}
+
+@section ThisValue
+
+@example
+v = hash::ThisValue(h)
+@end example
+
+Get the value of the pair pointed by the iteration pointer.
+
+[[[ITPNDEF]]]
+
+For more information on iteration over hash elements see the section @xref{start}
+
+@section Release
+
+@example
+hash::Release h
+@end example
+
+Release a hash and free all memory allocated to store the hash structures as well as the key/value pairs.
+
+@section ref[This]Value
+
+@example
+v = hash::refThisValue(h)
+v = hash::refValue(h)
+@end example
+
+These two functions retrieve a reference to a value stored in a hash and should only be used by advanced programmers, who deeply understand how ScriptBasic stores variables and handles reference values. Use of these functions may help the advanced programmers to increase program speed and effectiveness. On the other hand improper use of the functions may result non-deterministic behavior and memory corruption, process halt, core dump.
+
+The simple definition of the functions is that they do the same as their non-ref pairs with the extension that they return the value of the element, while the non-ref pair returns a copy of the value. Lets see a simple example!
+
+@example
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"evil",666
+Zazu = hash::Value(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+print hash::Value(h,"evil"),nl
+hash::Release h
+@end example
+
+This will print the number @code{666} twice. This is what we have expected. We have a variable that is named @code{Zazu}, and we have assigned the string value @code{"BILL"} to it, but this has nothing to do with the hash. Now let us alter the code:
+
+@example
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"evil",666
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+print hash::Value(h,"evil"),nl
+hash::Release h
+@end example
+
+The only difference is that we use the function @code{hash::refValue} instead of @code{hash::Value}. This time the program prints @code{666} on the first line and @code{BILL} on the second. The reason is that the variable @code{Zazu} not only holds the value assigned to the key evil, but it is the value.
+
+The situation is exactly the same as function argument passing and is implemented the same way. When a variable is passed to a function by reference the local variable holds a reference to the original variable and whenever the local variable is altered the original variable is altered. The functions @code{hash::refThisValue} and @code{hash::refValue} return a reference to the unnamed variable stored inside the hash structure holding the value. Whenever the variable is altered the referenced variable is altered inside the hash.
+
+What is the benefit? To have a reference to a value you can alter it without researching the hash. You can just assign a new value to the variable holding the reference value and in a snap you have altered the value of an existing key without searching for the key.
+
+What is the drawback? To have a reference to a value you should be careful otherwise you may get memory corrupting code. Let's see some erroneous examples.
+
+@example
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"good",999
+hash::SetValue h,"evil",666
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+print hash::Value(h,"evil"),nl
+Zazu = hash::refValue(h,"good")
+hash::SetValue h,"evil","William"
+print Zazu,nl
+hash::Release h
+@end example
+
+This program will print out @code{666}, @code{BILL} and finally @code{William}. Why does it print @code{William} on the third line? Don't @code{Zazu} hold the value for the key @code{"good"}? (Yes, it does.) Why does it have to do anything with the altered value of the key @code{"evil"}?
+
+The answer is the following. When we have assigned the reference to the value of the key @code{"evil"} to the variable @code{Zazu} we actually said that all assignments to @code{Zazu} will alter the value in the hash. Assigning the reference to the value assigned to the key @code{"good"} to @code{Zazu} assigned the reference to this key to the value assigned to the key @code{"evil"}. This means that the keys @code{"evil"} and @code{"good"} share the same value, which sometimes they pretend to also in real life.
+
+You should never forget a variable that has a reference into the hash! In an artificial example the programmer forgets that the variable @code{Zazu} at a certain point in the program was already set to hold a reference to a value in the hash and tries to set it to hold another reference to the same key.
+
+@example
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"good",999
+hash::SetValue h,"evil",666
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+' here the programmer makes a mistake and
+' forgets that Zazu holds a reference
+print hash::Value(h,"evil"),nl
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+hash::Release h
+@end example
+
+The code stops with an error. When assigning the reference to the value of @code{"evil"} second time, the value of @code{"evil"} is assigned to itself. It becomes a reference that references itself. The program recognizes the situation. It stops with an error after a few iteration trying to resolve the reference. (Builds before 18 of ScriptBasicv1.0 got into an infinite loop.)
+
+The solution is to use the command @code{ByVal} as soon as we want to get rid of the reference in the variable. The following program runs fine:
+
+@example
+import hash.bas
+Const nl="\n"
+h = hash::New()
+hash::SetValue h,"good",999
+hash::SetValue h,"evil",666
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+Zazu = "BILL"
+ByVal Zazu
+print hash::Value(h,"evil"),nl
+Zazu = hash::refValue(h,"evil")
+print Zazu,nl
+hash::Release h
+@end example
+
+Basic rules that you should keep when using references to hash values:
+
+@itemize
+@item ByVal a variable as soon as possible.
+@item ByVal any variable before releasing the hash.
+@item You need not ByVal local variables before returning from a function. The references will be dropped automatically.
+@item You need not ByVal local variables referencing a hash value even if the hash is released, but you should not use the local variable anymore. Not in assignment, not in expression and even not in a command ByVal.
+@end itemize
+
+@chapter Future development, aims
+
+There are no planned enhancements for the module. However this may change upon user demand.
+

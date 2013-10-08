@@ -1,0 +1,364 @@
+#
+# Makefile.nt to compile ScriptBasic on the platform Windows NT using
+# the C compiler Microsoft Visual C/C++
+#
+
+#
+# The C compiler is 'cl'
+# /Ox		maximum optimization
+# /GA6		optimize for Windows applications/PentiumPro/disable stack checking calls
+# /DWIN32	define the symbol WIN32
+# /MT		multi-thread compile
+# /nologo	be silent while compiling
+# /W0		warning level zero (warnings are cared when compiling in the integrated environment for debuging)
+CC=cl /Ox /GA6s /DWIN32 /MT /nologo /W0 
+#/Zi /U_DEBUG
+BCC=bcc32 -I"E:\\Program Files\\Borland\\BCC32\\Include"
+LDOPTIONS=
+LD=cl /LD /nologo
+CFLAGS=
+BCFLAGS=-5 -d -DWIN32=1 -DBCC32=1 -w-
+CFLAGSS=-DSTATIC_LINK=1
+LIBS=ws2_32.lib advapi32.lib
+OBJS=builder.obj conftree.obj dynlolib.obj execute.obj\
+     expression.obj filesys.obj getopt.obj lexer.obj match.obj\
+     memory.obj myalloc.obj options.obj reader.obj report.obj sym.obj\
+     syntax.obj errcodes.obj hookers.obj modumana.obj extops.obj\
+     uniqfnam.obj epreproc.obj md5.obj ipreproc.obj scriba.obj
+COBJS=environ.obj external.obj file.obj function.obj goto.obj\
+      if.obj let.obj mathfunc.obj mathops.obj print.obj\
+      string.obj time.obj while.obj logger.obj thread.obj hndlptr.obj\
+      mygmtime.obj basext.obj
+BOBJS=builder_omg.obj conftree_omg.obj dynlolib_omg.obj execute_omg.obj\
+     expression_omg.obj filesys_omg.obj getopt_omg.obj lexer_omg.obj match_omg.obj\
+     memory_omg.obj myalloc_omg.obj options_omg.obj reader_omg.obj report_omg.obj sym_omg.obj\
+     syntax_omg.obj errcodes_omg.obj hookers_omg.obj modumana_omg.obj extops_omg.obj\
+     uniqfnam_omg.obj epreproc_omg.obj md5_omg.obj ipreproc_omg.obj scriba_omg.obj
+BCOBJS=environ_omg.obj external_omg.obj file_omg.obj function_omg.obj goto_omg.obj\
+      if_omg.obj let_omg.obj mathfunc_omg.obj mathops_omg.obj print_omg.obj\
+      string_omg.obj time_omg.obj while_omg.obj logger_omg.obj thread_omg.obj hndlptr_omg.obj\
+      mygmtime_omg.obj basext_omg.obj
+CHEADERS=command.h errcodes.h report.h sym.h\
+         lexer.h expression.h builder.h memory.h\
+         syntax.h execute.h syntax.h myalloc.h filesys.h ipreproc.h prepext.h\
+         options.h uniqfnam.h
+LATEX=latex --quiet
+DVIPS=dvips -Ppdf
+
+.PHONY: headers all
+
+ALL: headers scriba.exe cgi.dll gd.dll hash.dll re.dll sbhttpd.exe mt.dll noprint.dll\
+ nt.dll zlib.dll cio.dll scriba.dll scriba.lib libscriba.lib libscriba_omg.lib tools.dll bdb.dll\
+ mysql.dll dbg.dll odbc.dll scriba.conf curl.dll
+	install.cmd
+
+clean: 
+	rm *.o *.obj *.lib *.exe *.dll *.h *.exp *.tds *.map notimp.c scriba.conf syntax.c errcodes.c include/error.bas 
+
+# --------------------------------------------------------------------
+#
+# R E S U L T  F I L E S
+#
+# --------------------------------------------------------------------
+headers : *.c extensions/cgi/cgi.c errcodes.c extensions/rpool.c syntax.c notimp.c
+	perl headerer.pl $?
+
+# --------------------------------------------------------------------
+#
+# STATIC LINK MODULE LIST TABLE FILES
+#
+# --------------------------------------------------------------------
+lmt_none.c : lmt_none.def
+	perl lmt_make.pl $?
+
+lmt_httpd.c : lmt_httpd.def
+	perl lmt_make.pl $?
+
+# --------------------------------------------------------------------
+#
+# CREATE THE SOURCE DOCUMENTATION to HTML and to LaTex, dvi and PS
+#
+# --------------------------------------------------------------------
+doc : *.c modules.sdd scriba.sdd
+	perl esd2html.pl modules.sdd
+	perl esd2html.pl scriba.sdd
+	$(LATEX) modules.tex
+	$(LATEX) modules.tex
+	$(LATEX) scriba.tex
+	$(LATEX) scriba.tex
+	$(DVIPS) modules.dvi
+	$(DVIPS) scriba.dvi
+
+
+#
+# DLL version
+#
+scriba.dll : $(OBJS) $(COBJS) lmt_none.obj scriba.def
+	$(LD) $(LDOPTIONS) /Fescriba.dll $(OBJS) $(COBJS) $(LIBS) lmt_none.obj /link /DEF:scriba.def 
+
+scriba.def : scriba.c
+	perl mkscribadef.pl
+
+#
+# LIB same as DLL just link statically
+#
+scriba.lib : $(OBJS) $(COBJS) lmt_none.obj
+	lib /OUT:scriba.lib /nologo $(OBJS) $(COBJS) lmt_none.obj
+
+#
+# This library is to be linked with the compiled basic program to create
+# standalone executable 
+#
+libscriba.lib : libscriba.obj $(OBJS) $(COBJS) lmt_none.obj
+	lib /OUT:libscriba.lib /nologo libscriba.obj $(OBJS) $(COBJS) lmt_none.obj
+
+libscriba_omg.lib : libscriba_omg.obj $(BOBJS) $(BCOBJS) lmt_none_omg.obj
+	tlib libscriba_omg.lib +libscriba_omg.obj\
+		+builder_omg.obj +conftree_omg.obj +dynlolib_omg.obj +execute_omg.obj\
+		+expression_omg.obj +filesys_omg.obj +getopt_omg.obj +lexer_omg.obj +match_omg.obj\
+		+memory_omg.obj +myalloc_omg.obj +options_omg.obj +reader_omg.obj +report_omg.obj +sym_omg.obj\
+		+syntax_omg.obj +errcodes_omg.obj +hookers_omg.obj +modumana_omg.obj +extops_omg.obj\
+		+uniqfnam_omg.obj +epreproc_omg.obj +md5_omg.obj +ipreproc_omg.obj +scriba_omg.obj\
+		+environ_omg.obj +external_omg.obj +file_omg.obj +function_omg.obj +goto_omg.obj\
+		+if_omg.obj +let_omg.obj +mathfunc_omg.obj +mathops_omg.obj +print_omg.obj\
+		+string_omg.obj +time_omg.obj +while_omg.obj +logger_omg.obj +thread_omg.obj +hndlptr_omg.obj\
+		+mygmtime_omg.obj +basext_omg.obj +lmt_none_omg.obj
+
+
+#
+# Command line variation of ScriptBasic
+#
+scriba.exe	: $(OBJS) $(COBJS) scribacmd.obj lmt_none.obj lsp.obj confpile.obj
+	$(CC) /Fe$@ $(LIBS) $(OBJS) $(COBJS) scribacmd.obj lmt_none.obj lsp.obj confpile.obj
+	scriba -v
+
+#
+# Standalone web server
+#
+sbhttpd.exe	: $(OBJS) $(COBJS) httpd.obj websrv.obj service.obj lmt_httpd.obj cgi.obj s_cginterf.obj s_mt.obj
+	$(CC) /Fe$@ $(LIBS) $(OBJS) $(COBJS) httpd.obj websrv.obj service.obj lmt_httpd.obj cgi.obj s_cginterf.obj s_mt.obj
+
+#
+# Module extension DLLs
+#
+hash.dll : hash.obj
+	$(LD) $(LDOPTIONS) /Fehash.dll hash.obj
+
+re.dll : reinterf.obj regcomp.obj regerror.obj regexec.obj regfree.obj
+	$(LD) $(LDOPTIONS) /Fere.dll reinterf.obj regcomp.obj regerror.obj regexec.obj regfree.obj
+
+curl.dll : curlintrfc.obj
+	$(LD) $(LDOPTIONS) /Fecurl.dll curlintrfc.obj libcurl.lib ws2_32.lib
+
+cgi.dll : cgi.obj cginterf.obj
+	$(LD) $(LDOPTIONS) /Fecgi.dll cgi.obj cginterf.obj
+
+tools.dll : tools.obj
+	$(LD) $(LDOPTIONS) /Fetools.dll tools.obj
+
+gd.dll : gdinterf.obj
+	$(LD) $(LDOPTIONS) /Fegd.dll gdinterf.obj libpng.lib gd.lib zlibs.lib
+
+mt.dll : mt.obj
+	$(LD) $(LDOPTIONS) /Femt.dll mt.obj
+
+noprint.dll : noprint.obj
+	$(LD) $(LDOPTIONS) /Fenoprint.dll noprint.obj
+
+nt.dll : nt.obj
+	$(LD) $(LDOPTIONS) /Fent.dll nt.obj advapi32.lib user32.lib
+
+zlib.dll : zlib.obj
+	$(LD) $(LDOPTIONS) /Fezlib.dll zlib.obj zlibs.lib
+
+cio.dll : cio.obj
+	$(LD) $(LDOPTIONS) /Fecio.dll cio.obj
+
+bdb.dll : bdinterf.obj
+	$(LD) $(LDOPTIONS) /Febdb.dll bdinterf.obj libdb31s.lib
+
+mysql.dll : mysqlinterf.obj
+	$(LD) $(LDOPTIONS) /Femysql.dll mysqlinterf.obj mysqlclient.lib $(LIBS)
+
+mysqle.dll : mysqleinterf.obj rpool.obj
+	$(LD) $(LDOPTIONS) /Femysql.dll mysqleinterf.obj rpool.obj mysqlclient.lib $(LIBS)
+
+dbg.dll : dbg.obj dbg_con.obj
+	$(LD) $(LDOPTIONS) /Fedbg.dll dbg.obj dbg_con.obj
+
+odbc.dll : odbcinterf.obj
+	$(LD) $(LDOPTIONS) /Feodbc.dll odbcinterf.obj odbc32.lib odbccp32.lib
+
+# --------------------------------------------------------------------
+#
+# I N T E R M E D I A T E  F I L E S
+#
+# --------------------------------------------------------------------
+
+#
+# Variations OBJs
+#
+scribacmd.obj : variations/standard/scribacmd.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CFLAGS) /c /Foscribacmd.obj variations/standard/scribacmd.c
+
+websrv.obj : variations/httpd/websrv.c variations/httpd/service.h getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CFLAGS) /c /Fowebsrv.obj variations/httpd/websrv.c
+
+service.obj : variations/httpd/service.c
+	$(CC) $(CFLAGS) /c /Foservice.obj variations/httpd/service.c
+
+libscriba.obj : variations/standalone/libscriba.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CFLAGS) /c /Folibscriba.obj variations/standalone/libscriba.c
+
+libscriba_omg.obj : variations/standalone/libscriba.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(BCC) $(BCFLAGS) -c -olibscriba_omg.obj variations/standalone/libscriba.c
+#
+# Create the configuration file
+#
+scriba.conf : scriba.conf.lsp scriba.exe
+	scriba -k scriba.conf.lsp -f scriba.conf
+
+#
+# Main OBJs
+#
+{#define CompileMain/X/Y=\
+X.obj : X.c Y
+	$(CC) $(CFLAGS) /c /FoX.obj X.c
+
+X_omg.obj : X.c Y
+	$(BCC) $(BCFLAGS) -c -oX_omg.obj X.c
+}\
+{CompileMain confpile}
+{CompileMain ipreproc}
+{CompileMain lsp}
+{CompileMain scriba}
+{CompileMain builder filesys.h report.h lexer.h sym.h expression.h myalloc.h builder.h errcodes.h buildnum.h}
+{CompileMain lmt_none}
+{CompileMain lmt_httpd}
+{CompileMain conftree conftree.h errcodes.h filesys.h}
+{CompileMain dynlolib}
+{CompileMain execute sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h}
+{CompileMain expression errcodes.h report.h lexer.h sym.h expression.h myalloc.h}
+{CompileMain filesys errcodes.h}
+{CompileMain httpd}
+{CompileMain getopt}
+{CompileMain lexer errcodes.h report.h lexer.h}
+{CompileMain match errcodes.h}
+{CompileMain logger}
+{CompileMain mygmtime}
+{CompileMain thread}
+{CompileMain hndlptr}
+{CompileMain memory errcodes.h myalloc.h}
+{CompileMain modumana basext.h sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h dynlolib.h modumana.h}
+{CompileMain hookers basext.h sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h dynlolib.h hookers.h}
+{CompileMain myalloc}
+{CompileMain epreproc myalloc.h}
+{CompileMain options sym.h errcodes.h report.h lexer.h expression.h builder.h memory.h syntax.h execute.h myalloc.h}
+{CompileMain reader filesys.h report.h errcodes.h conftree.h reader.h}
+{CompileMain report errcodes.h}
+{CompileMain sym}
+{CompileMain basext}
+{CompileMain uniqfnam}
+{CompileMain errcodes}
+{CompileMain syntax report.h lexer.h sym.h expression.h syntax.h}
+
+md5.obj : tools/md5.c tools/md5.h tools/global.h
+	$(CC) $(CFLAGS) /c /Fomd5.obj tools/md5.c
+
+md5_omg.obj : tools/md5.c tools/md5.h tools/global.h
+	$(BCC) $(BCFLAGS) -c -omd5_omg.obj tools/md5.c
+
+syntax.c : syntax.def
+	perl syntaxer.pl
+
+command.h : command.c
+	perl headerer.pl command.c
+
+#
+# Command OBJs
+#
+{#define CompileCommand/X=\
+X.obj : commands/X.c $(CHEADERS)
+	$(CC) $(CFLAGS) /c /FoX.obj commands/X.c
+
+X_omg.obj : commands/X.c $(CHEADERS)
+	$(BCC) $(BCFLAGS) -c -oX_omg.obj commands/X.c
+}
+{CompileCommand extops}
+{CompileCommand environ}
+{CompileCommand external}
+{CompileCommand file}
+{CompileCommand function}
+{CompileCommand goto}
+{CompileCommand if}
+{CompileCommand let}
+{CompileCommand mathfunc}
+{CompileCommand mathops}
+{CompileCommand print}
+{CompileCommand string}
+{CompileCommand time}
+{CompileCommand while}
+
+#
+# Extension module OBJs
+#
+
+rpool.obj : extensions/rpool.c
+	$(CC) $(CFLAGS) /c /Fo$@ extensions/rpool.c
+
+{#define CompileExtension/X/Y/Z=\
+Y.obj : extensions/X/ZY.c
+	$(CC) $(CFLAGS) /c /Fo$@ extensions/X/ZY.c
+
+s_Y.obj : extensions/X/ZY.c
+	$(CC) $(CFLAGSS) /c /Fo$@ extensions/X/ZY.c
+}
+{CompileExtension mt mt}
+{CompileExtension curl curlintrfc}
+{CompileExtension nt nt}
+{CompileExtension cio cio}
+{CompileExtension odbc odbcinterf}
+{CompileExtension zlib zlib}
+{CompileExtension noprint noprint}
+{CompileExtension hash hash}
+{CompileExtension re reinterf}
+{CompileExtension re regcomp hsregex/}
+{CompileExtension re regerror hsregex/}
+{CompileExtension re regexec hsregex/}
+{CompileExtension re regfree hsregex/}
+{CompileExtension cgi cgi}
+{CompileExtension cgi cginterf}
+{CompileExtension gd gdinterf}
+{CompileExtension tools tools}
+{CompileExtension berkeley_db bdinterf}
+{CompileExtension mysql mysqlinterf}
+{CompileExtension mysql mysqleinterf}
+
+#
+# Preprocessor objects
+#
+dbg.obj : preproc/dbg/dbg.c preproc/dbg/dbg.h preproc/dbg/dbg_comm.h
+	$(CC) $(CFLAGS) /c /Fo$@ preproc/dbg/dbg.c
+
+dbg_con.obj : preproc/dbg/dbg_con.c preproc/dbg/dbg.h preproc/dbg/dbg_comm.h
+	$(CC) $(CFLAGS) /c /Fo$@ preproc/dbg/dbg_con.c
+
+#
+# Generated C files
+#
+errcodes.c : errors.def
+	perl generrh.pl
+
+

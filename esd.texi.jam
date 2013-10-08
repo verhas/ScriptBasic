@@ -1,0 +1,22 @@
+{#sep/[[[/]]]}
+
+[[[#use esd]]]
+
+[[[#esd::command s{\/\*FUNCTION\*\/}{\@example}]]]
+[[[#esd::command s{\/\*noverbatim}{\@end example}]]]
+[[[#esd::command s{^\s*\)\{\s*$}{);}]]]
+[[[#esd::command s/=verbatim/\@example/]]]
+[[[#esd::command s/=noverbatim/\@end example/]]]
+[[[#esd::command s/=itemize/\@itemize/]]]
+[[[#esd::command s/=noitemize/\@end itemize/]]]
+[[[#esd::command s/=item/\@item/]]]
+[[[#esd::command s/T<(.*?)>/\@code\{$1\}/g]]]
+[[[#esd::command s/B<(.*?)>/\@b\{$1\}/g]]]
+[[[#esd::command s/I<(.*?)>/\@emph\{$1\}/g]]]
+[[[#esd::command s/R<(.*?)>/\@xref\{$1\}/g]]]
+[[[#esd::command s/=H(.*)$/\@section $1/]]]
+[[[#esd::command s/=section.*$//]]]
+
+
+[[[#esd::include scriba.c /*POD CUT*/]]]
+

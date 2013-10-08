@@ -1,0 +1,2 @@
+{#define LdNeededLibraryFiles=-lcurl -lssl -lcrypto -ldl -lc}
+{#define LibNeededLibraryFiles=}

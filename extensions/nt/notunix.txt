@@ -1,0 +1,1 @@
+This file helps setup.pl to know that this module cannot be compiled under unix.

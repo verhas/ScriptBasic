@@ -1,0 +1,6 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=curses]]]
+[[[#define FILE=curses.c]]]
+[[[#define AUTHOR=Berki Lukacs Tamas]]]
+[[[#include skeleton.jim]]]

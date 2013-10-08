@@ -1,0 +1,56 @@
+[[[@comment
+This is the TEXI skeleton that most module documentation should use.
+The module specific file should define the two macros FILE and MODULE and then
+include this file. This file contains the initialization macros, use of the
+jamal j-SEX module esd and includes the documentation delivered in the file
+defined by the macro FILE.
+]]]
+
+[[[#use esd]]]
+[[[#esd::command 1 s{\/\*FUNCTION\*\/}{\@example}]]]
+[[[#esd::command 2 s{\/\*noverbatim}{\@end example}]]]
+[[[#esd::command 3 s{^\s*\)\{\s*$}{);}]]]
+[[[#esd::command 4 s/=verbatim/\@example/]]]
+[[[#esd::command 5 s/=noverbatim/\@end example/]]]
+[[[#esd::command 6 s/=itemize/\@itemize/]]]
+[[[#esd::command 7 s/=noitemize/\@end itemize/]]]
+[[[#esd::command 8 s/=item/\@item/]]]
+[[[#esd::command 9 s/T<(.*?)>/\@code\{$1\}/g]]]
+[[[#esd::command A s/B<(.*?)>/\@b\{$1\}/g]]]
+
+
+[[[#esd::command B s/I<(.*?)>/\@emph\{$1\}/g]]]
+[[[#esd::command C s/R<(.*?)>/\@xref\{$1\}/g]]]
+[[[#esd::command D s/=H(.*)$/\@chapter $1/]]]
+[[[#esd::command E s/=section.*$//]]]
+[[[#esd::command E0 s/=subsection (.*)$/\@section $1/]]]
+
+[[[@define SourceFile/FILE_NAME=
+[[[#esd::include ../../extensions/[[[MODULE]]]/FILE_NAME /** */]]] ]]]
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename mod_[[[MODULE]]]
+@settitle Documentation of the module [[[MODULE]]]
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title Documentation of the module [[[MODULE]]][[[#define? AUTHOR=Peter Verhas]]]
+@author [[[AUTHOR]]]
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+[[[SourceFile [[[FILE]]] ]]]

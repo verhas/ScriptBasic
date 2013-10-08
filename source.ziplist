@@ -1,0 +1,14 @@
+; List of source files to zip into the source distribution
+*.c
+*h
+commands\*.c
+commands\*.h
+Makefile.nt
+build.txt
+*.def
+*.pl
+*.bat
+*.cmd
+*.sdd
+scriba.conf.lsp
+extensions

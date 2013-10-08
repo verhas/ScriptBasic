@@ -1,0 +1,6 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=curl]]]
+[[[#define FILE=curlintrfc.c]]]
+
+[[[#include skeleton.jim]]]

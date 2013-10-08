@@ -1,0 +1,394 @@
+CC=gcc
+LDOPTIONS=-shared
+LD=ld
+CCFLAGS=-DCYGWIN=1
+CFLAGSS=-DSTATIC_LINK=1 -DCYGWIN=1
+LIBS=
+OBJS=builder.o conftree.o dynlolib.o execute.o\
+     expression.o filesys.o getopt.o lexer.o match.o\
+     memory.o myalloc.o options.o reader.o report.o sym.o\
+     syntax.o errcodes.o hookers.o modumana.o extops.o\
+     uniqfnam.o epreproc.o md5.o ipreproc.o scriba.o
+COBJS=environ.o external.o file.o function.o goto.o\
+      if.o let.o mathfunc.o mathops.o print.o\
+      string.o time.o while.o logger.o thread.o hndlptr.o\
+      mygmtime.o basext.o
+CHEADERS=command.h errcodes.h report.h sym.h\
+         lexer.h expression.h builder.h memory.h\
+         syntax.h execute.h syntax.h myalloc.h filesys.h ipreproc.h prepext.h\
+         options.h uniqfnam.h
+
+.PHONY: headers clean install all
+
+all: headers scriba cftc cgi.so hash.so re.so libscriba.a sbhttpd ux.so mt.so basic.conf gd.so zlib.so mysql.so dbg.so
+
+deb: all
+	sh mkdeb.sh
+
+dpkg: deb
+	echo "Next time type: make deb"
+
+install: all
+	sh install.sh
+
+sourcepack : clean
+	rm -rf scriba-1.0b`cat build.txt`
+	mkdir scriba-1.0b`cat build.txt`
+	ls -1|grep -v scriba-1.0b`cat build.txt` >tmp
+	cp -R `cat tmp` scriba-1.0b`cat build.txt`
+	rm tmp
+	tar czf scriba-v1.0b`cat build.txt`-source.tar.gz scriba-1.0b`cat build.txt`
+	rm -rf scriba-1.0b`cat build.txt`
+
+rpm: sourcepack
+	cp scriba-v1.0b`cat build.txt`-source.tar.gz /usr/src/redhat/SOURCES
+	perl scriba-rpm.pl
+	rpm -ba /usr/src/redhat/SPECS/scriba-rpm.spec
+
+clean :
+	rm -f *.a *.so *.o *.h syntax.c errcodes.c ./scriba ./sbhttpd ./cftc
+	rm -rf deb/scriba/*
+	rm -f deb/*.deb
+	rm -f `find . -name \*.lib -print`
+	rm -f `find . -name \*.dll -print`
+	rm -f `find . -name \*.exe -print`
+	rm -f `find . -name \*.cmd -print`
+	rm -f `find . -name \*.bat -print`
+	rm -f `find . -name \*.zip -print`
+	rm -f `find . -name \*.gz  -print`
+	rm -f `find . -name \*.tar -print`
+	rm -f `find . -name \*.aux -print`
+	rm -f `find . -name \*.dvi -print`
+	rm -f `find . -name \*.ps  -print`
+	rm -f `find . -name \*.tex -print`
+	rm -f `find . -name \*.toc -print`
+	rm -f `find . -name \*.exp -print`
+	rm -f `find . -name \*.bbf -print`
+	rm -f `find . -name \*.bkg -print`
+	rm -f `find . -name \*.obj -print`
+	rm -f `find . -name \*.ps -print`
+	rm -f `find . -name \*.jar -print`
+	rm -f `find . -name \*.tex -print`
+	rm -f `find . -name \*.h_bas -print`
+	rm -f `find . -name \*.pbt -print`
+	rm -f `find . -name \*.log -print`
+	rm -f `find . -name \*.c_ -print`
+	rm -f `find . -name \*~ -print`
+	rm -f `find . -name \*.thtml -print`
+	rm -rf `find . -name \*Debug\* -print`
+	rm -rf `find . -name \*imDebug\* -print`
+	rm -rf `find . -name \*Release\* -print`
+	rm -rf `find . -name \*imRelease\* -print`
+	rm -f *.conf
+	rm -rf gif
+	rm -rf html
+	rm -rf filesdoc
+	rm -rf extensions/japi/reference
+	rm -rf extensions/japi/c-examples
+	rm -f Makefile.nt
+	rm -f Makefile.OSF
+
+headers : *.c extensions/cgi/cgi.c errcodes.c
+	perl syntaxer.pl
+	perl headerer.pl *.c extensions/cgi/cgi.c errcodes.c
+
+scriba	: $(OBJS) $(COBJS) scribacmd.o lmt_none.o
+	$(CC) -o $@ $(LIBS) $(OBJS) $(COBJS) scribacmd.o lmt_none.o
+	strip scriba.exe
+	./scriba -v
+
+sbhttpd	: $(OBJS) $(COBJS) httpd.o websrv.o lmt_httpd.o cgi.o s_cgiinterface.o s_mt.o
+	$(CC) -o $@ $(LIBS) $(OBJS) $(COBJS) httpd.o websrv.o lmt_httpd.o cgi.o s_cgiinterface.o s_mt.o
+	strip sbhttpd
+
+# --------------------------------------------------------------------
+#
+# STATIC LINK MODULE LIST TABLE FILES
+#
+# --------------------------------------------------------------------
+lmt_none.c : lmt_none.def
+	perl lmt_make.pl $?
+
+lmt_httpd.c : lmt_httpd.def
+	perl lmt_make.pl $?
+
+cftc : cftc.o confpile.o conftree.o lsp.o
+	$(CC) -o $@ $(LIBS) cftc.o confpile.o conftree.o lsp.o
+
+cftc.o : cftc.c
+	$(CC) $(CCFLAGS) -c -o $@ cftc.c
+
+confpile.o : confpile.c
+	$(CC) $(CCFLAGS) -c -o $@ confpile.c
+
+ipreproc.o : ipreproc.c
+	$(CC) $(CCFLAGS) -c -o $@ ipreproc.c
+
+lsp.o : lsp.c
+	$(CC) $(CCFLAGS) -c -o $@ lsp.c
+
+hash.so : hash.o
+	$(LD) $(LDOPTIONS) -o $@ hash.o -lc
+
+re.so : reinterf.o regcomp.o regerror.o regexec.o regfree.o
+	$(LD) $(LDOPTIONS) -o $@ reinterf.o regcomp.o regerror.o regexec.o regfree.o -lc
+
+ux.so : ux.o
+	$(LD) $(LDOPTIONS) -o $@ ux.o -lc
+
+cgi.so : cgi.o cgiinterface.o
+	$(LD) $(LDOPTIONS) -o $@ cgi.o cgiinterface.o -lc
+
+libscriba.a : $(OBJS) $(COBJS) libscriba.o lmt_none.o
+	ar -r libscriba.a $(OBJS) $(COBJS) libscriba.o lmt_none.o
+
+scribacmd.o : variations/standard/scribacmd.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CCFLAGS) -c -o $@ variations/standard/scribacmd.c
+
+websrv.o : variations/httpd/websrv.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CCFLAGS) -c -o $@ variations/httpd/websrv.c
+
+libscriba.o : variations/standalone/libscriba.c getopt.h report.h\
+             lexer.h sym.h expression.h syntax.h reader.h myalloc.h\
+             builder.h memory.h execute.h buildnum.h conftree.h\
+             filesys.h 
+	$(CC) $(CCFLAGS) -c -o $@ variations/standalone/libscriba.c
+
+hash.o : extensions/hash/hash.c 
+	$(CC) $(CFLAGS) -c -o $@ extensions/hash/hash.c
+
+s_hash.o : extensions/hash/hash.c 
+	$(CC) $(CFLAGSS) -c -o $@ extensions/hash/hash.c
+
+reinterf.o : extensions/re/reinterf.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/re/reinterf.c
+
+s_reinterf.o : extensions/re/reinterf.c
+	$(CC) $(CFLAGSS) -c -o $@ extensions/re/reinterf.c
+
+regcomp.o : extensions/re/hsregex/regcomp.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/re/hsregex/regcomp.c
+
+regerror.o : extensions/re/hsregex/regerror.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/re/hsregex/regerror.c
+
+regexec.o : extensions/re/hsregex/regexec.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/re/hsregex/regexec.c
+
+regfree.o : extensions/re/hsregex/regfree.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/re/hsregex/regfree.c
+
+cgi.o : extensions/cgi/cgi.c extensions/cgi/cgi.h
+	$(CC) $(CFLAGS) -c -o $@ extensions/cgi/cgi.c
+
+ux.o : extensions/ux/ux.c
+	$(CC) $(CFLAGS) -c -o $@  extensions/ux/ux.c
+
+s_ux.o : extensions/ux/ux.c
+	$(CC) $(CFLAGSS) -c -o $@  extensions/ux/ux.c
+
+cgiinterface.o : extensions/cgi/cginterf.c extensions/cgi/cgi.h
+	$(CC) $(CFLAGS) -c -o $@ extensions/cgi/cginterf.c
+
+s_cgiinterface.o : extensions/cgi/cginterf.c extensions/cgi/cgi.h
+	$(CC) $(CFLAGSS) -c -o $@ extensions/cgi/cginterf.c
+
+scriba.o : scriba.c
+	$(CC) $(CCFLAGS) -c -o $@ scriba.c
+
+builder.o : builder.c filesys.h report.h lexer.h sym.h\
+            expression.h myalloc.h builder.h errcodes.h buildnum.h
+	$(CC) $(CCFLAGS) -c -o $@ builder.c
+
+lmt_none.o : lmt_none.c
+	$(CC) $(CCFLAGS) -c -o $@ lmt_none.c
+
+lmt_httpd.o : lmt_httpd.c
+	$(CC) $(CCFLAGS) -c -o $@ lmt_httpd.c
+
+conftree.o : conftree.c conftree.h errcodes.h filesys.h
+	$(CC) $(CCFLAGS) -c -o $@ conftree.c
+
+dynlolib.o : dynlolib.c
+	$(CC) $(CCFLAGS) -c -o $@ dynlolib.c
+
+execute.o : execute.c sym.h errcodes.h report.h lexer.h\
+            expression.h builder.h memory.h syntax.h execute.h myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ execute.c
+
+expression.o : expression.c errcodes.h report.h lexer.h\
+               sym.h expression.h myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ expression.c
+
+filesys.o : filesys.c filesys.h errcodes.h
+	$(CC) $(CCFLAGS) -c -o $@ filesys.c
+
+httpd.o : httpd.c httpd.h
+	$(CC) $(CCFLAGS) -c -o $@ httpd.c
+
+getopt.o : getopt.c
+	$(CC) $(CCFLAGS) -c -o $@ getopt.c
+
+lexer.o : lexer.c errcodes.h report.h lexer.h
+	$(CC) $(CCFLAGS) -c -o $@ lexer.c
+
+match.o : match.c match.h errcodes.h
+	$(CC) $(CCFLAGS) -c -o $@ match.c
+
+logger.o : logger.c logger.h
+	$(CC) $(CCFLAGS) -c -o $@ logger.c
+
+mygmtime.o : mygmtime.c mygmtime.h
+	$(CC) $(CCFLAGS) -c -o $@ mygmtime.c
+
+thread.o : thread.c thread.h
+	$(CC) $(CCFLAGS) -c -o $@ thread.c
+
+hndlptr.o : hndlptr.c hndlptr.h
+	$(CC) $(CCFLAGS) -c -o $@ hndlptr.c
+
+memory.o : memory.c errcodes.h memory.h myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ memory.c
+
+modumana.o : modumana.c basext.h sym.h errcodes.h report.h lexer.h expression.h\
+	     builder.h memory.h syntax.h execute.h myalloc.h\
+	     dynlolib.h modumana.h
+	$(CC) $(CCFLAGS) -c -o $@ modumana.c
+
+hookers.o : hookers.c basext.h sym.h errcodes.h report.h lexer.h\
+	    expression.h builder.h memory.h syntax.h execute.h\
+	    myalloc.h dynlolib.h hookers.h
+	$(CC) $(CCFLAGS) -c -o $@ hookers.c
+
+myalloc.o : myalloc.c myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ myalloc.c
+
+epreproc.o : epreproc.c epreproc.h myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ epreproc.c
+
+options.o : options.c sym.h errcodes.h report.h lexer.h\
+            expression.h builder.h memory.h syntax.h execute.h myalloc.h
+	$(CC) $(CCFLAGS) -c -o $@ options.c
+
+reader.o : reader.c filesys.h report.h errcodes.h conftree.h reader.h
+	$(CC) $(CCFLAGS) -c -o $@ reader.c
+
+report.o : report.c report.h errcodes.h
+	$(CC) $(CCFLAGS) -c -o $@ report.c
+
+sym.o : sym.c sym.h
+	$(CC) $(CCFLAGS) -c -o $@ sym.c
+
+basext.o : basext.c basext.h
+	$(CC) $(CCFLAGS) -c -o $@ basext.c
+
+uniqfnam.o : uniqfnam.c uniqfnam.h
+	$(CC) $(CCFLAGS) -c -o $@ uniqfnam.c
+
+md5.o : tools/md5.c tools/md5.h tools/global.h
+	$(CC) $(CCFLAGS) -c -o $@ tools/md5.c
+
+errcodes.c : errors.def
+	perl generrh.pl
+
+errcodes.o : errcodes.c errcodes.h
+	$(CC) $(CCFLAGS) -c -o $@ errcodes.c
+
+syntax.h : syntax.c
+	perl headerer.pl syntax.c
+
+syntax.c : syntax.def
+	perl syntaxer.pl
+
+syntax.o : syntax.c report.h lexer.h sym.h expression.h syntax.h
+	$(CC) $(CCFLAGS) -c -o $@ syntax.c
+
+command.h : command.c
+	perl headerer.pl command.c
+
+extops.o : commands/extops.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/extops.c
+
+environ.o : commands/environ.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/environ.c
+
+external.o : commands/external.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/external.c
+
+file.o : commands/file.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/file.c
+
+function.o : commands/function.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/function.c
+
+goto.o : commands/goto.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/goto.c
+
+if.o : commands/if.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/if.c
+
+let.o : commands/let.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/let.c
+
+mathfunc.o : commands/mathfunc.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/mathfunc.c
+
+mathops.o : commands/mathops.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/mathops.c
+
+print.o : commands/print.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/print.c
+
+string.o : commands/string.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/string.c
+
+time.o : commands/time.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/time.c
+
+while.o : commands/while.c $(CHEADERS)
+	$(CC) $(CCFLAGS) -c -o $@ commands/while.c
+
+mt.so : mt.o
+	$(LD) $(LDOPTIONS) -o $@ mt.o
+
+mt.o : extensions/mt/mt.c
+	$(CC) $(CFLAGS) -c -o $@ extensions/mt/mt.c
+
+s_mt.o : extensions/mt/mt.c
+	$(CC) $(CFLAGSS) -c -o $@ extensions/mt/mt.c
+
+#
+# Preprocessor objects
+#
+dbg.o : preproc/dbg/dbg.c preproc/dbg/dbg.h preproc/dbg/dbg_comm.h
+	$(CC) $(CFLAGS) -c -o $@ preproc/dbg/dbg.c
+
+dbg_con.o : preproc/dbg/dbg_con.c preproc/dbg/dbg.h preproc/dbg/dbg_comm.h
+	$(CC) $(CFLAGS) -c -o $@ preproc/dbg/dbg_con.c
+
+gd.so : extensions/gd/gdinterf.c
+	$(CC) -shared -o $@ extensions/gd/gdinterf.c -lc -lpng -lz -lgd
+
+zlib.so : extensions/zlib/zlib.c
+	$(CC) -shared -o $@ extensions/zlib/zlib.c -lc -lz
+
+# The currently available version in Debian is 3.22 therefore this
+# macro is defined to compile the interface program for the version 3.22
+mysqlinterf.o : extensions/mysql/mysqlinterf.c
+	$(CC) -c -o $@ -DVERSION323=0 extensions/mysql/mysqlinterf.c
+
+mysql.so : mysqlinterf.o
+	$(LD) $(LDOPTIONS) -o $@ mysqlinterf.o -lc -lmysqlclient
+
+dbg.so : dbg.o dbg_con.o
+	$(LD) $(LDOPTIONS) -o $@ dbg.o dbg_con.o -lc
+
+basic.conf : scriba.conf.unix.lsp cftc
+	./cftc scriba.conf.unix.lsp $@
+

@@ -1,0 +1,24 @@
+' Demo executing program interactively
+ConfigDir = CONF("include")
+LastBS = INSTRREV(ConfigDir,"\\",len(ConfigDir)-1)
+if IsDefined(LastBS) then
+  ConfigDir = MID$(ConfigDir,1,LastBS)
+end if
+if RIGHT$(ConfigDir,1) <> "\\" then ConfigDir &= "\\"
+ConfigFile = ConfigDir & "scriba.conf.txt"
+print """This program will compile your modified configuration.
+You can compile and install any configuration file from the
+command line using the ScriptBasic command line option '-k',
+for example:
+               """
+print "scriba -k " & ConfigFile
+print """
+Press any key to continue..."""
+line input ProgramLine$
+ExitCode = Execute("scriba -k " & ConfigFile , -1 , pid)
+print """
+The configuration file was compiled. The new configuration file will
+be loaded next time ScriptBasic starts. You may consider restarting
+the Eszter SB Application Engine using the Services Contol Panel Applet.
+Press any key to continue...\n"""
+line input a$

@@ -1,0 +1,1149 @@
+%file index.html
+{#sep/<%/%>}
+<%#define POPUPWINDOWSIZE='width=550,height=650,scrollbars=yes,resizable=yes'%>
+<%#define TABLEBGCOLOR="WHITE"%><%@comment "#B0AA8E"%>
+<%#define TABLEHEADERBGCOLOR="WHITE"%><%@comment "#B0AA8E"%>
+<%#define HTMLBGCOLOR="WHITE"%><%@comment "#C7C1A7"%>
+<%#define FontFace=Verdana%>
+<%#define FontSize=2%>
+<%#define SetFont=<FONT FACE="<%FontFace%>" size="<%FontSize%>">%>
+<%#define EndFont=</FONT>%>
+<%@define START/X/YY=
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
+<title><%#if|YY|YY|X%></title>
+</HEAD>
+<BODY BGCOLOR=<%HTMLBGCOLOR%>>
+<%SetFont%>
+<H1>X</H1>
+%>
+<%#define END=<HR>
+<FONT SIZE="1">
+<a href="sibawa.bas">[Home]</A>
+<a href="logout.bas">[Log Out]</A>
+<A HREF="javascript:void window.open('chpass.bas','_blank',<%POPUPWINDOWSIZE%>)">[Change Password]</A>
+</FONT>
+<%EndFont%>
+</BODY>
+</HTML>
+%>
+<%#define POPUPEND=<HR>
+<FONT FACE="<%FontFace%>" SIZE="1">
+<a OnClick="window.close()" href="">[Close This Window]</A>
+</FONT>
+<%EndFont%>
+</BODY>
+</HTML>
+%>
+
+<%#define TD/X=<TD BGCOLOR=<%TABLEBGCOLOR%> VALIGN="TOP"><%SetFont%>X<%EndFont%></TD>%>
+<%#define TDR/X=<TD BGCOLOR=<%TABLEBGCOLOR%> ALIGN="RIGHT"><%SetFont%>X<%EndFont%></TD>%>
+<%#define TH/X=<TH><%SetFont%><B>X</B><%EndFont%></TH>%>
+
+<%#define tt/X=<FONT SIZE="3" FACE="Courier New"><TT>X</TT></FONT>%>
+<%#define Ttt/X=<FONT SIZE="7" FACE="Courier New"><TT>X</TT></FONT>%>
+<%#define pre/X=<pre><FONT SIZE="3" FACE="Courier New">X</FONT></pre>%>
+<%#define ADMINTABLETD/X=<TD BGCOLOR=<%TABLEBGCOLOR%> width="30%"><%SetFont%>X<%EndFont%></TD>%>\
+<%#define ADMINTABLETH/X=<TH BGCOLOR=<%TABLEBGCOLOR%> width="30%"><%SetFont%>X<%EndFont%></TH>%>\
+<%#define DESCRIBE/X=<FONT SIZE="1">X</FONT>%>
+<%#define INPUTSTYLECSSTEXT="font-family: Courier New; font-size: 10pt; border-width: 1px; border-style: solid; border-color: black; cursor: crosshair"%>
+<%#define SELECTSTYLECSSTEXT="font-family: Courier New; font-size: 10pt; border-width: 1px; border-style: solid; border-color: black; cursor: crosshair"%>
+<%#define CHECKBOXSTYLECSSTEXT="margin: -2px -1px -2px -1px; cursor: crosshair"%>
+<%#define SUBMITSTYLECSSTEXT="width: 400px; font-family: Courier New; font-size: 10pt; border-width: 1px; border-style: solid; border-color: black; background-color: white; cursor: hand"%>
+<%#define PasswordField/X=<INPUT TYPE="PASSWORD" NAME="X" VALUE="" STYLE=<%INPUTSTYLECSSTEXT%>>%>
+<%#define InputField/NAMEP/VALUEP=<INPUT TYPE="TEXT" NAME="NAMEP" VALUE="VALUEP" STYLE=<%INPUTSTYLECSSTEXT%>>%>
+<%#define InputFieldEx/NAMEP/VALUEP/SIZEP/MAXLENGTHP=<INPUT TYPE="TEXT" NAME="NAMEP" VALUE="VALUEP" SIZE="SIZEP" MAXLENGTH="MAXLENGTHP" STYLE=<%INPUTSTYLECSSTEXT%>>%>
+<%#define TABLE=<TABLE>%>
+<%#define SubmitButton/X=<INPUT TYPE="SUBMIT" VALUE="X" STYLE=<%SUBMITSTYLECSSTEXT%>>%>
+%file index.html
+<%START
+SIBAWA start%>
+This is the SIBAWA start screen.<P>
+<%END%>
+%file logout.html
+<%START
+Log Out%>
+You are successfully logged out of the application. For 100% safety we recommend that you close your browser.
+<%END%>
+%file nopriv.html
+<%START
+No privilege%>
+No privilege to perform the desired operation
+<%END%>
+
+
+%dir chpass
+%file requestpage.html
+<%START
+Change Password%>
+Using this page you can change the password you use in the SIBAWA system. To change the password, specify your old password, and the desired new password. To ensure that you set the new password to the word you really want, you are requested to type the desired new password twice.
+<FORM METHOD="POST" NAME="CHPASS" ACTION="chpass.bas">
+<%TABLE%>
+<TR>
+<%TD Old password:%><%TD <%PasswordField oldpassword%> %>
+</TR>
+<TR>
+<%TD New password:%><%TD <%PasswordField newpassword%> %>
+</TR>
+<TR>
+<%TD Verify new password:%><%TD <%PasswordField verpassword%> %>
+</TR>
+</TABLE>
+<%SubmitButton Press This Button To Change Password!%>
+
+</FORM>
+<%POPUPEND%>
+%file badoldpw.html
+<%START
+Wrong Old Password%>
+You tried to change your password, but could not because you specified a wrong password as the current one.
+<P>
+To change your password you have to specify your current password in the field named "<%tt Old password%>". The password you have specified in this field is not your old password.
+<P>
+Now you can either <A HREF="chpass.bas">click on this link</A> to try again, or close this window and ask the help of the system manager.
+<%POPUPEND%>
+%file mismatch.html
+<%START
+Mismatch in Password%>
+You tried to change your password, but could not because you specified two different words as a new password.
+<P>
+To change your password you have to specify the desired new password twice. Once in the field named "<%tt New password%>" and repeat the same word again in the field named "<%tt Verify new password%>". This ensures that you do not set a secret word as your password that even you do not know.
+<P>
+Now you can either <A HREF="chpass.bas">click on this link</A> to try again, or close this window and ask the help of the system manager.
+<%POPUPEND%>
+%file success.html
+<%START
+Success%>
+You have successfully altered your password.
+<P>
+<FONT COLOR="RED">
+Note that the password change is already committed. Therefore the next page appearing after pressing any link or button in the SIBAWA application will ask your newly set password. This is because the browser remembers the password that you used successfully to log in last time. Now that your password is changing that password is not valid anymore. Use your new password to authenticate yourself!
+</FONT>
+<P>
+Close this window using the link on the bottom.
+<%POPUPEND%>
+%dir admin
+%file userlisthead.html
+<%START
+List of Users%>
+<P>
+<a href="newuser.bas">Create new user</A><BR>
+<A HREF="listusers.bas">Refresh this page</A>
+<%TABLE%>
+<TR>
+<%ADMINTABLETH id%>\
+<%ADMINTABLETH Real Name%>\
+<%ADMINTABLETH Privileges%>
+<TR>
+%file userlistline.html
+<TR>
+<%ADMINTABLETD <A HREF="javascript:void window.open('edituser.bas?user=<!--NAME-->','_blank',<%POPUPWINDOWSIZE%>)"><!--NAME--></a>%>
+<%ADMINTABLETD <!--REALNAME-->%>
+<%ADMINTABLETD <!--PRIV-->%>
+</TR>
+%file userlisttail.html
+</TABLE>
+<p>
+<A HREF="listusers.bas">Refresh this page</A>
+<%END%>
+%file edituserhead.html
+<%START
+Edit User: <%Ttt <!--NAME-->%>
+Edit User: <!--NAME-->%>
+<%DESCRIBE
+You can alter parameters of the user account <!--NAME--> using this form.
+You can not change the name of the user and thus you can not create a new user
+using this form. You should check the checkbox if you want to change the password
+of a user. To change the password you have to type the password twice to ensure that
+the specified password is the one you really wanted. To specify privileges type the
+names of the privileges comma separated without spaces case sensitive. To select or deselect
+a group the user is member of press the control key, hold it and click on the name of the group
+to change selection. After finished with the settings press the button. To delete the user press
+the lower button after the delete checkbox was checked.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="setuser.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<INPUT TYPE="CHECKBOX" NAME="setpassword" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>>check this box to alter password
+<%TABLE%>
+<TR>
+<%TD New password:%><%TD <%PasswordField newpassword%> %>
+</TR>
+<TR>
+<%TD Verify new password:%><%TD <%PasswordField verpassword%> %>
+</TR>
+<TR>
+<%TD Real name:%><%TD <%InputField realname <!--REALNAME-->%> %>
+</TR>
+<TR>
+<%TD Privileges:%><%TD <%InputField priv <!--PRIV-->%> %>
+</TR>
+<TR>
+<%TD ACL:%><%TD <%InputField acl <!--ACL-->%> %>
+</TR>
+<TR>
+<%TD Owner:%><%TD <%InputField owner <!--OWNER-->%> %>
+</TR>
+<TR>
+<%TD Groups:%><%TD
+<SELECT NAME="groups" SIZE="5" MULTIPLE STYLE=<%SELECTSTYLECSSTEXT%>>
+%file edituserse.html
+<OPTION VALUE="<!--ID-->"<!--SELECTED-->><!--NAME-->
+%file editusertail.html
+</SELECT>
+%></TR>
+</TABLE>
+<%SubmitButton Press  This  Button To  Alter  User  Values!%>
+</FORM>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="deluser.bas">
+
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<INPUT TYPE="CHECKBOX" NAME="surecheck" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>> check this box to delete the user account before pressing the button
+<%SubmitButton Press This Button To Delete User Account!%>
+</FORM>
+
+<%POPUPEND%>
+%file editnouser.html
+<%START
+No Such User%>
+There is no user with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file setnouser.html
+<%START
+No Such User%>
+There is no user with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file mismatch.html
+<%START
+Mismatch in Password%>
+You tried to change the password of the user, but could not because you specified two different words as a new password.
+<P>
+To change the password you have to specify the desired new password twice. Once in the field named "<%tt New password%>" and repeat the same word again in the field named "<%tt Verify new password%>". This ensures that you do not set a secret word as the password that even you do not know.
+<P>
+Now you can either <A HREF="edituser.bas?user=<!--NAME-->">click on this link</A> to try again, or close this window and ask the help of the system manager.
+<%POPUPEND%>
+%file setuser.html
+<%START
+User Properties Have Been Changed%>
+Properties for the user <%tt <!--NAME-->%> have been changed.
+<P>
+The new properties are:
+<%pre
+Name:            <!--NAME-->
+Password:        ************
+Real name:       <!--REALNAME-->
+Privileges:      <!--PRIV-->
+%>
+Now after closing this window you may still see the old values on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file index.html
+<%START
+SIBAWA start%>
+This is the SIBAWA admin start screen.<P>
+<UL>
+
+<LI><B STYLE="width: 70px">USER</B><a href="newuser.bas">create</A> <a href="listusers.bas">list</A>
+<LI><B STYLE="width: 70px">GROUP</B><a href="newgroup.bas">create</A> <a href="listgroups.bas">list</A>
+<LI><B STYLE="width: 70px">ROLE</B><a href="newrole.bas">create</A> <a href="listroles.bas">list</A>
+<LI><B STYLE="width: 70px">ACL</B><a href="newacl.bas">create</A> <a href="listacls.bas">list</A>
+<LI><B STYLE="width: 70px">ACL TYPE</B><a href="newacltype.bas">create</A> <a href="listacltypes.bas">list</A>
+</UL>
+<%END%>
+%file newuser.html
+<%START
+Create New User Account%>
+Using this form, you can create a new user account.
+<P>
+<%DESCRIBE
+Before starting to create a new user ensure that the <%tt Name%> is not used by any already existing user account. Using this form you can not alter the
+account parameters of an already existing account. To set the password you have to specify the password twice to ensure that the specified password is the one you really wanted. 
+To specify privileges list the desired user privileges comma separated without spaces.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="adduser.bas">
+<%TABLE%>
+<TR>
+<%TD Name:%><%TD <%InputField|name|%> %>
+</TR><TR>
+<%TD New password:%><%TD <%PasswordField newpassword%> %>
+<TR>
+<%TD Verify new password:%><%TD <%PasswordField verpassword%> %>
+<TR>
+<%TD Real name:%><%TD <%InputField|realname|%> %>
+<TR>
+<%TD Privileges:%><%TD <%InputField|priv|%> %>
+</TR>
+<TR>
+<%TD Acl:%><%TD <%InputField|acl|%> %>
+</TR>
+<TR>
+<%TD Owner:%><%TD <%InputField|owner|%> %>
+</TR>
+</TABLE>
+<%SubmitButton Press This Button To Create the New User!%>
+
+</FORM>
+<%END%>
+%file nosuser.html
+<%START
+No such User%>
+You tried to create a new account and you specified <!--NAME--> as the name of the owner. However there is no-one with that name.
+<P>
+Now you can either 
+<ul>
+<li>click on the browser "back" button or 
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file nosacl.html
+<%START
+No such ACL%>
+You tried to create a new user account and you specified <!--ACL--> as the name of the ACL that is going to govern the access to this user account. However there is no ACL with that name in the system.
+<P>
+Now you can either 
+<ul>
+<li>click on the browser "back" button or 
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file mismatchnew.html
+<%START
+Mismatch in Password%>
+You tried to set the password, but could not because you specified two different words as a new password.
+<P>
+To change your password you have to specify the desired new password twice. Once in the field named "<%tt New password%>" and repeat the same word again in the field named "<%tt Verify new password%>". This ensures that you do not set a secret word as your password that even you do not know.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newuser.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file userexists.html
+<%START
+User already exist%>
+You tried to create a user, but there is already a user account with this name.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newuser.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listusers.bas">click on this link</A> to have a view of the already existing users or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file adduser.html
+<%START
+User was added%>
+The user was added to the system with the following parameters:
+<p>
+<%pre
+Name:            <!--NAME-->
+Password:        ************
+Real name:       <!--REALNAME-->
+Privileges:      <!--PRIV-->
+%>
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newuser.bas">click on this link</A> to add a new user or
+<li>follow one of the links below.
+</ul>
+<%END%>
+%file deluser.html
+<%START
+User Deleted%>
+The user account<%tt <!--NAME-->%> has been deleted.
+<P>
+Now after closing this window you may still see the user listed on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file suredelete.html
+<%START
+User NOT Deleted%>
+The user account <%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the user, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the user or you still want to alter some parameters <a href="edituser.bas?user=<!--NAME-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file suregdelete.html
+<%START
+Group NOT Deleted%>
+The group <%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the user, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the group or you still want to alter some parameters <a href="edituser.bas?user=<!--NAME-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file saredelete.html
+<%START
+ACL NOT Deleted%>
+The ACL <%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the ACL, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the ACL or you still want to alter some parameters <a href="editacl.bas?acl=<!--NAME-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file grouplisthead.html
+<%START
+List of groups%>
+<P>
+<A HREF="newgroup.bas">Create new group</A><BR>
+<A HREF="listgroups.bas">Refresh this page</A>
+<%TABLE%>
+<TR>
+<%ADMINTABLETH id%>\
+<%ADMINTABLETH Description%>
+<TR>
+%file grouplistline.html
+<TR>
+<%ADMINTABLETD <A HREF="javascript:void window.open('editgroup.bas?group=<!--ID-->','_blank',<%POPUPWINDOWSIZE%>)"><!--NAME--></a>%>
+<%ADMINTABLETD <!--DESCRIPTION-->%>
+</TR>
+%file grouplisttail.html
+</TABLE>
+<p>
+<A HREF="listgroups.bas">Refresh this page</A>
+<%END%>
+%file newgroup.html
+<%START
+Create New User Account%>
+Using this form, you can create a new user group.
+<P>
+<%DESCRIBE
+Before starting to create a new group ensure that the name is not used by any already existing group.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="addgroup.bas">
+<%TABLE%>
+<TR>
+<%TD Name:%><%TD <%InputField|name|%> %>
+</TR>
+<TR>
+<%TD Description:%><%TD <%InputField|description|%> %>
+</TR>
+<TR>
+<%TD Acl:%><%TD <%InputField|acl|%> %>
+</TR>
+<TR>
+<%TD Owner:%><%TD <%InputField|owner|%> %>
+</TR>
+</TABLE>
+<%SubmitButton Press This Button To Create the New Group!%>
+</FORM>
+<%END%>
+%file addgroup.html
+<%START
+Group was added%>
+The group was added to the system with the following parameters:
+<p>
+<%pre
+Name:            <!--NAME-->
+Description:     <!--DESCRIPTION-->
+%>
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newgroup.bas">click on this link</A> to add a new group or
+<li>follow one of the links below.
+</ul>
+<%END%>
+%file delgroup.html
+<%START
+Group Deleted%>
+The group <%tt <!--NAME-->%> has been deleted.
+<P>
+Now after closing this window you may still see the group listed on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file suredelete.html
+<%START
+User NOT Deleted%>
+The user account<%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the user, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the user or you still want to alter some <a href="edituser.bas?user=<!--NAME-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file groupexists.html
+<%START
+Group already exist%>
+You tried to create a group, but there is already a group with this name.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newgroup.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listgroups.bas">click on this link</A> to have a view of the already existing groups or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file editgrouphead.html
+<%START
+Edit Group <%Ttt <!--NAME-->%>
+Edit Group <!--NAME-->%>
+<%DESCRIBE
+You can alter parameters of the group <!--NAME--> using this form.
+You can not change the name of the group and thus you can not create a new group
+using this form. To select or deselect
+a users being member of the group press the control key, hold it and click on the name of the user
+to change selection. After finished with the settings press the button. To delete the group press
+the lower button after the delete checkbox was checked.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="setgroup.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<%TABLE%>
+<TR>
+<%TD Description:%><%TD <%InputField|description|<!--DESCRIPTION-->%> %>
+</TR>
+<TR>
+<%TD Acl:%><%TD <%InputField|acl|<!--ACL-->%> %>
+</TR>
+<TR>
+<%TD Owner:%><%TD <%InputField|owner|<!--OWNER-->%> %>
+</TR>
+<TR><%TD Members:%><%TD <SELECT NAME="members" SIZE="10" MULTIPLE STYLE=<%SELECTSTYLECSSTEXT%>>
+%file editgroupse.html
+<OPTION VALUE="<!--ID-->"<!--SELECTED-->><!--NAME-->
+%file editgrouptail.html
+</SELECT>%></TR>
+</TABLE>
+<%SubmitButton Press  This  Button To  Alter  Group  Values!%>
+</FORM>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="delgroup.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<INPUT TYPE="CHECKBOX" NAME="surecheck" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>> check this box to delete the group before pressing the button
+<%SubmitButton Press This Button To Delete Group!%>
+</FORM>
+<%POPUPEND%>
+%file editnogroup.html
+<%START
+No Such group%>
+There is no group with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file setnogroup.html
+<%START
+No Such group%>
+There is no group with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file mismatch.html
+<%START
+Mismatch in Password%>
+You tried to change the password of the group, but could not because you specified two different words as a new password.
+<P>
+To change the password you have to specify the desired new password twice. Once in the field named "<%tt New password%>" and repeat the same word again in the field named "<%tt Verify new password%>". This ensures that you do not set a secret word as the password that even you do not know.
+<P>
+Now you can either <A HREF="editgroup.bas?group=<!--NAME-->">click on this link</A> to try again, or close this window and ask the help of the system manager.
+<%POPUPEND%>
+%file setgroup.html
+<%START
+group Properties Have Been Changed%>
+Properties for the group <%tt <!--NAME-->%> have been changed.
+<P>
+The new properties are:
+<%pre
+Description: <!--DESCRIPTION-->
+%>
+Now after closing this window you may still see the old values on the original window listing the groups. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file delnouser.html
+<%START
+No Such User%>
+There is no user with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file delnogroup.html
+<%START
+No Such Group%>
+There is no group with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file delnoacl.html
+<%START
+No Such ACL%>
+There is no ACL with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file newacl.html
+<%START
+Create New Access Control List%>
+Using this form, you can create a new Access Control List.
+<P>
+<%DESCRIBE
+
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="addacl.bas">
+<%TABLE%>
+<TR>
+<%TD Name:%><%TD <%InputField|name|%> %>
+</TR><TR>
+<%TD Description:%><%TD <%InputField|description|%> %>
+</TR><TR>
+<%TD ACL:%><%TD <%InputField acl%> %>
+</TR><TR>
+<%TD Owner:%><%TD <%InputField owner%> %>
+</TR>
+<TR>
+<%TD ACL Type:%><%TD <%InputField acltype%> %>
+</TR>
+</TABLE>
+<%SubmitButton Press This Button To Create the New ACL!%>
+</FORM>
+<%END%>
+%file aclexists.html
+<%START
+The Access Control List already exist%>
+You tried to create a new access control list (ACL), but there is already an ACL with this name.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacl.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listacls.bas">click on this link</A> to have a view of the already existing ACLs or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file aclnoacl.html
+<%START
+There is no such ACL%>
+You tried to create a new access control list (ACL) with specifying <!--ACL--> as the ACL that governs access to the new ACL. However this ACL does not exist.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacl.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listacls.bas">click on this link</A> to have a view of the already existing ACLs or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file aclnoacltype.html
+<%START
+There is no such ACL type%>
+You tried to create a new access control list (ACL) with specifying <!--ACLTYPE--> as the ACL type. However this ACL type does not exist.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacl.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listacltypes.bas">click on this link</A> to have a view of the already existing ACL types or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file editnoacltype.html
+<%START
+There is no such ACL type%>
+You tried to edit an access control list type with specifying <!--ID--> as the ID of the ACL type. However there is no such ACL type with this ID.
+<P>
+Now you can either 
+<ul>
+<li>or click on the browser "back" button or 
+<li><A HREF="listacltypes.bas">click on this link</A> to have a view of the already existing ACL types or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file addacl.html
+<%START
+ACL was added%>
+The ACL was added to the system with the following parameters:
+<p>
+<%pre
+Name:            <!--NAME-->
+Description:     <!--DESCRIPTION-->
+Owner:           <!--OWNER-->
+Acl:             <!--ACL-->
+Acl Type:        <!--ACLTYPE-->
+%>
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacl.bas">click on this link</A> to add a new acl or
+<li>follow one of the links below.
+</ul>
+<%END%>
+%file acllisthead.html
+<%START
+List of acls%>
+<P>
+<A HREF="newacl.bas">Create new ACL</A><BR>
+<A HREF="listacls.bas">Refresh this page</A>
+<%TABLE%>
+<TR>
+<%ADMINTABLETH id%>\
+<%ADMINTABLETH Description%>\
+<%ADMINTABLETH acl%>
+<%ADMINTABLETH acl type%>
+<TR>
+%file acllistline.html
+<TR>
+<%ADMINTABLETD <A HREF="javascript:void window.open('editacl.bas?acl=<!--NAME-->','_blank',<%POPUPWINDOWSIZE%>)"><!--NAME--></a>%>
+<%ADMINTABLETD <!--DESCRIPTION-->%>
+<%ADMINTABLETD <!--ACLNAME-->%>
+<%ADMINTABLETD <!--ACLTYPE-->%>
+</TR>
+%file acllisttail.html
+</TABLE>
+<p>
+<A HREF="listacls.bas">Refresh this page</A>
+<%END%>
+%file editaclhead.html
+<%START
+Edit acl: <%Ttt <!--ACLNAME-->%>
+Edit acl: <!--ACLNAME-->%>
+<%DESCRIBE
+You can alter paramateres of the acl <!--ACLNAME--> using this form.
+To delete the acl press the lower button after the delete checkbox was checked.
+To delete an ACE from the list delete the characters in the ACE value and submit the form.
+To set permissions you can use the following keywords:
+%><DIV STYLE="BORDER: solid black 1px; MARGIN: 3px; PADDING: 3px"><CENTER>
+%file editaclkw.html
+<A HREF="javascript:void window.open('descacltbit.bas?bit=<!--BIT-->&acltypeid=<!--ACLTYPEID-->','_blank',<%POPUPWINDOWSIZE%>)"><!--KEYWORD--></A>
+%file descaclbit.html
+<%START
+ACL <!--NAME--> bit <!--BITNAME--> description
+%>
+The keyword <%tt <!--BITNAME-->%> in this ACL type means
+<BR>
+<i>
+<!--BITDESCRIPTION-->
+</i>.
+<%POPUPEND%>
+%file editaclthead.html
+</CENTER></DIV>
+<%DESCRIBE
+You should list the needed permission keywords comma separated. Optional <%tt +%> preceeding the keyword means "allowed",
+<%tt -%> preceeding the keyword means "denied".
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="setacl.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--ACLNAME-->">\
+<%TABLE%>
+<TR>
+<%TD Id:%><%TD <%tt <!--ID-->%>
+</TR>
+<TR>
+<%TD Description:%><%TD <%InputField description <!--DESCRIPTION-->%>%>
+</TR>
+<TR>
+<%TD ACL:%><%TD <%InputField aclaclname <!--ACLACLNAME-->%>\
+<INPUT TYPE="HIDDEN" NAME="haclaclname" VALUE="<!--ACLACLNAME-->">%>
+<INPUT NAME="n" TYPE="HIDDEN" VALUE="<!--N-->">%>
+</TR>
+<TR>
+<%TD Owner:%><%TD <%InputField owner <!--OWNER-->%> %>
+</TR>
+<TR>
+<%TD Type:%><%TD <%InputField acltype <!--ACLTYPE-->%>\
+<INPUT TYPE="HIDDEN" NAME="hacltype" VALUE="<!--ACLTYPE-->">%>
+</TR>
+<TR>
+<%TD ACEs:%><%TD ACE value%>
+%file editaclseu.html
+<TR>
+<%TD U:<!--NAME-->&nbsp;%><%TD <INPUT TYPE="hidden" NAME="aceid<!--I-->" VALUE="<!--ID-->">\
+<INPUT NAME="haceval<!--I-->" TYPE="HIDDEN" VALUE="<!--HACEVAL-->">\
+<%InputFieldEx aceval<!--I--> <!--ACEVAL--> 33 32%>
+%>
+</TR>
+%file editaclseg.html
+<TR>
+<%TD G:<!--NAME-->&nbsp;%><%TD <INPUT TYPE="hidden" NAME="aceid<!--I-->" VALUE="<!--ID-->">\
+<INPUT NAME="haceval<!--I-->" TYPE="HIDDEN" VALUE="<!--HACEVAL-->">\
+<%InputFieldEx aceval<!--I--> <!--ACEVAL--> 33 32%>
+%>
+</TR>
+%file editaclser.html
+<TR>
+<%TD R:<!--NAME-->&nbsp;%><%TD <INPUT TYPE="hidden" NAME="aceid<!--I-->" VALUE="<!--ID-->">\
+<INPUT NAME="haceval<!--I-->" TYPE="HIDDEN" VALUE="<!--HACEVAL-->">\
+<%InputFieldEx aceval<!--I--> <!--ACEVAL--> 33 32%>
+%>
+</TR>
+%file editacltail.html
+<TR>
+<TD COLSPAN="2"><%SetFont%>
+<INPUT TYPE="RADIO" NAME="isuser" VALUE="0" CHECKED> group
+<INPUT TYPE="RADIO" NAME="isuser" VALUE="1"> user
+<INPUT TYPE="RADIO" NAME="isuser" VALUE="2"> role
+<FONT SIZE="1">list of
+<A HREF="javascript:void window.open('listgroups.bas','_blank',<%POPUPWINDOWSIZE%>)">[groups]</A>
+<A HREF="javascript:void window.open('listusers.bas','_blank',<%POPUPWINDOWSIZE%>)">[users]</A>
+<A HREF="javascript:void window.open('listroles.bas','_blank',<%POPUPWINDOWSIZE%>)">[roles]</A>
+in separate window
+</FONT>
+<%EndFont%>
+</TD>
+</TR>
+<TR>
+<%TD <%InputField guname%> %><%TD 
+<%InputFieldEx aceval<!--I--> <!--ACEVAL--> 33 32%>
+%>
+</TR>
+</TABLE>
+<%SubmitButton Press  This  Button To  Alter  acl  Values!%>
+</FORM>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="delacl.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<%SetFont%><FONT SIZE=1"><INPUT TYPE="CHECKBOX" NAME="surecheck" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>> check this box to delete the acl account before pressing the button</FONT><%EndFont%>
+<%SubmitButton Press This Button To Delete acl Account!%>
+</FORM>
+<%POPUPEND%>
+<%#define ACLPOPUPEND=<P>
+The ACL <!--ACLNAME--> was not modified. To retry the modification of the ACL <a href="editacl.bas?acl=<!--ACLNAME-->">follow this link</A>.
+<%POPUPEND%> %>
+%file badaceval.html
+<%START
+Bady formatted ACE string%>
+The ACE string is bad formatted:
+<P>
+<DIV STYLE="BORDER: solid black 1px; PADDING: 3px">
+<%tt <!--BADACEVAL-->%>
+</DIV>
+<P>
+The allowed value is comma separated list of permission keywords. Each keyword can be preceeded by a "-" sign to denote that the permission is denied from the user, group or role, and optionally can be preceeded by a "+" sign to allow the permission.
+
+<%ACLPOPUPEND%>
+%file editnoacl.html
+<%START
+No Such acl%>
+There is no acl with the name <%tt <!--NAME-->%>.
+<%ACLPOPUPEND%>
+%file setnoacl.html
+<%START
+No Such Acl%>
+There is no acl with the name <%tt <!--NAME-->%>.
+<%ACLPOPUPEND%>
+%file setaclnon.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt n%> is missing.
+<%ACLPOPUPEND%>
+%file setaclnohacevali.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt haceval<!--I-->%> is missing.
+<%ACLPOPUPEND%>
+%file setaclnoacevali.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt aceval<!--I-->%> is missing.
+<%ACLPOPUPEND%>
+%file setaclnoisuser.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt isuser%> is missing.
+<%ACLPOPUPEND%>
+%file noaclacl.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt <!--NAME-->%> is nonexistent ACL and as such can not be specified as an ACL controlling the access to this acl.
+<%ACLPOPUPEND%>
+%file noacltype.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt <!--NAME-->%> is nonexistent ACL type and as such can not be specified as the type of this acl.
+<%ACLPOPUPEND%>
+%file setaclnoaceid.html
+<%START
+Error in data%>
+The data sent by the for is erroneous. <%tt aceid<!--I-->%> is missing.
+<%ACLPOPUPEND%>
+%file setaclnosuser.html
+<%START
+No such user%>
+The altered ACL contained and extra ACE referencing the user <!--NAME-->. However
+there is no such user.
+<%ACLPOPUPEND%>
+%file setaclnosrole.html
+<%START
+No such role%>
+The altered ACL contained and extra ACE referencing the role <!--NAME-->. However
+there is no such role.
+<%ACLPOPUPEND%>
+%file setaclnosgroup.html
+<%START
+No such user%>
+The altered ACL contained and extra ACE referencing the group <!--NAME-->. However
+there is no such group.
+<%ACLPOPUPEND%>
+%file setacl.html
+<%START
+Acl was modified%>
+The ACL <!--NAME--> was modified. Now you can <A HREF="editacl.bas?acl=<!--NAME-->">follow this link</A> to edit further the ACL or follow the link below to close this window.
+<%POPUPEND%>
+%file delacl.html
+<%START
+ACL Deleted%>
+The ACL <%tt <!--NAME-->%> has been deleted.
+<P>
+Now after closing this window you may still see the user listed on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file rolelisthead.html
+<%START
+List of roles%>
+<P>
+<A HREF="newrole.bas">Create new role</A><BR>
+<A HREF="listroles.bas">Refresh this page</A>
+<TABLE BORDER="0">
+<TR>
+<%ADMINTABLETH id%>\
+<%ADMINTABLETH Description%>
+<TR>
+%file rolelistline.html
+<TR>
+<%ADMINTABLETD <A HREF="javascript:void window.open('editrole.bas?role=<!--ID-->','_blank',<%POPUPWINDOWSIZE%>)"><!--NAME--></a>%>
+<%ADMINTABLETD <!--DESCRIPTION-->%>
+</TR>
+%file rolelisttail.html
+</TABLE>
+<p>
+<A HREF="listroles.bas">Refresh this page</A>
+<%END%>
+
+%file newrole.html
+<%START
+Create Role%>
+Using this form, you can create a new role.
+<P>
+<%DESCRIBE
+Before starting to create a new role ensure that the name is not used by any already existing role.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="addrole.bas">
+<TABLE BORDER="0">
+<TR>
+<%TD Name:%><%TD <%InputField name%> %>
+</TR><TR>
+<%TD Description:%><%TD <%InputField description%> %>
+</TR>
+</TABLE>
+<%SubmitButton Press This Button To Create the New Role!%>
+</FORM>
+<%END%>
+%file addrole.html
+<%START
+Role was added%>
+The role was added to the system with the following parameters:
+<p>
+<%pre
+Name:            <!--NAME-->
+Description:     <!--DESCRIPTION-->
+%>
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newrole.bas">click on this link</A> to add a new role or
+<li>follow one of the links below.
+</ul>
+<%END%>
+%file delrole.html
+<%START
+Role Deleted%>
+The role <%tt <!--NAME-->%> has been deleted.
+<P>
+Now after closing this window you may still see the role listed on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file suroledelete.html
+<%START
+Role NOT Deleted%>
+The role <%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the role, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the role or you still want to alter some <a href="editrole.bas?role=<!--NAME-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file roleexists.html
+<%START
+Role already exist%>
+You tried to create a role, but there is already a role with this name.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newrole.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listroles.bas">click on this link</A> to have a view of the already existing roles or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file editrole.html
+<%START
+Edit role <%Ttt <!--NAME-->%>
+Edit role <!--NAME-->%>
+<%DESCRIBE
+You can alter parameters of the role <!--NAME--> using this form.
+You can not change the name of the role and thus you can not create a new role
+using this form. To delete the role press the lower button after the delete checkbox was checked.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="setrole.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<TABLE><TR><%TD
+Description:%><%TD <%InputField|description|<!--DESCRIPTION-->%> %></TR>
+</TABLE>
+<%SubmitButton Press  This  Button To  Alter  Role  Values!%>
+</FORM>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="delrole.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<FONT SIZE="1"><INPUT TYPE="CHECKBOX" NAME="surecheck" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>> check this box to delete the role before pressing the button</FONT>
+<%SubmitButton Press This Button To Delete Role!%>
+</FORM>
+<%POPUPEND%>
+%file setrole.html
+<%START
+Role Properties Have Been Changed%>
+Properties for the role <%tt <!--NAME-->%> have been changed.
+<P>
+The new properties are:
+<%pre
+Description: <!--DESCRIPTION-->
+%>
+Now after closing this window you may still see the old values on the original window listing the groups. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+
+
+
+
+
+%file acltypelisthead.html
+<%START
+List of ACL types%>
+<P>
+<A HREF="newacltype.bas">Create new ACL type</A><BR>
+<A HREF="listacltypes.bas">Refresh this page</A>
+<TABLE BORDER="0">
+<TR>
+<%ADMINTABLETH id%>\
+<%ADMINTABLETH Description%>
+<TR>
+%file acltypelistline.html
+<TR>
+<%ADMINTABLETD <A HREF="javascript:void window.open('editacltype.bas?acltype=<!--ID-->','_blank',<%POPUPWINDOWSIZE%>)"><!--NAME--></a>%>
+<%ADMINTABLETD <!--DESCRIPTION-->%>
+</TR>
+%file acltypelisttail.html
+</TABLE>
+<p>
+<A HREF="listacltypes.bas">Refresh this page</A>
+<%END%>
+%file newacltype.html
+<%START
+Create ACL Type%>
+Using this form, you can create a new ACL type.
+<P>
+<%DESCRIBE
+Before starting to create a new acltype ensure that the name is not used by any already existing acltype.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="addacltype.bas">
+<%SubmitButton Press This Button To Create the New acltype!%>
+<TABLE BORDER="0">
+<TR>
+<%TD Name:%><%TD <%InputField name%> %>
+</TR><TR>
+<%TD Description:%><%TD <%InputField description%> %>
+</TR>
+<%#for XXX/1..32/
+<TR>
+<%TD BitXXX:%><%TD <%InputFieldEx|bitXXX||17|16%> %>
+</TR>
+<TR>
+<%TD DescriptionXXX:%><%TD <%InputFieldEx|descriptionXXX||40|255%> %>
+</TR>
+%>
+</TABLE>
+<%SubmitButton Press This Button To Create the New acltype!%>
+</FORM>
+<%END%>
+%file addacltype.html
+<%START
+acltype was added%>
+The acltype was added to the system with the following parameters:
+<p>
+<%pre
+Name:            <!--NAME-->
+Description:     <!--DESCRIPTION-->
+%>
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacltype.bas">click on this link</A> to add a new acltype or
+<li>follow one of the links below.
+</ul>
+<%END%>
+%file delacltype.html
+<%START
+acltype Deleted%>
+The acltype <%tt <!--NAME-->%> has been deleted.
+<P>
+Now after closing this window you may still see the acltype listed on the original window listing the users. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file suacltypedelete.html
+<%START
+acltype NOT Deleted%>
+The acltype <%tt <!--NAME-->%> has NOT been deleted.
+<P>
+This is because you did not check the box above the delete button. In case you did not want to delete the acltype, but accidentally pressed the wrong button, you understand why there is the checkbox. If you really wanted to delete the acltype or you still want to alter some <a href="editacltype.bas?acltype=<!--ID-->">click on this link</A> to go back to the previous page.
+<%POPUPEND%>
+%file acltypeexists.html
+<%START
+acltype already exist%>
+You tried to create a acltype, but there is already a acltype with this name.
+<P>
+Now you can either 
+<ul>
+<li><A HREF="newacltype.bas">click on this link</A> to try again,
+<li>or click on the browser "back" button or 
+<li><A HREF="listacltypes.bas">click on this link</A> to have a view of the already existing acltypes or
+<li>ask the help of the system manager.
+</ul>
+In this latter case you may be in trouble if this is you.
+<%END%>
+%file editacltype.html
+<%START
+Edit acltype <%Ttt <!--NAME-->%>
+Edit acltype <!--NAME-->%>
+<%DESCRIBE
+You can alter parameters of the acltype <!--NAME--> using this form.
+You can not change the name of the acltype and thus you can not create a new acltype
+using this form. To delete the acltype press the lower button after the delete checkbox was checked.
+%>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="setacltype.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<%SubmitButton Press  This  Button To  Alter  acltype  Values!%>
+<TABLE><TR><%TD
+Description:%><%TD <%InputField|description|<!--DESCRIPTION-->%> %></TR>
+<%#for XXX/1..32/
+<TR>
+<%TD BitXXX:%><%TD <%InputFieldEx|bitXXX|<!--BITXXX-->|17|16%> %>
+</TR>
+<TR>
+<%TD DescriptionXXX:%><%TD <%InputFieldEx|descriptionXXX|<!--descriptionXXX-->|40|255%> %>
+</TR>
+%>
+</TABLE>
+<%SubmitButton Press  This  Button To  Alter  acltype  Values!%>
+</FORM>
+<FORM METHOD="POST" NAME="CHPASS" ACTION="delacltype.bas">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--NAME-->">\
+<FONT SIZE="1"><INPUT TYPE="CHECKBOX" NAME="surecheck" VALUE="1" STYLE=<%CHECKBOXSTYLECSSTEXT%>> check this box to delete the acltype before pressing the button</FONT>
+<%SubmitButton Press This Button To Delete acltype!%>
+</FORM>
+<%POPUPEND%>
+%file setacltype.html
+<%START
+acltype Properties Have Been Changed%>
+Properties for the acltype <%tt <!--NAME-->%> have been changed.
+<P>
+The new properties are:
+<%pre
+Description: <!--DESCRIPTION-->
+%>
+Now after closing this window you may still see the old values on the original window listing the groups. To see the new values you have to refresh the page in the browser.
+<%POPUPEND%>
+%file delnoacltype.html
+<%START
+No Such ACL type%>
+There is no ACL type with the name <%tt <!--NAME-->%>.
+<%POPUPEND%>
+%file acltypeused.html
+<%START
+ACL type can not be deleted%>
+The ACL type <%tt <!--NAME-->%>. can not be deleted, because there are ACL(s) that use this type. Delete those
+ACls before deleting the ACL type.
+<%POPUPEND%>
+%file noright.html
+<%START
+Not enough right%>
+The current security settiong does not allow to perform this action.
+<%POPUPEND%>
+

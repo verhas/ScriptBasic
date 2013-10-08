@@ -1,0 +1,21 @@
+{@comment
+
+This jamal macro file is included when the UNIX specific makefiles are generated. This macro includes
+make_common.jim to get the common files.
+
+}
+{#define DS=/}
+{#define LibraryExtension=.a}
+{#define DllExtension=.so}
+{#define ObjectExtension=.o}
+{#define ExeExtension=}
+
+{#include make_common.jim}
+
+{@comment define where the extension SOs are generated}
+{#define moddlldir={moddir}dll{DS}}
+
+{@comment OPERATING SYSTEM COMMANDS
+}
+
+{@define mkdir/X=mkdir X || echo }

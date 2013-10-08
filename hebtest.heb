@@ -1,0 +1,12 @@
+<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+This is a sample file containing embedded ScriptBasic code.
+<% for i=1 to 10%>
+<font size="<%=i%>">Font<%=i%></font>
+<%next i%>
+</BODY>
+</HTML>
+
+

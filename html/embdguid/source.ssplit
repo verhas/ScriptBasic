@@ -1,0 +1,38 @@
+%file macros.jim
+{#define ttsize="3"}
+{#define FontFace=Verdana, Arial}
+{#define tt/x=<font size={ttsize}><tt>x</tt></font>}
+{#define SetFont=<FONT SIZE=2 FACE="{FontFace}" COLOR="BLACK">}
+{#define FRAMECOLOR=#FFAAA5}
+{#define BODYCOLOR=#E26560}
+{#define LINEC=#FFAAA5}
+{#define SEPLINEC=#FD805B}
+{#define ExampleColor=#0000AA}
+{#define Example/file=<table border=0><tr>
+<td width=50 VALIGN=TOP><small><b>Example</B><br>file</small></td><td>
+<table border=1><tr><td width=550 border=1>
+<FONT COLOR="{ExampleColor}"><PRE>
+{@null {#include pre "file"}}
+</PRE></FONT></td></tr></table></td></tr></table>}
+{#define InlineExample/text=<PRE><FONT COLOR="{ExampleColor}">
+text
+</FONT></PRE>}
+{#define START/X=<HTML>
+<HEAD>
+<TITLE>X</TITLE>
+</HEAD>
+<BODY BGCOLOR="{BODYCOLOR}" ALINK="BLACK" LINK="BLUE" VLINK="GREEN">
+<FONT FACE="{FontFace}" SIZE=6 COLOR="BLACK"><B>X</B></FONT>
+<HR align=left>
+<FONT size="2" face="{FontFace}">
+}
+{#define END=</BODY></HTML>}
+
+%file index.html.jam
+{START How to embed/extend ScriptBasic}
+
+This documentation guides you through examples on how to write
+ScriptBasic extensions as well as how to embed ScriptBasic into
+applications.
+
+{END}

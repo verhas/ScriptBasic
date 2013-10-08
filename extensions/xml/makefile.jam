@@ -1,0 +1,23 @@
+{@comment
+Convert this makefile.jam into makefile.vc7, makefile.bcc and to makefile 
+using the setup.pl script configure --module=xml
+}
+{#define MODULE=xml}
+
+all : {CreLib xml} {CreDll xml} {CreTexiDocument}
+
+{#include libraries.jim}
+{CreLib xml} : {CreSObj interface} 
+	{lib} {LibOptOutput {CreLib xml}} {LibOptInput {CreSObj interface}}  {LibNeededLibraryFiles}
+
+{CreDll xml} : {CreObj interface} 
+	{ld} {LdOptOutput {CreDll xml}} {LdOptInput {CreObj interface}} {LdNeededLibraryFiles}
+
+{CreObj interface} : interface.c 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj interface}} {CcOptInput interface.c}
+
+{CreSObj interface} : interface.c 
+	{cc} {CcOptDefine STATIC_LINK=1} {CcOptCompile} {CcOptOutput {CreSObj interface}} {CcOptInput interface.c}
+
+{CompileTexiDoc}
+

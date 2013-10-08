@@ -1,0 +1,13 @@
+#! /usr/bin/perl
+open(F,">build.sh") or die "Can not open build.cmd\n";
+opendir(D,".");
+@f = grep /\.jam$/ , readdir D;
+closedir D;
+for( @f ){
+  print F "jamal -m macros.jim $_ ../../html/";
+  s/\.jam$//;
+  print F "$_\n";
+  print F "echo $_ done\n";
+  }
+close F;
+

@@ -1,0 +1,26 @@
+{@comment
+Convert this makefile.jam into makefile.vc7, makefile.bcc and to makefile 
+using the setup.pl script configure --module=dbg
+}
+{#define MODULE=dbg}
+
+all : {CreLib dbg} {CreDll dbg} {CreTexiDocument}
+
+{#include libraries.jim}
+{CreLib dbg} : {CreObj dbg_con} {CreSObj interface} 
+	{lib} {LibOptOutput {CreLib dbg}} {LibOptInput {CreObj dbg_con}} {LibOptInput {CreSObj interface}}  {LibNeededLibraryFiles}
+
+{CreDll dbg} : {CreObj dbg_con} {CreObj interface} 
+	{ld} {LdOptOutput {CreDll dbg}} {LdOptInput {CreObj dbg_con}} {LdOptInput {CreObj interface}} {LdNeededLibraryFiles}
+
+{CreObj dbg_con} : dbg_con.c dbg.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj dbg_con}} {CcOptInput dbg_con.c}
+
+{CreObj interface} : interface.c dbg_comm.h dbg.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj interface}} {CcOptInput interface.c}
+
+{CreSObj interface} : interface.c dbg_comm.h dbg.h 
+	{cc} {CcOptDefine STATIC_LINK=1} {CcOptCompile} {CcOptOutput {CreSObj interface}} {CcOptInput interface.c}
+
+{CompileTexiDoc}
+

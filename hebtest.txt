@@ -1,0 +1,26 @@
+print """<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+<font face=\"Verdana\">
+This is a sample file containing embedded ScriptBasic code.<p>
+
+I simply love it.
+
+"""
+ for i=1 to 7
+print """
+<font size=\""""
+print i
+print """\">Font """
+print i
+print """</font><br>
+"""
+next i
+print """
+</font>
+</BODY>
+</HTML>
+
+
+"""

@@ -1,0 +1,476 @@
+{#sep/[[[/]]]}
+[[[#use esd]]]
+
+[[[@comment
+The esd jamal package is used to include the source code to convert all
+Special characters to be escaped by texi notation.
+]]]
+
+[[[#esd::command 0 s{\@\@}{SAVEALLDOUBLESOBAKA}g]]]
+[[[#esd::command 1 s{\@}{\@\@}g]]]
+[[[#esd::command 2 s{\{}{\@\{}g]]]
+[[[#esd::command 3 s{\}}{\@\}}g]]]
+[[[#esd::command 4 s{\$}{\@\$}g]]]
+[[[#esd::command X s{SAVEALLDOUBLESOBAKA}{\@\@}g]]]
+
+[[[@define SourceCode/FILENAME=The souce code of the file @file{FILENAME} is:
+@example
+[[[#esd::include ../../FILENAME]]]
+@end example
+]]]
+[[[@define NoSourceCode=The source code of the file is not included in
+this documentation because the file itself is too long for the purpose.]]]
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename auxfiles
+@settitle ScriptBasic development auxilliarry files
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title ScriptBasic development auxilliarry files
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+This documentation describes some of the auxiliary files that were created and are used in the ScriptBasic project. These are UNIX shell scripts, Windows NT command files, Perl programs that ease the maintenance of the developers and automate such tasks as creating a new build.
+
+It is not the intention of the creator of this document to have anyone to read this documentation throughly and to learn its content. This is rather a reference book that helps to understand, which file implements which tool and how to invoke them.
+
+But I do not try to prevent you to read it in case you want.
+
+@chapter Directory Structure
+
+
+ScriptBasic is usually developed on a Windows 2000 Professional workstation. Linux is used to test the portability. Files are uploaded via SMB and @code{GNU} command line tools are used to build the binaries.
+
+The source of ScriptBasic on the development station is  @file{\MyProjects\sb\source}.
+
+The actual location of the source code root should not affect the building of the source.
+
+The directory structure of the source under this directory is the following:
+
+@example
+--- ScriptBasic core C source files,
+    def files, command files,
+    shell scripts, Perl scripts
+
+commands   --- all C source files that implement ScriptBasic commands
+deb        --- Debian package files
+deb/scriba     --- temporary directory that is filled by the script mkdeb.sh when
+                   creating a Debian package
+deb/DEBIAN     --- Debian package script files (source, these are copied into deb/scriba
+                   when building the package)
+examples   --- example BASIC program files
+extensions --- module extension files
+extensions/berkeley_db --- Berkeley DB module
+extensions/cgi         --- CGI module
+extensions/cio         --- Console Input Output module only for Windows NT
+extensions/gd          --- GD module to generate PNG graphics
+extensions/hash        --- hash module
+extensions/japi        --- Interface module to the graphics features of the Java AWT
+extensions/md5         --- md5 module
+extensions/mt          --- Multi-thread support module with session, locks and global variables
+extensions/mysql       --- MySQL interface
+extensions/noprint     --- Example module that switches off printing
+extensions/nt          --- Special Windows NT module
+extensions/re          --- Regular Expression module
+extensions/tools       --- Tools module
+extensions/trial       --- Example module mainly for test purposes
+extensions/ux          --- Special UNIX module
+extensions/zlib        --- zlib compression module
+filesdoc   --- auxilliary source file documentations
+gif        --- banner.gif file
+html       --- web page HTML source using the jamal preprocessor and ssplit.pl
+html/texi              --- texi.jam documentation source files. Should be processed with
+                           jamal.pl first to get texi
+include    --- BASIC include files for the modules
+preproc    --- a sample preprocessor. Note that preprocessor is experimental and will change in future.
+test       --- test programs
+tools      --- tool programs
+variations --- different variations of ScriptBasic
+variations/apacmodu   --- Apache module version of ScriptBasic. This variation was never developed and
+                          this thread of the development is stopped. Instead the httpd variation should
+                          be used together with the Apache web server.
+variations/httpd      --- Standalone web server variation.
+variations/standalone --- Standalone version that allows BASIC compile to C and link together with the
+                          runtime environment.
+variations/standard   --- The standard command line variation.
+variations/win32dll   --- Win32dll version that allows embedding of the program into WIN32 applications.
+                          This thread of the development was stopped and is not supported anymore. There
+                          are plans to support similar variations.
+variations/winisapi   --- Variation that executes web programs as ISAPI application. This version is not
+                          supported any more. Laster it may revitalized.
+@end example
+
+@chapter BASIC programs
+
+In this chapter I list the BASIC programs that are used as utility programs. Note that the BASIC samples are documented in a separate document.
+
+@section heber.bas
+
+This BASIC program is an external preprocessor for ScriptBasic. This demonstrates how simple to write an external preprocessor, as it can even be done in BASIC itself.
+
+This small program converts HTML Embedded BASIC (heb) into pure BASIC. HEB is something like PHP or Microsoft ASP BASIC, where the BASIC code is put between HTML code. This small preprocessor converts the heb file taking all HTML that is outside of the BASIC code and putting it into @code{print} statements, and all BASIC code that is inside HTML code putting outside.
+
+This is a sample implementation and has significant shortages. In case the BASIC program inside some string has @code{<%} or @code{>%} (which is not likely though possible) the preprocessor crates false code.
+
+[[[SourceCode heber.bas]]]
+
+@section newbuild.bas Start a new build
+
+Whenever the development of a new build is started this program has to be executed. This will increase the build number stored in the file T<build.txt> and also creates the file @file{buildnum.c}
+
+[[[SourceCode newbuild.bas]]]
+
+@section cbbfc.bas Convert Basic Binary Format Command
+
+This program reads a ScriptBasic binary format file
+and replaces the leading interpreter specification
+by the one specified by the user.
+
+For example a program was developed on a machine having
+scriba in the directory /usr/bin. The first line of the
+bbf file is then @code{#!/usr/bin/scriba}
+To run this bbf file without having the original source file
+on a machine having scriba on @code{/usr/local/bin} this first line
+has to be replaced. This is not a simple task, because
+the bbf file is binary.
+
+[[[SourceCode cbbfc.bas]]]
+
+@chapter Batch (.CMD) files
+
+These command files can be used to maintain the source files under Windows NT.
+
+@section mkdoc.cmd
+Create the on-line documentation
+
+This batch file creates the on-line documentations
+
+[[[SourceCode mkdoc.cmd]]]
+
+@section mkcdoc.cmd
+
+Create the command reference
+
+This batch file creates the @file{command.html} file that contains the user reference
+documentation of the BASIC commands. The source of the documentation is maintained
+on the C source files that are in the directory @file{commands}. This way the reference
+documentation of a BASIC command is maintained together with the actual C code
+implementing the command.
+
+[[[SourceCode mkcdoc.cmd]]]
+
+@section install.cmd
+
+This command file copies all the generated and documentation files into the root
+directory @file{\ScriptBasic} that belong to the final installation set under Win32.
+
+[[[SourceCode install.cmd]]]
+
+@section makerrs.cmd
+
+This command file creates the files @file{errcodes.c} and @file{errcodes.h} file from the file
+T<errors.def>. The file T<errors.def> contains the error messages in an easy to maintain and
+easy to read format. This bacth file using the Perl script @file{generrh.pl} creates
+the C source files for the error codes.
+
+[[[SourceCode makerrs.cmd]]]
+
+@section mkweb.cmd
+
+This command file compiles the ScriptBasic web content. It has to be executed from the source root directory.
+
+[[[SourceCode mkweb.cmd]]]
+
+@section mksyntax.cmd
+
+This command file runs the Perl script @file{syntaxer.pl} to create the @file{syntax.c} file
+from the file @file{syntax.def}
+
+The syntax definition of the BASIC language is defined in an easy to maintain text
+file named @file{syntax.def} and a Perl script @file{syntaxer.pl} creates the human-unreadable
+C source file from it that contains all the tables that drive the syntax analyzer.
+
+[[[SourceCode mksyntax.cmd]]]
+
+@section precompile.cmd
+
+This command file performs all the tasks that are needed before the C compilation of ScriptBasic
+can start. This is
+
+@itemize
+@item creating the syntax tables from the text T<syntax.def> syntax definition
+@item creating the error codes and T<#define>s
+@item creating the header files from the C source files.
+@end itemize
+
+[[[SourceCode precompile.cmd]]]
+
+@section pack.cmd
+
+This command file compiles all the ScriptBasic package for the Windows NT platform, copies
+the resulting files to the @file{\ScriptBasic} directory and creates the distribution
+ZIP files.
+
+Before releasing a new release this batch file has to be edited to alter the
+@code{%BUILD%} variable for the actual build.
+
+[[[SourceCode pack.cmd	]]]
+@section mksamples.cms
+
+This command file converts a @code{.texi.jam} file in the directory @file{./html/texi} using @file{jamal.pl} to @code{.texi} files and then converts it using the Perl script @xref{t2h.pl} to html files into the directory @file{../html/texi}. The command also starts TeX to convert the texi file to dvi, ps and pdf as well as the Microsoft hhc help compiler to result compiled html file (chm).
+
+Running Jamal may result several @code{.bas} files in the temporary directory. This command file puts them into a @code{tgz} archive and copies to the directory @file{html/texi}.
+
+The command file deletes all auxiliary files when done.
+
+The script has to be executed from the source directory and should get a single argument that is the name of the documentation file without any extension. For example
+
+@example
+call mkth samplebas
+@end example
+
+This command is similar to @xref{mkth.com} except that this file also cares the resulting BASIC sample files.
+
+@section mkth.cmd
+
+This command file converts a @code{.texi.jam} files in the directory @file{./html/texi} using @file{jamal.pl} to @code{.texi} files and then converts it using the Perl script @xref{t2h.pl} to html files into the directory @file{../html/texi}. The command also starts TeX to convert the texi file to dvi, ps and pdf as well as the Microsoft hhc help compiler to result compiled html file (chm). The command file deletes all auxiliary files when done.
+
+The script has to be executed from the source directory and should get a single argument that is the name of the documentation file without any extension. For example
+
+@example
+call mkth auxfiles
+@end example
+
+will convert the file @file{auxfiles.texi.jam} (the source file for this text) to @file{auxfiles_toc.html} and @file{auxfiles_xxx.html} files in the appropriate html directory.
+
+The command file @xref{mkath.cmd} calls this command file for each @code{.texi.jam} file.
+
+[[[SourceCode mkth.cmd]]]
+
+@section mkthl.cmd
+
+This command file should be used the same way as @xref{mkth.cmd}. This command file performs only minimal compilation, running only @file{jamal.pl} and @file{t2h.pl} on the documentation file, but does not run TeX or dviXX or Microsoft help compiler.
+
+This command file is to be used instead of @xref{mkth.cmd} when editing the documentation and there is a need for a fast proof reading, but you do not need all versions of the document.
+
+@section mkath.cmd
+
+This is a simple command script that calls @xref{mkth.cmd} for each @code{.texi.jam} file that
+is in the @file{./html/texi} directory.
+
+[[[SourceCode mkath.cmd]]]
+
+@chapter C source files
+
+The C source files are documented in a separate document in more detail that the scope of this
+document.
+
+@chapter Configuration files
+
+Configuration files in the source package hold default values that are shipped with the
+program. Each "setuper" has to edit the configuration file according to the
+local needs and recompile it using @file{cftc.exe} or @file{cftc} (UNIX).
+
+There are two configuration files currently in the source:
+
+@itemize
+@item @file{scriba.conf.lsp} configuration source file in LSP format for WIN32 setup
+@item @file{scriba.conf.unix.lsp} configuration source file in LSP format for UNIX (Debian Linux setup)
+@end itemize
+
+@chapter Definition files
+
+This chapter lists the definition files. These files are used to have a maintainable format instead of complex C syntax. The definition files have simple syntax and are converted into C source file.
+
+@section errors.def
+
+This file contains the error constant definitions. This file is converted to C source file using the Perl script @file{generrh.pl}
+
+[[[NoSourceCode]]]
+
+@section syntax.def
+
+This file contains the syntax definition of the language ScriptBasic. This syntax definition is converted to C source file containing syntax definition tables using the Perl script
+@file{syntaxer.pl}.
+
+[[[SourceCode syntax.def]]]
+
+@section source.ziplist
+
+List of files and extensions to include into the source distribution
+of ScriptBasic WIN32 distribution.
+
+[[[SourceCode source.ziplist]]]
+
+@section source.exziplist
+
+List of files and extensions to exclude from the source distribution
+of ScriptBasic WIN32 distribution.
+
+[[[SourceCode source.exziplist]]]
+
+
+@chapter Perl files
+
+The Perl program used to automate the code maintenance are listed in this chapter.
+
+@section ssplit.pl
+
+This file splits the file @file{html/source.txt} into several Jamal files. This file is called from @xref{mkweb.pl}
+
+[[[SourceCode ssplit.pl]]]
+
+@section mkweb.pl
+
+This Perl script is invoked by @xref{mkweb.cmd} and it executes several Jamal processes for the web jamal files.
+
+[[[SourceCode mkweb.pl]]]
+
+@section convert.pl
+
+This small utility opens all files in the current directory and below recursively and converts the files to contain UNIX line-feeds. This is needed when the files are copied from a DOS development station to UNIX via SMB.
+
+[[[SourceCode convert.pl]]]
+
+@section esd2html.pl
+
+Create on-line documentation based on SDD files. This program was NOT developed for ScriptBasic. This is a general purpose source documentation package that was developed first for the Perl language but turned out to be useful for other languages like C.
+
+This tool is not going to be used anymore for the documentation of ScriptBasic. However you can still find the old definition files in the source tree and some source code may still contain old esd formatted documentation.
+
+[[[NoSourceCode]]]
+
+@section generrh.pl
+
+This script reads the files @file{errors.def}, @file{build.txt} and creates the files @file{errcodes.c} and @file{include/error.bas}
+
+The file @file{errors.def} contains the used error symbols in an easy to maintain text format.
+
+
+[[[SourceCode generrh.pl]]]
+
+@section headerer.pl
+
+This Perl script reads the C source files one-by-one that are given on the command line and extracts the header information from the C file and creates the @file{.h} files.
+
+Note that in case the C file was not changed and thus the new header file is the same as the old one the program does not touch the header file and this way it does not force and @code{make} utility to recompile the source useless.
+
+[[[SourceCode headerer.pl]]]
+
+@section heber.pl
+
+Html Embedded Basic sample preprocessor.
+
+[[[SourceCode heber.pl]]]
+
+@section mkcdoc.pl
+
+Extract the BASIC command reference documentation from the C source files that are in the
+C source file in the directory @file{commands}
+
+[[[SourceCode mkcdoc.pl]]]
+
+@section syntaxer.pl
+
+Read the file @file{syntax.def} and create the file @file{syntax.c} converting the syntax definition
+from an easy to read and maintain format to C source file.
+
+[[[NoSourceCode]]]
+
+@section preparedeb.pl
+
+This Perl script alters the @file{deb/DEBIAN/control} file so that it contains the actual
+build version.
+
+[[[SourceCode preparedeb.pl]]]
+
+@section lmt_make.pl
+
+This perl script reads a file named @file{lmt_XXX.def} and creates the file @file{lmt_XXX.c}
+to help the linking of the external modules into ScriptBasic static.
+
+[[[SourceCode lmt_make.pl]]]
+
+@section t2h.pl
+
+A special purpose texi-to-html converter used to document ScriptBasic.
+
+[[[NoSourceCode]]]
+
+@section jamal.pl
+
+The jamal preprocessor.
+
+[[[NoSourceCode]]]
+
+@chapter UNIX Shell scripts
+
+This chapter lists the UNIX shell scripts that are used to automate the code maintenance under the UNIX version of ScriptBasic.
+
+@section install.sh
+
+This script copies the compiled files to the installation directory and sets the
+various permissions. You have to be root to run this script. This is used by 
+@file{Makefile}
+
+[[[SourceCode install.sh]]]
+
+@section convert.sh
+
+Converts @file{convert.pl} to the UNIX CR/LF convention and then runs it to convert all the
+files. You have to execute this script after you have uploaded to source files froma Win32
+workstation to a UNIX machine and have all the files with the wrong CR/LF line termination.
+
+[[[SourceCode convert.sh]]]
+
+@section uncr
+
+A simple Perl script that converts @code{stdin} to @code{stdout} CR/LF to UNIX LF. This file
+is a one liner thus there is no CR/LF issue when this file is
+transferred.
+
+Actually @xref{convert.sh} converts @file{convert.pl} using this Perl script and then
+@file{convert.pl} converts the uploaded files safely.
+
+[[[SourceCode uncr]]]
+
+@section mkdeb.sh
+
+This shell script (used by @file{Makefile}) cleans the directory @file{deb} and then copies all
+neccessary files, sets permissions and starts @code{dpkg} to create a Debian package of
+ScriptBasic.
+
+[[[SourceCode mkdeb.sh]]]
+
+@section Makefile
+
+Well, the Debian Linux Makefile to create ScriptBasic binaries.
+
+Use, like:
+
+@itemize
+
+@item
+@code{make all} to create all the binaries
+
+@item
+@code{make deb} to create Debian package.
+
+@end itemize
+
+[[[SourceCode Makefile]]]

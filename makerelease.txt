@@ -1,0 +1,33 @@
+This documentation describes how to compile a new relase of scriba on the development environment.
+The purpose of this file is to help the development engineer to perform the genration of the
+release package and to minimize errors. This file does not intended to describe the release
+process in detail, this is only a remainder. 
+
+This file is not intended to be part of the release package.
+
+1. Check the build version in build.txt. If neccessary run scriba newbuild.bas
+2. Run precompile.bat in the directory "source".
+3. Start Visual C++ V6.0, select the project build all and compile the release version binaries.
+   Run the test programs.
+4. Create scriba_exe.zip using WinZIP. Copy the files cgi.dll, scriba.exe, scriba.lib and scriba.dll
+5. Create scriba_source.zip using WinZIP. Copy all files into this ZIP from under the directory
+   source. Remove the header and other unneccesary files from the ZIP.
+6. Copy the source files with ftp to the Tru64 UNIX development station.
+7. Run 'sh convert.sh' then run 'make all'
+8. Run the test scripts.
+9. Remove the header files, the generated executable and all other unneccesary files.
+10. Create scriba.tar saying 'tar c * > ../scriba.tar' (Linux)  tar cf - * > ../scriba.tar (Tru64 UNIX)
+11. Run 'make all' again to test that no neccessary file was deleted before creating the tar file.
+12. gzip the tar file.
+13. Edit the HTML jamal source files if neccessary.
+14. Run the make.cmd in the directory "source\html"
+15. Copy the doc files into directory 'html'.
+16. Open the doc files and convert each to HTML and text format.
+16.a Copy all modified and new ppt files and real audio files to the directory 'html'.
+16.b Save all modified and new ppt files as html.
+17. Copy the directories HTML, DOC, the zip files to the UNIX development station.
+17.a Remove the huge real audio files that were not modified since last upload.
+18. Create the upload.tar.gz file putting all files into this archive.
+19. Upload the file upload.tar.gz to the web server and extract it.
+
+p.v.c September 25, 1999.

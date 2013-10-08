@@ -1,0 +1,447 @@
+{#sep/[[[/]]]}
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename mod_bdb
+@settitle Using the module MySQL
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title Using the module MySQL
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+
+@chapter Introduction
+
+
+This document describes how to install and use the module MySQL.
+
+There are separate documents that describe the language (Users’ Guide), the major architecture of the source code (Source Guide).
+
+This document describes the version 1.0 of the module.
+
+Document version: 4.0
+
+The module MySQL allows ScriptBasic programmers to connect to MySQL database and to execute SQL commands. The module allow access to almost all the functionality that the MySQL native C interface provides. You can connect to a database, execute SQL command, disconnect, but also execute administration commands like @code{mysql::kill} that kills a query thread on the server in case you have privilege.
+
+@chapter Installing the module
+
+The module comes in source form or as compiled binary. Binary is usually available for the Win32 platforms only. The compilation of the source code is simple. Compile the source files to a .dll or to .so shared library. To do so you will find an install.sh command file in the UNIX distribution of ScriptBasic in the directory extensions/mysql. To execute this command file you have to have root privileges and have to type:
+
+@example
+sh install.sh
+@end example
+
+The compiled module contains a dynamically load binary file and a basic include file named mysql.bas. The include file mysql.bas should be placed in a module include directory file configured in the configuration file. The configuration file usually named scriba.conf should include a line
+
+@example
+include /etc/scriba/include/
+@end example
+
+defining the include files location for the modules and other generally used include files. The actual directory can be different.
+
+The binary part of the module should be placed in another directory specified in the configuration file, like
+
+@example
+module /usr/scriba/modules/
+@end example
+
+There can be more than one include and module statement in the configuration file. In that case the interpreter searches the directories in the order they are specified until the include file or the module is found.
+
+@subsection While compiling the compiler complains
+
+@example
+mysqlinterf.c:10: mysql.h: No such file or directory
+@end example
+
+Be sure that you have a MySQL client installed on your UNIX. Check that the file @file{mysql.h} is in the directory @file{/usr/include} or in a directory that is specified using the –I option of the compiler. A sample @file{install.sh} file is the following:
+
+@example
+cc -c -I/usr/include/mysql -o mysqlinterf.o mysqlinterf.c
+ld -shared -o mysql.so mysqlinterf.o -lc -lmysqlclient
+mv *.so /etc/scriba/modules
+@end example
+
+@subsection Module can not be loaded
+
+You have an old MySQL installed. ScriptBasic MySQL interface was tested using MySQL v3.23. Older versions do not support @code{mysql_real_escape_string}, @code{mysql_change_user} and @code{mysql_character_set_name} functions. To be able to compile the interface for this older version edit the @code{mysqlinterf.c} file and search the line:
+
+@example
+#define VERSION323 1
+@end example
+
+and change it to
+
+@example
+#define VERSION323 0
+@end example
+
+This will switch off the use of these functions, however be sure that your BASIC program does not use the functions @code{mysql::ChangeUser}, @code{mysql::EscapeString} and @code{mysql::CharacterSetName}.
+
+@chapter Configuration
+
+The module is not configurable currently. However there are plans introducing configuration options and you can also define connections in the configuration file.
+
+The section of the configuration file important for the MySQL module is under the key @code{mysql}. For example:
+
+@example
+mysql (
+  connections (
+    test (        ; the name of the connection
+	  host "127.0.0.1" ; the host for the connection
+	  db "test"   ; database for the connection
+	  user "root" ; user for the connection
+	  password "" ; password for the connection
+	  port 0      ; the port to use
+	  socket ""  ; the name of the socket or ""
+	  flag 0      ; the client flag
+	  )
+    )
+  )
+@end example
+
+This fragment of the configuration file defines a connection that ScriptBasic programs may use. The parameters of the connections are defined in the configuration file and the BASIC program should only refer to it without knowing the actual host, user, password or other parameters. These are matters of configuration. It is also advisable not to include such sensitive information like a password into the BASIC scripts. What is more: later versions of the module loaded by multithreaded version of the interpreter may keep such configured connections alive and reuse them resulting faster database handling.
+
+@chapter Using the module
+
+To use the module the basic program should include the file mysql.bas. To do this the program should contain the line
+
+@example
+include mysql.bas
+@end example
+
+somewhere at the start of the code. Note that there are no double quote characters before and after the file name. This tells the interpreter that the include file is located in a module include directory. This include file contains all the declarations that are needed to use the MySQL functions.
+
+The program using the module should call the functions declared in the include file. The binary library file is loaded when the first function call is executed. 
+
+@section RealConnect
+
+@example
+dbh =
+ mysql::RealConnect(host,user,password,database [,port] [,unixsocketname] [,clientflag])
+@end example
+
+Connect to a database using the real connection parameters. 
+
+@section Connect
+
+@example
+dbh = mysql::Connect(connection)
+@end example
+
+Connect to a database using a named connection. The connection parameters should be configured in the ScriptBasic configuration file.
+
+@section Close
+
+@example
+mysql::Close dbh
+@end example
+
+Close an opened connection. There is no need to call this function, all database connections are automatically closed when the interpreter finishes executing the BASIC script. However it is polite to close a database connection as soon as possible.
+
+@section Query
+
+@example
+mysql::query dbh,query_string
+@end example
+
+Execute a query.
+
+@section FetchArray
+
+@example
+Mysql::FetchArray dbh,arr
+@end example
+
+Get a row from a result set after a query. The row will be placed in the variable @code{arr} as an array each element containing the value of the appropriate column.
+
+@section FetchHash
+
+@example
+mysql::FetchHash dbh, arr
+@end example
+
+Get a row from a result set after a query. The row will be placed in the variable @code{arr} as an associative array. Each column name is associated with the column value of the actual row.
+
+@section AffectedRows
+
+@example
+n = mysql::AffectedRows(dbh)
+@end example
+
+Returns the number of affected rows after executing an @code{INSERT}, @code{DELETE} or similar command.
+
+@section ChangeUser
+
+@example
+mysql::ChangeUser dbh, user,password [,database]
+@end example
+
+Change the actual user on an existing connection. Optionally change the database of the connection also.
+
+@section CharacterSetName
+
+@example
+A$ = mysql::CharacterSetName(dbh)
+@end example
+
+Return the character set name string actually used by the connection.
+
+@section DataSeek
+
+@example
+mysql::DataSeek dbh,n
+@end example
+
+Seek to a certain row of a result set.
+
+@section ErrorMessage
+
+@example
+A$ = mysql::ErrorMessage(dbh)
+@end example
+
+Returns the string describing the last database handling error.
+
+@section GetClientInfo
+
+@example
+A$ = mysql::GetClientInfo()
+@end example
+
+Returns the character string that represents the MySQL client library version. 
+
+
+@section GetHostInfo
+
+@example
+A$ = mysql::GetHostInfo(dbh)
+@end example
+
+Returns a string describing the type of connection in use, including the server host name.
+
+@section GetProtoInfo
+
+@example
+n = mysql::GetProtoInfo(dbh)
+@end example
+
+Returns the protocol version used by current connection. This is an unsigned integer representing the protocol version used by the current connection.
+
+@section GetServerInfo
+
+@example
+A$ = mysql::GetServerInfo(dbh)
+@end example
+
+This function returns a string that represents the server version number. 
+
+@section Info
+
+@example
+A$ = mysql::Info(dbh)
+@end example
+
+This function retrieves a string providing information about the most recently executed query, but only for the statements listed below. For other statements, @code{mysql::Info()} returns @code{undef}. The format of the string varies depending on the type of query, as described below. The numbers are illustrative only; the string will contain values appropriate for the query. 
+
+@example
+INSERT INTO ... SELECT ... 
+String format: Records: 100 Duplicates: 0 Warnings: 0 
+INSERT INTO ... VALUES (...),(...),(...)... 
+String format: Records: 3 Duplicates: 0 Warnings: 0 
+LOAD DATA INFILE ... 
+String format: Records: 1 Deleted: 0 Skipped: 0 Warnings: 0 
+ALTER TABLE 
+String format: Records: 3 Duplicates: 0 Warnings: 0 
+UPDATE 
+String format: Rows matched: 40 Changed: 40 Warnings: 0 
+@end example
+
+Note that @code{mysql::Info()} returns a string value for the @code{INSERT ... VALUES} statement only if multiple value lists are specified in the statement.  Otherwise it returns @code{undef}.
+
+
+@section InsertId
+
+@example
+n = mysql::InsertId(dbh)
+@end example
+
+Returns the ID generated for an @code{AUTO_INCREMENT} column by the previous query. Use this function after you have performed an INSERT query into a table that contains an @code{AUTO_INCREMENT} field.
+
+Note that @code{mysql::InsertId()} returns 0 if the previous query does not generate an @code{AUTO_INCREMENT}value. If you need to save the value for later, be sure to call @code{mysql::InsertId()} immediately after the query that generates the value. 
+
+Also note that the value of the SQL @code{LAST_INSERT_ID()} function always contains the most recently generated @code{AUTO_INCREMENT} value, and is not reset between queries because the value of that function is maintained in the server. 
+
+@section Kill
+
+@example
+mysql::Kill dbh,pid
+@end example
+
+Asks the server to kill the thread specified by the pid.
+
+@section Ping
+
+@example
+n = mysql::Ping(dbh)
+@end example
+
+Checks whether or not the connection to the server is working. If it has gone down, an automatic reconnection is attempted.
+
+Clients that remain idle for a long while, to check whether or not the server has closed the connection and reconnect if necessary can use this function. 
+
+Returns true if the server is alive and false if an error occurred.
+
+@section EscapeString
+
+@example
+A$ = mysql::EscapeString(dbh,string)
+@end example
+
+Encodes the string to an escaped SQL string, taking into account the current charset of the connection, that can be sent to the server in a SQL statement, places the result in to, and adds a terminating null byte. Characters encoded are @code{NUL} (ASCII 0), @code{\n}, @code{\r}, @code{\}, @code{'}, @code{"}, and Control-Z.
+
+@section SelectDatabase
+
+@example
+Mysql::SelectDb dbh,database
+@end example
+
+Causes the database specified by database to become the default (current) database on the connection specified by MySQL. In subsequent queries, this database is the default for table references that do not include an explicit database specifier. 
+
+@section Shutdown
+
+@example
+mysql::Shutdown dbh
+@end example
+
+This function asks the database server to shut down. The connected user must have shutdown privileges.
+
+@section Stat
+
+@example
+A$ = mysql::Stat(dbh)
+@end example
+
+This function returns a character string containing information similar to that provided by the @code{mysqladmin} status command. This includes uptime in seconds and the number of running threads, questions, reloads, and open tables.
+
+@section ThreadId
+
+@example
+n = mysql::ThreadId(dbh)
+@end example
+
+Returns the thread ID of the current connection. This value can be used as an argument to mysq::Kill() to kill the thread.
+
+If the connection is lost and you reconnect with mysql::Ping(), the thread ID will change. This means you should not get the thread ID and store it for later. You should get it when you need it. 
+
+@chapter Sample code
+
+@example
+import mysql.bas
+
+dbh = mysql::Connect("test")
+print "The data base handle is: ",dbh,"\n"
+' mysql::Shutdown dbh
+' print mysql::ErrorMessage(),"\n"
+print mysql::Stat(dbh)
+print
+mysql::query dbh,"delete from users where name='Kakukk'"
+print "Affected rows after delete is: ",mysql::AffectedRows(dbh)
+print
+mysql::query dbh,"insert into users values ('Kakukk',52)"
+print "Affected rows after inserting kakukk: ",mysql::AffectedRows(dbh)
+print
+print "Info is: ",mysql::Info(dbh)
+print
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]," ",q[1]
+print
+wend
+print "Character set name is: ",mysql::CharacterSetName(dbh)
+print
+
+mysql::query dbh,"select * from users order by name desc"
+print "Affected rows after select: ",mysql::AffectedRows(dbh)
+print
+' mysql::DataSeek dbh,1
+' print
+i=0
+while mysql::FetchHash(dbh,q)
+i=i+1
+print i,". "
+print
+print "name=",q{"name"}
+print
+print "age=",q{"age"}
+print
+wend
+
+
+' mysql::DataSeek dbh,0
+on error resume next
+mysql::query dbh,"select * from user"
+print "Last error is: ",mysql::ErrorMessage(dbh)
+print
+print "Client info is: ",mysql::GetClientInfo()
+print
+print "Host info is: ",mysql::GetHostInfo(dbh)
+print
+print "Proto info is: ",mysql::GetProtoInfo(dbh)
+print
+print "Server info is: ",mysql::GetServerInfo(dbh)
+print
+
+mysql::query dbh,"SHOW PROCESSLIST"
+print "Affected rows after show processlistselect: ",mysql::AffectedRows(dbh)
+print
+i=0
+while mysql::fetcharray(dbh,q)
+i=i+1
+print i,". ",q[0]
+' mysql::kill dbh,q[0]
+print
+wend
+print "ping result: ",mysql::Ping(dbh)
+print "haho"
+print
+on error resume next
+mysql::Query dbh,"INSERT INTO autoinc values ('huuuh',null)"
+print mysql::ErrorMessage(dbh)
+print
+print mysql::InsertId(dbh)
+print
+
+print "Thread id=",mysql::ThreadId(dbh)
+print
+mysql::kill dbh, mysql::ThreadId(dbh)
+
+mysql::Close(dbh)
+@end example
+
+@chapter Future development, aims
+
+Later with development of interfaces to other databases (Oracle and PostgreSQL is planned and, well ODBC) there will be a definite need to develop an interface that hides the difference between the databases.
+
+As soon as we are ready with the ScriptBasic daemon engine for fast web applications a new version of this module will be developed that will keep connection pools available and not close and reconnect for each client.
+
+

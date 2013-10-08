@@ -1,0 +1,664 @@
+{#sep/[[[/]]]}\
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename prep_dbg
+@settitle ScriptBasic Users Guide
+@setchapternewpage odd
+@c %**end of header
+
+@ifinfo
+This file contains the texinfo format documentation how to use the ScriptBasic debugger dbg.
+
+Copyright 1999-2001 Peter Verhas
+@end ifinfo
+
+@titlepage
+@title ScriptBasic Debugger Users' Guide
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1999-2001 Peter Verhas
+Published by @code{peter.verhas.com}
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+@chapter Introduction
+
+ScriptBasic debugger @code{dbg} allows programmers to debug BASIC programs. The debugger provides a console interface that can be used to execute a program line, by line, to a specified line, set break points and while in debug mode examine variables.
+
+The debugger can also be used to debug CGI programs utilizing the Eszter SB Application Engine.
+
+@chapter Installing the Preprocessor dbg
+
+Installing the preprocessor is usually not needed as this is automatically installed during ScriptBasic installation. In the following sections I describe how to install it in case something is not working or you want to set up some files differently.
+
+The debugger is implemented as an internal preprocessor. This means that the code of the preprocessor is in a @code{.dll} file under Windows and @code{.so} file under UNIX. Internal preprocessors have to be configured to be invoked by the interpreter.
+
+To do this the file @code{scriba.conf.lsp} has to be modified and recompiled using the program @code{cftc} in case the default configuration does not fit you.
+
+The preprocessors in the configuration file are configured under the key @code{preproc}.
+
+@example
+preproc (
+  internal (
+    dbg "E:\\ScriptBasic\\modules\\dbg.dll"
+    )
+  )
+@end example
+
+This is the configuration file fragment on the development station. This names the preprocessor the name @code{dbg} and specifies the exact location. You can name the debugger different though this would not be wise. In case you rename the debugger you have to invoke it with the option @option{-I newname}.
+
+The debugger requires no other configuration.
+
+
+
+@chapter Using the Debugger
+
+This chapter uses an example program to debug. While we debug the code the sections go through the available commands showing the use by example. Thus the recommended reading is going through the sections one after the other.
+ 
+@section Starting Program Debug from Command Line
+
+To start a program in debug mode you should start the program on the command line with the option @option{-i dbg}. This will load the debugger module into the interpreter before starting to execute the program, and after successful compilation of the code into internal format the execution stops and waits for user intervention.
+
+For example you can say:
+
+@example
+scriba -i debugtest.bas
+@end example
+
+to start the sample program @file{debugtest.bas} in debug mode. ScriptBasic compiles the program into byte-code and gives you a prompt:
+
+@example
+ScriptBasic debugger, executing
+  debugtest.bas
+For help type 'h'
+
+-----------------------------------------------------
+ >001. print "hello\n"
+  002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#_
+@end example
+
+(The @code{_} character shows the place of the blinking cursor.)
+
+The debugger has already listed some of the code around the actual program line. The @code{>} character precedes the line where the execution of the program is waiting.
+
+@section Single Stepping
+
+After you have started the program the most frequent thing you will do is single-step. Single step means executing one line of the BASIC program at a time. To do this press @code{s} and @code{ENTER}. Because this is the command you will issue most frequently it is enough just to press @code{ENTER}.
+
+Now what you see is (also recalling the lines that were already presented in the previous section):
+
+@example
+ScriptBasic debugger, executing
+  debugtest.bas
+For help type 'h'
+
+-----------------------------------------------------
+ >001. print "hello\n"
+  002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#s
+hello
+
+-----------------------------------------------------
+  001. print "hello\n"
+ >002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#_
+@end example
+
+You can see that the program has written to the console @code{hello} that actually came from the BASIC program and a new listing. Notice that the actual line now is the second line and the character @code{>} points this line.
+
+@section Listing Lines
+
+As you could see the debugger lists some of the lines for you around the actual execution point. To be precise the debugger automatically displays five lines before executing any line: two lines before the actual line, the actual line and two lines after. This slightly altered for the first and the last two lines.
+
+Each line contains a serial number. This number identifies the line for the debugger and when you issue a command that should specify a certain line you can use this number. For example issuing the command @code{r 22} will run until the line denoted by the serial number 22 is ready for execution.
+
+This serial number is not necessarily the line number in the source file. This is the serial number of the line inside the program after all @code{#include} and @code{#import} statements were performed.
+
+Sometimes you may want to list other lines. To do this simply issue the command @code{l}. (This is lower case @code{l}, upper case @code{L} lists local variables.)
+
+@example
+#l
+
+-----------------------------------------------------
+  001. print "hello\n"
+ >002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#_
+@end example
+
+As you can see you got the same listing. This seems to be useless, unless you have examined several variables and the original listing was scrolled off and you need another peek at the current lines.
+
+However the command @code{l} is more useful than just this. You can issue an argument to the command specifying the start and the end lines for the listing.
+
+For example:
+
+@example
+#l 2-7
+
+
+-----------------------------------------------------
+ >002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+  006.
+  007. b = t + 2
+
+-----------------------------------------------------
+#_
+@end example
+
+The command @code{l n-m} lists the lines from line @code{n} to line @code{m}. If you omit the start number then the listing will start at the first line. If you omit the end number the listing will go to the end of the program. If you omit both numbers the command will list all the program lines, for example:
+
+@example
+#l -
+
+
+-----------------------------------------------------
+  001. print "hello\n"
+ >002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+  006.
+  007. b = t + 2
+  008. print b
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+  011. print " *"
+  012. end sub
+  013.
+  014. MyFunction a
+  015.
+  016. a = a + 2
+  017.
+  018. MyFunction a
+
+-----------------------------------------------------
+#_
+@end example
+
+@examining Variables
+
+Stepping forward and examining where the program is actually executing is useful, but not enough. You can also examine the actual content of variables. To do this the command @code{?} can be used. Type @code{? A} at the prompt!
+
+@example
+#? a
+undef
+#_
+@end example
+
+Step one step ahead again and repeat the command!
+
+@example
+#s
+
+-----------------------------------------------------
+  002. a = 3
+  003.
+ >004. sub MyFunction(t)
+  005. local a,b,c
+  006.
+
+-----------------------------------------------------
+#? a
+3
+#_
+@end example
+
+@section Stepping over Function or Subroutine
+
+Up to now we used the command @code{s} to advance the execution of the program. But there is a similar command @code{S}. Step ahead one step until you get to the function call calling @code{MyFunction}.
+
+@example
+#s
+
+-----------------------------------------------------
+  012. end sub
+  013.
+ >014. MyFunction a
+  015.
+  016. a = a + 2
+
+-----------------------------------------------------
+#_
+@end example
+
+Now if you issue the debugger command @code{s} then you get into the function and you can debug the function itself. But for now assume that you are quite confident with the function fully debugged and you want to treat the function call if it was a single instruction. Issue the command @code{S}!
+
+@example
+#S
+5 34 23 1 * * *
+-----------------------------------------------------
+  014. MyFunction a
+  015.
+ >016. a = a + 2
+  017.
+  018. MyFunction a
+
+-----------------------------------------------------
+#_
+@end example
+
+You can see the printouts that were recursively generated by the function.
+
+@section Stopping the program
+
+As you saw in the previous chapter the printout you realize that the numbers @code{34} and @code{23} are not OK. You wish you typed @code{s} to step into the function instead of stepping over.
+
+No problem. Stop debugging and restart the debugger! To do this issue the command @code{q}.
+
+@example
+#q
+Ok... you have said that... quitting...
+(0): error &H37:The preprocessor said to abort program compilation or execution.
+#_
+@end example
+
+This generates a special error that causes the interpreter to finish execution.
+
+@section Running to Line
+
+Start the debugger again and without debugging let the program run to the line where the function call starts. To do this the command @code{r} should be used.
+
+@example
+E:\MyProjects\sb\source\examples>scriba -i dbg debugtest.bas
+ScriptBasic debugger, executing
+  debugtest.bas
+For help type 'h'
+
+-----------------------------------------------------
+ >001. print "hello\n"
+  002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#r 14
+hello
+
+-----------------------------------------------------
+  012. end sub
+  013.
+ >014. MyFunction a
+  015.
+  016. a = a + 2
+
+-----------------------------------------------------
+#_
+@end example
+
+The command @code{r} has one argument, the number of the line to run to. If the argument is missing the program will run until it finishes or until a breakpoint is found.
+
+Now step into the function and step until the first number is printed.
+
+@example
+#s
+
+-----------------------------------------------------
+  002. a = 3
+  003.
+ >004. sub MyFunction(t)
+  005. local a,b,c
+  006.
+
+-----------------------------------------------------
+#s
+
+-----------------------------------------------------
+  005. local a,b,c
+  006.
+ >007. b = t + 2
+  008. print b
+  009. print " ",t
+
+-----------------------------------------------------
+#s
+
+-----------------------------------------------------
+  006.
+  007. b = t + 2
+ >008. print b
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+
+-----------------------------------------------------
+#s
+5
+-----------------------------------------------------
+  007. b = t + 2
+  008. print b
+ >009. print " ",t
+  010. if t > 1 then MyFunction t-1
+  011. print " *"
+
+-----------------------------------------------------
+@end example
+
+Now we want to advance program execution to the line 11 so we issue the command @code{r 11}.
+
+@example
+#r 11
+ 34 23 1
+-----------------------------------------------------
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+ >011. print " *"
+  012. end sub
+  013.
+
+-----------------------------------------------------
+#_
+@end example
+
+You get the numbers printed again, but where are the @code{*}? When @code{MyFunction t-1} was called it printed the starts didn't it? The answer is that is did not.
+
+Running to line 11 started to execute the program and stopped the execution as soon the line 11 the first time was about to be executed. Our function called itself with the argument @code{2} and then even getting deeper with argument @code{1} before it did not call itself any deeper and execution stopped at line 11.
+
+Quit the program again, start debugging again and first run to line 9, and then issue the command @code{R 11}:
+
+@example
+#q
+Ok... you have said that... quitting...
+(0): error &H37:The preprocessor said to abort program compilation or execution.
+
+
+E:\MyProjects\sb\source\examples>scriba -i dbg debugtest.bas
+ScriptBasic debugger, executing
+  debugtest.bas
+For help type 'h'
+
+-----------------------------------------------------
+ >001. print "hello\n"
+  002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+
+-----------------------------------------------------
+#r 9
+hello
+5
+-----------------------------------------------------
+  007. b = t + 2
+  008. print b
+ >009. print " ",t
+  010. if t > 1 then MyFunction t-1
+  011. print " *"
+
+-----------------------------------------------------
+#R 11
+ 34 23 1 * *
+-----------------------------------------------------
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+ >011. print " *"
+  012. end sub
+  013.
+
+-----------------------------------------------------
+#_
+@end example
+
+This time the program did not stop in the recursive function call.
+
+The command @code{R} is similar to command @code{r}, but it does not stop at the line in recursive functions.
+
+@section Walking Along the Stack
+
+Examine the variable @code{a} again.
+
+@example
+#R 11
+ 34 23 1 * *
+-----------------------------------------------------
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+ >011. print " *"
+  012. end sub
+  013.
+
+-----------------------------------------------------
+#? a
+undef
+#_
+@end example
+
+This is @code{undef} because now we examine the local variable. Issue the command @code{u} and examine the variable again.
+
+@example
+#u
+done
+#?a
+3
+#_
+@end example
+
+Issuing the command @code{u} we stepped one level up in the call stack. At that point the variable @code{a} is global and has value. That is actually a different variable that happens to have the same name.
+
+Issue the command @code{l} to see where we are.
+
+@example
+#l
+
+-----------------------------------------------------
+  012. end sub
+  013.
+ >014. MyFunction a
+  015.
+  016. a = a + 2
+
+-----------------------------------------------------
+#
+@end example
+
+To get one level deeper in the stack issue the command @code{d}.
+
+@example
+#d
+done
+#l
+
+-----------------------------------------------------
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+ >011. print " *"
+  012. end sub
+  013.
+
+-----------------------------------------------------
+#_
+@end example
+
+If you stepped several levels up in the stack you should issue that many commands @code{d} or just one @code{D} to go to the bottom of the stack.
+
+@section Listing Variables
+
+Using the command @code{?} we could examine the value of a variable. There are two other commands to examine variables. These are: @code{L} and @code{G}. These commands list the @code{L}ocal and the @code{G}lobal variables. Try it!
+
+@example
+#L
+main::t=->3
+main::a=undef
+main::b=5
+main::c=undef
+#G
+main::a=3
+#_
+@end example
+
+@section Stepping Out of Function
+
+Now that we have debugged the function enough we do not want to step any further inside the function, but go ahead and debug the rest of the main program. You could in our example issue @code{r 14}, or better, well ... is it @code{r 16}? You have to list the lines, step in the stack up, find the next executable line and issue the command @code{r}.
+
+Instead of that just issue the command @code{o}, to step out of the current function.
+
+@example
+#o
+ *
+-----------------------------------------------------
+  014. MyFunction a
+  015.
+ >016. a = a + 2
+  017.
+  018. MyFunction a
+
+-----------------------------------------------------
+#_
+@end example
+
+As you see it still printed a character and stopped at the line 16.
+
+@section Setting Break Points
+
+In case you have a complex program and you want to debug only a certain part of it you need break points.
+
+The command @code{b} sets a so called breakpoint at the line for which the line serial number is given. Issue the commands:
+
+@example
+#b8
+done
+#b11
+done
+#l -
+
+
+-----------------------------------------------------
+  001. print "hello\n"
+  002. a = 3
+  003.
+  004. sub MyFunction(t)
+  005. local a,b,c
+  006.
+  007. b = t + 2
+* 008. print b
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+* 011. print " *"
+  012. end sub
+  013.
+  014. MyFunction a
+  015.
+ >016. a = a + 2
+  017.
+  018. MyFunction a
+
+-----------------------------------------------------
+#_
+@end example
+
+As you can see in the listing the lines are preceded by a @code{*} character. When the program is executed using the command @code{r} (or even @code{R}) the execution will stop when it reaches one of the break points.
+
+Because many times programmers want to set a breakpoint on the actual line, if you issue the command @code{b} without argument it will set the breakpoint on the actual line.
+
+@example
+#R
+
+-----------------------------------------------------
+  006.
+  007. b = t + 2
+*>008. print b
+  009. print " ",t
+  010. if t > 1 then MyFunction t-1
+
+-----------------------------------------------------
+#_
+@end example
+
+To remove the breakpoints you should issue the command @code{B}. The command @code{B n} removes the breakpoint from the line @code{n}. The command @code{b n-m} removes all breakpoints that are on the lines from @code{n} to line @code{m} including the line @code{n} and line @code{m}. Both @code{n} and @code{m} are optional. For example @code{B -} removes all breakpoints.
+
+@section Getting Help
+
+At any time when the debugger waits for your input the command @code{h} prints a help screen.
+
+@example
+#h
+h help
+s step one line, or just press return on the line
+S step one line, do not step into functions or subs
+o step until getting out of the current function
+  (if you stepped into but changed your mind)
+? var  print the value of a variable
+u step one level up in the stack
+d step one level down in the stack (for variable printing)
+D step down in the stack to current execution depth
+G list all global variables
+L list all local variables
+l [n-m] list the source lines
+r [n] run to line n
+R [n] run to line n but do not stop in recursive function call
+b [n] set breakpoint on the line n or the current line
+B [n-m] remove breakpoints from lines
+q quit the program
+#_
+@end example
+
+@section Debugging CGI programs
+
+To debug a CGI program you have to execute it in the Eszter SB Application Engine. The Eszter SB Application Engine is a single process, multi-thread httpd daemon that runs ScriptBasic programs inside the process as separate threads. Yoi can install the engine as Windows NT Service, UNIX daemon or start just as a command line tool.
+
+More information how to start the Eszter SB Application Engine read the manual of the program.
+
+When the engine is started from the command line it acts like a normal command line program. Although the BASIC command @code{PRINT} is redirected to send HTML output to the browser, and the input functions read the http POST data, the debugger, if started still prints to the console screen and reads the keyboard.
+
+To invoke the debugger, however you can not use the command line option @option{-i dbg} because in this case the command line is for the Eszter SB Application Engine and not for the individual BASIC program thread. Instead you have to modify the code of your BASIC program to have the first line (or the second line following @code{#! /usr/bin/scriba) to be
+
+@example
+use dbg
+@end example
+
+This will invoke the debugger as soon as the file is read y the application engine.
+
+To make sure that the engine is reading the source instead of the cache file, in which case the preprocessors defined by the statement @code{use} are ignored configure the ScriptBasic interpreter with a fake cache directory that does not exist.
+
+Start the engine from the command line 
+
+@example
+sbhttpd -start
+@end example
+
+and open a browser with the URL that refers to the program you want to debug. Do not forget to specify @option{-start} under Windows NT! The engine will stop and wait on the console with the debugger cursor.
+
+At this point you can go and debug your program.
+
+@chapter Known Bugs
+
+@itemize
+@item The preprocessor is not capable displaying values of arrays.
+@end itemize
+
+@chapter Future Development
+
+This debugger is the very first debugger that was developed as soon as the internal preprocessor interface was developed. Later versions will feature graphical interface, networked remote debugging and more comfort.
+
+
+@bye
+
+

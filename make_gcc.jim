@@ -1,0 +1,34 @@
+{@define bin={osbin}}
+{#include macro make_unix.jim}
+
+{@comment define the command that starts make with C compiler}
+{#define make=make}
+
+{@comment
+Define where the include files and the libraries are. Use the ? because
+setup.pl may already correctly define it in configure.jim if the
+borland compiler is in the path.
+}
+
+{@comment
+The C compiler is 'gcc'
+-I where the include directories are
+-L where the libraries are
+}
+{#define cc=gcc -w}
+{#define CcOptOutput/X=-o X}
+{#define CcOptInput/X=X}
+{#define CcOptCompile=-c}
+{#define CcOptDefine/X=-DX}
+
+{@comment }
+{#define lib=ar}
+{#define LibOptOutput/X=-r X}
+{#define LibOptInput/X=X}
+
+{#define ld=ld -shared -Bstatic}
+{#define LdOptOutput/X=-o X}
+{#define LdOptInput/X=X}
+
+{@comment the standard libraries that we need}
+{#define StandardLibraries=-lc -lm -ldl -lpthread}

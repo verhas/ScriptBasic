@@ -1,0 +1,39 @@
+{@define bin={osbin}bcc\}
+{#include macro make_nt.jim}
+
+{@comment define the command that starts make with Borland C compiler}
+{#define make=nmake}
+
+{@comment
+Define where the include files and the libraries are. Use the ? because
+setup.pl may already correctly define it in configure.jim if the
+borland compiler is in the path.
+}
+{#define ? BorlandIncludeDirectory="E:\Program Files\Borland\BCC32\Include"}
+{#define ? BorlandLibDirectory="E:\Program Files\Borland\BCC32\Lib"}
+{#define ? bcc32=bcc32}
+
+{@comment
+The C compiler is 'bcc32'
+-I where the include directories are
+-L where the libraries are
+}
+{#define cc={bcc32} -6 -I{BorlandIncludeDirectory} -L{BorlandLibDirectory} -DWIN32=1 -DBCC32=1 -w-}
+{#define CcOptOutput/X=-oX}
+{#define CcOptInput/X=X}
+{#define CcOptCompile=-c}
+{#define CcOptDefine/X=-DX}
+
+{@comment
+/C case sensitive library
+}
+{#define lib=tlib /a}
+{#define LibOptOutput/X=X}
+{#define LibOptInput/X=X}
+
+{#define ld={bcc32} -WD -L{BorlandLibDirectory}}
+{#define LdOptOutput/X=-eX}
+{#define LdOptInput/X=X}
+
+{@comment VC needs some libraries specified, we do not}
+{#define StandardLibraries=}

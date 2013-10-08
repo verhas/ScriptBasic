@@ -1,0 +1,588 @@
+{#sep/<%/%>}
+<%#use samples%>
+
+<%@define TBD=
+This section is under development. In case you think that you can and want to write this section, please do not hesitate. First contact @email{peter@@verhas.com} for formatting details and then go ahead.
+%>
+
+<%#define SCRIBAEXE=T:\MyProjects\ScriptBasic\source\scriba.exe%>
+
+<%@define Example/FILE_NAME/TEXT=
+<%#::sample FILE_NAME
+TEXT%>
+Example @code{FILE_NAME} :
+
+@example
+TEXT
+@end example%>
+
+
+<%@define Result/FILE_NAME=
+
+Result executing @code{FILE_NAME} :
+
+
+@example
+<%#::execute <%SCRIBAEXE%> FILE_NAME%>
+@end example%>
+
+<%@define ResultWithInput/FILE_NAME/INPUT=
+<%#::sample input.txt
+INPUT%>
+
+Result executing @code{FILE_NAME} :
+
+
+@example
+
+<%#::execute <%SCRIBAEXE%> FILE_NAME < input.txt%>
+@end example%>
+
+<%@define ExampleAndResult/FILE_NAME/TEXT=
+<%Example/FILE_NAME/TEXT%>
+
+<%Result/FILE_NAME%>
+%>
+
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename source
+@settitle ScriptBasic Samples
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title ScriptBasic Samples 
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+@chapter Introduction
+
+This document introduces you the ScriptBasic programming language via examples.
+This documentation was created using
+
+<%#::execute <%SCRIBAEXE%> -v 2> sversion.txt%>
+@example
+
+<%#include tmp/sversion.txt%>
+@end example
+
+@chapter Simple Examples
+
+
+@section Hello Word
+
+This is the simplest ever example that you can ever find in any programming language. It is quite simple in BASIC. The most frequently used statement is the @code{print} command. This simply prints its arguments to the standard output, which is usually the screen.
+
+<%ExampleAndResult hello1.bas
+' The simplest ever ScriptBasic program
+PRINT "HELLO!"
+%>
+
+The first line of the program is a comment line. Any line starting with an apostrophe or with the keyword @code{REM} is a comment line. In the example we used the @code{'} character but anytime if you feel like an old BASIC fan, and want to use the keyword @code{REM} feel free to do so.
+
+As you could realize the sample code contains @code{PRINT} while the sentence before uses the same keyword in lower case letters. This is no mistake. ScriptBasic just as most BASIC implementations is quite liberal regarding the case of the identifier. You can write any reserved word in lower or upper or even mixed case. Thus @code{print} and @code{PRINT} are the same just as @code{Print}, @code{print} or @code{PrInT}. (Although I advise that you avoid using weird and unreadable mixed case.) From now on I will use the upper case version of the keywords in most cases.
+
+As you will learn later, not only the keywords, but also the variables and function names are also case insensitive.
+
+Getting back a bit more to the @code{PRINT} statement. You will use this statement many times in your programs to display data on the console or to send HTML code to the browser when programming CGI. Therefore it is worth examining the specialties of this statement.
+
+Old BASIC languages allowed quite complex @code{PRINT} statements, that used tabbing, spaces between elements and so on. ScriptBasic treats this statement extremely simple. When you print values to the screen (to the standard output to be precise) ScriptBasic prints out the values that are separated by commas and nothing else. If you need spaces between the elements, or new line at the end of the printed line, you have to specify those.
+
+<%ExampleAndResult hello2.bas
+A = 1
+B = 2
+' this just prints "12"
+PRINT A,B
+%>
+
+On the other hand
+
+<%ExampleAndResult hello3.bas
+A = 1
+B = 2
+' this just prints "12"
+PRINT A," ",B,"\n"
+PRINT "This goes onto a new line"
+%>
+
+Now that we discussed in detail that @code{PRINT} statement prints only what it is told to we break the rule. There is an exception when @code{PRINT} statement prints something, which is not explicitly specified.
+
+When you have a @code{PRINT} statement without any argument it would just print nothing according to the rules detailed above. Such a statement would be totally useless and therefore ScriptBasic makes an exception for the case. If you have a single @code{PRINT} statement on a line and no argument, ScriptBasic will print new line when executing the statement.
+
+<%ExampleAndResult hello4.bas
+PRINT "HELLO!"
+PRINT
+PRINT "HELLO AGAIN!"
+%>
+
+To express the new line and make your code more readable you can use the keyword @code{PRINTNL} without argument. Note however that this keyword can only be used without arguments!
+
+Both the @code{PRINT} and the @code{PRINTNL} statements can be used to print values to files as you will see it later.
+
+@section greet.bas
+
+After you have seen how to write to the screen this is the next step to read from the keyboard. Reading from the keyboard is common in small programs that require complex parameters that do not easily fit on the command line as parameters or want to help the user with screen prints what to enter. Lets see the first example!
+
+<%Example greet1.bas
+PRINT "What is your name?"
+PRINT
+LINE INPUT Name$
+PRINT "HELLO ",Name$," my deer"
+%>
+
+This program prints the string @code{What is your name?> on the screen using the statement @code{PRINT}, which should already familiar to you. The next statement prints a new-line, thus the cursor is now below the printed string. At this point the program executes the command @code{LINE INPUT}. This command reads from the keyboard (from the standard input to be precise) until the end of the line. In other words the command reads the characters that you type up to and including the new-line character you typed by pressing the line terminating ENTER. Let's see what the result is running this program!
+
+<%ResultWithInput/greet1.bas/Peter
+
+.
+%>
+
+in case your name is Peter and you typed it at keyboard when the program questioned.
+ 
+The command @code{LINE INPUT} reads a line from the standard input. This is usually the keyboard. The line is put into a variable, that is named @code{Name$} in our example. Notice that the whole line, including the terminating new-line is put into the variable. This is the reason, why the string @code{my deer} gets on the next line and not just after the name.
+
+In case you want to get rid of the string terminating new line you can use the function @code{CHOMP}.
+
+
+<%Example greet2.bas
+PRINT "What is your name?"
+PRINT
+LINE INPUT Name$
+Name$ = CHOMP(Name$)
+PRINT "HELLO ",Name$," my deer"
+%>
+
+<%ResultWithInput/greet2.bas/Peter
+
+.
+%>
+ 
+The function @code{CHOMP} removes the trailing new-line characters from the end of a string and returns the string without them. This could be performed using other functions, but this function was designed for the very purpose and thus it is very convenient. If the string does not happen to have a new-line character at the end no harm is done. @code{CHOMP} removes the last character only if the character is new-line.
+
+The command @code{LINE INPUT} can also be used to read lines from files, but that issue is a bit more complex and will be discussed later.
+
+There is also a function called @code{INPUT}, which reads from the standard input or from a file given number of characters (or rather bytes to be precise). This will also be detailed later.
+
+@section Using Variables
+
+Variables in ScriptBasic store values. These values can be integer, real or string values. The variables are not bound to any type. A variable can hold one type of value at a time and a different on at other types. That is why ScriptBasic is called @emph{type-less}.
+ 
+Variables are referenced by their names. These names should start with an alpha character, underscore (@code{_}), colon (@code{:}), or dollar sign (@code{$}) and may continue with these characters and numbers. A variable can have any length and all characters are significant. However variable names, just like any other symbol in ScriptBasic are case insensitive. Thus @code{FOO}, @code{Foo}, @code{fOO} and @code{foo} mean the same.
+ 
+The following examples are legal variable names:
+ 
+@example
+A
+B2
+ThisIsAVariable
+This_Is_also:a$variable
+$perl_style_variable
+a$
+main::here
+@end example
+
+The alpha characters and the @code{: _} and @code{$} characters are equivalent in the sense that their usage does not reflect the type or any other feature of the variable. In BASIC languages string variables are usually denoted with a trailing @code{$} character. ScriptBasic does not require this. You can name any variable as you like and store string, integer or real value in that.
+
+A variable can even be an array that holds several variables indexed. These are discussed in @xref{array}.
+
+In addition to all possible real, integer and string values there is a special value that a variable can hold and this is @code{undef}. An @code{undef} value means that the variable does not hold any value, in other words it is undefined. All variables that were not assigned any value are @code{undef}.
+ 
+When a variable holds a value and is used in an environment where a different type is expected the value is automatically converted.
+
+<%ExampleAndResult var.bas
+A = "123"
+B = A + 1
+PRINT B
+PRINT
+B = A & B
+PRINT B
+PRINT
+%>
+
+On the line, where addition is used the string value is automatically converted to numeric and the addition was performed on integer values. The variable @code{B} will hold an integer value.
+
+Before second @code{PRINT} lines the variable @code{B} gets a new value again. The operation in this case is concatenation. Because concatenation is a string operation both arguments are converted to be string. The variable @code{A} is already a string so there is no need to convert it. The variable @code{B} is an integer. This value, and not the variable itself is converted to string and the values are put together.
+
+Variables in ScriptBasic can be local and global. Global variables can be used anywhere in the program, while local variables are available only in the function or subroutine where they are defined. This will be detailed later when I talk about user defined functions and subroutines.
+
+There is a simple name space management in ScriptBasic that helps to avoid name collisions when more than one programmers work on a project. This is detailed in @xref{Modules and Name Spaces}. From now on it is enough to note that variables like @code{main::a} and @code{modu::var} are legal variables.
+
+@section Strings
+
+Strings are easily handled in ScriptBasic. A string starts with a @code{"} character and stops with another one. For example
+
+@example
+A="This is a single line string"
+B="Strings may contain \" characters backslash quoted"
+C="""Multiline strings should start with three " and
+may contain single or double " characters, like "" without backslash"""
+@end example
+
+Whenever you want to store a string in a variable it is automatically handled. ScriptBasic automatically allocates space to store the string and reuses the memory not needed anymore. You can use single line strings just as well as multi-line strings. Multi-line strings should start and end with three @code{"} characters.
+ 
+Strings can contain any character with the code between zero and 255 and can be any length limited by available memory only. In other words ScriptBasic strings are byte-streams or byte strings. You can store arbitrary binary data as string in variables. You can easily type binary data, because any @code{\} character inside a string may be followed by the code of the character. For example you can write
+
+@example
+"\32is just a space"
+@end example
+
+If the first number following the @code{\} character is zero then the code is calculated as octal.
+ 
+There are other characters that can be typed using the @code{\} character. For example:
+
+@example
+"\n is a new-lien character"
+"\r is a carriage return character"
+"\t is a tabulator character"
+"\" is a double apostrophe character"
+"\\ oh! This is a back-slash character"
+@end example
+
+Finally there is a very special type of string in ScriptBasic and this is the binary multi-line string. A binary multi-line string should be used to specify binary data that is long and may not fit into a single line if you want to specify it using @code{\000} characters.
+
+To specify a binary multi-line string you have to start your string with the four characters @code{"""&}. This will instruct the ScriptBasic reader to neglect all new-line characters inside the string unless they are explicitly denoted using @code{\n}.
+
+This way you can specify any string and still keep your source code editable with moderated line lengths. For example:
+
+<%ExampleAndResult string1.bas
+PRINT """&This is a multiline 
+
+string with a single\nnewline in it."""
+%>
+
+Of course this is not the usual usage of this type of string, but is a more or less readable example.
+
+@section Modules and Name Spaces
+
+ScriptBasic does not have real name spaces to separate modules from each other. 
+There are no such things as public and private variables of modules or classes. Whenever you develop a module you have to trust the user of the module that he or she will use the module in the way it is intended and the way you hopefully documented. A programmer should not use the internal variables of a module not because he can not but because he is supposed not to.
+ 
+ScriptBasic name spaces only help the programmers to avoid accidental name collisions. When you develop a module you start it saying
+
+@example
+Module MyModule
+@end example
+
+After this line until the end of the module which is noted by the line
+
+@example
+End Module
+@end example
+
+all lines will belong to the specific module and all global variables will belong to that module.
+
+However all these module and name space handling is done on low level altering the names of the variables and functions. When you start to write a program and you write:
+
+@example
+A = 3
+print A
+@end example
+
+you actually use the variable @code{main::A}. This is because the default name space is @code{main}, and if there is no name space defined in a variable its name is altered so that the variable will belong to the current name space. Try the following:
+
+<%ExampleAndResult mod1.bas
+A = 3
+print main::A
+%>
+
+Surprising? Try the following:
+
+<%ExampleAndResult mod2.bas
+A=5
+module boo
+A=3
+print main::A
+end module
+%>
+
+This is because @code{main::A} is @code{5}, @code{boo::A} is @code{3} and the variable name @code{main::A} is not converted to @code{boo::main::A}, because it is explicitly denoted to belong to the name space @code{main}.
+ 
+Name spaces can be nested. You can write:
+
+<%ExampleAndResult mod3.bas
+A=1
+module boo
+ A= 2
+ module boo::baa
+ A= 3
+ print A
+ print boo::A
+ print main::A
+end module
+end module
+%> 
+
+To ease the nesting of modules you can write the same code as
+
+<%Example mod4.bas
+A=1
+module boo
+ A= 2
+ module ::baa
+ A= 3
+ print A
+ print _::A
+ print main::A
+end module
+end module
+%>
+ 
+When the module name in the module declaration starts with double colon ScriptBasic knows that the module is to be nested into the current module. The variable name @code{_::A} means: the variable @code{A} of the surrounding name space. This is the same as the operating system directories. You can think of name spaces as directories and variables as files. Whenever you write
+ 
+@code{../../mydir/file.c}
+ 
+a similar construct may say
+ 
+@code{_::_::mynamespace::variable}
+ 
+When the parser sees the end module statement it always returns to the previous name space. You can start and close modules many times, ScriptBasic will not complain that the module was already defined. You can even totally neglect the module statement and you can write the above program as
+
+@example
+main::A=1
+boo::A= 2
+boo::baa::A= 3
+print boo::baa::A
+print boo::A
+print main::A
+@end example
+
+This is a bit less readable. Name spaces can serve another purpose. See the following code:
+
+@example
+string = "AF"
+hex = 0
+while string <> ""
+ chr = mid(string,1,1)
+ string = mid(string,2)
+ hex = hex*16 + asc(chr) - asc("A")
+wend
+print hex
+@end example
+
+when you try to compile you will probably get many errors. Why? Because string, @code{chr} and @code{hex} are predefined functions and can not be used as variable names. What to do then? You can use them as variable names when you specify that they are variables:
+
+@example
+::string = "AF"
+::hex = 0
+while ::string <> ""
+ ::chr = mid(::string,1,1)
+ ::string = mid(::string,2)
+ ::hex = ::hex*16 + asc(::chr) - asc("A")
+wend
+print ::hex
+@end example
+
+When you write @code{::string}, @code{::chr} or @code{::hex} ScriptBasic will know that they are variables belonging to the current name space. This is a bit weird, so you better avoid using function names and predefined function names as variable names.
+
+@section Array Variables
+
+ScriptBasic can handle arrays. Practically any variable can be an array, just like interger, real or string. Array is a variable type when a variable holds not only one, but many values and these values can be accessed using the variable name and an index value.
+ 
+In ScriptBasic arrays are automatically created. There is no statement like @code{DIM}. All you have to do is to use the variable like an array. Array subscripts are written using square brackets. This is usually the convention in PASCAL and in C. Other BASIC languages use normal parentheses to index arrays.
+However that confuses the reader as well as the parser, because function call looks the same as array access. Therefore ScriptBasic uses the square brackets.
+ 
+There is no limit on the number of indices. You can use many as you like. Also there is no limit on the index values. Positive, negative or zero integers can play the role of an index. Whenever you access an array element or assign a value to that ScriptBasic automatically checks if the referenced array element exists or not and adjusts the array if necessary. For example:
+
+<%ExampleAndResult array1.bas
+a[1] = 3
+a[5]=4
+for i=1 to 5
+print a[i]
+print
+next
+%>
+
+Arrays are handled quite liberal. You are not required to declare the index bounds, you need not declare the number of indices. As a matter of fact you can have different number of indices at different points in the array. For example the following code is also legal:
+
+@example
+a[1] = 3
+a[5,3]=4
+print a[1],"\n",a[5,3]
+@end example
+
+You can even write:
+
+@example
+a[1] = 3
+a[5,3,1,6,5,4,3,6,4,3,2222]=4
+print a[1],"\n",a[5,3,1,6,5,4,3,6,4,3,2222]
+@end example
+
+if you wish. But what happens if you write:
+
+<%ExampleAndResult array2.bas
+a[1] = 3
+a[5,3]=4
+print a[1],"\n",a[5]
+%>
+
+or some similar message. What has happened? To understand we have to explain how ScriptBasic stores the arrays.
+ 
+An array in ScriptBasic is stored as a list of C pointers. When a ScriptBasic variable first time used as an array a new array of a single element is created. It has one element assigned to the index that was referenced.
+
+@example
+VARIABLE[6] = 555
+@end example
+
+Later, when other elements are referenced the array is automatically extended. 
+For example if the array was first time referenced using the index 6 and it 
+was accessed second time using the index 11 ScriptBasic automatically extends the array to contain six elements, the elements indexed with the values 6,7,8,9,10 and 11.
+
+@example
+VARIABLE[11] = "a string"
+@end example
+
+This means that an array can consume significant memory even if only a few indices are used.
+ 
+When an array element, let’s say index 10 is used with a second index, let’s say with 3 a new
+
+@example
+VARIABLE[10,3] =6.24E3
+@end example
+
+one-element array is created. Later this new array is treated the same as the one assigned to the variable itself, and when the element
+
+@example
+VARIABLE[10,6] = 55
+@end example
+
+is set it is enlarged to be able to hold all values between and including indices 3 and 6.
+ 
+When the variable in our example named VARIABLE gets a new value, like
+
+@example
+VARIABLE = "NEW VALUE"
+@end example
+
+the arrays are released automatically.
+ 
+When accessing an array element, which is an array itself ScriptBasic tries to do its best. However the result may not be what you expect. The following program:
+
+<%ExampleAndResult array3.bas
+a[1]=1
+a[5,3]=4
+c = a[5]
+a[5,3]=2
+print a[5,3]," ",c
+%>
+
+in current version of ScriptBasic, but this may change later. That is because the expression @code{a[5]} that we try to assign to the variable @code{c} is an array itself. However ScriptBasic does not support the assignment of whole arrays. Therefore ScriptBasic tries to calculate the integer, double or string value that the programmer wanted to assign to @code{c}.
+ 
+In other BASIC implementations you have to use the declaration @code{DIM} and after that you have the array and you know the index limits of the array. In ScriptBasic there is no limit on the indices. Somehow you still may want to know the smallest and the largest index values used.
+ 
+For the purpose there are two functions named @code{lbound} and @code{ubound}. For example
+
+<%ExampleAndResult array4.bas
+a[1] = undef
+print lbound(a)," ",ubound(a)
+print
+a[2,-3] = "whoops"
+print lbound(a)," ",ubound(a)
+print
+print lbound(a[2])," ",ubound(a[2])
+print
+%>
+
+As you can see the argument to these functions can be a variable that has array value or an expression that has an array value. (Such an expression is likely to be an array element, which is an array by itself.)
+
+@section Expressions
+
+Up to know you have already seen some simple examples of expression. However before going on it is a wise choice to get into more details regarding them.
+ 
+When you see the example
+@example
+A = 3
+@end example
+
+the number @code{3} on the right hand side is an expression. This is actually the simplest expression ever containing a single integer number.
+ 
+Speaking generally an expression is made of integers, real numbers and strings connected together with operators and groupped using parentheses. You can add numbers, subtract and so on. The operators that you can use are:
+
+@example
+^    power, for example 2^3 = 8      (8)
+*    multiply                        (7)
+/    divide                          (7)
+\    integer divide                  (7)
+%    modulo operator                 (7)
++    addition                        (6)
+-    substraction                    (6)
+&    string concatenation            (5)
+like string like operator            (4)
+=    test equality                   (3)
+<    test less-than                  (3)
+<=   test less-then-or-equal         (3)
+>    test greater-then               (3)
+>=   test greater-than-or-equal      (3)
+<>   test non-equality               (3)
+and  bitwise AND operator            (2)
+or   bitwise OR operator             (1)
+xor  bitwise XOR operator            (1)
+@end example
+
+The operators have a precedence value. This value is given in parentheses above.
+When an expression is evaluated the higher precedence operators are evaluated before the lower precedence operators unless parentheses group the expression different.
+ 
+For example:
+<%ExampleAndResult expression1.bas
+print 2+3*6
+%>
+
+This is quite common in most languages. In case of using parentheses:
+
+<%ExampleAndResult expression2.bas
+print (2+3)*6
+%>
+
+Let's see some more complex examples of expressions:
+
+<%ExampleAndResult expression3.bas
+FOR I=0 TO PI/2.0 STEP PI/20.0
+PRINT I & " " & SIN(I) & " " & COS(I) & " " & SIN(I)^2+COS(I)^2
+PRINT
+NEXT I
+%>
+
+The expression following the command @code{PRINT} is complex. It contains string concatenation as well as numeric function calls and addition operator and powering operator.
+
+@section Conditional Execution
+<%TBD%>
+
+@section Loop Constructs
+<%TBD%>
+
+@section Functions and Subroutines
+<%TBD%>
+
+@section Mathematical Calculations
+<%TBD%>
+
+@section File Handling
+<%TBD%>
+
+@section Directory Handling
+<%TBD%>
+
+@section Packing and Unpacking
+<%TBD%>
+
+@section System Functions
+<%TBD%>
+
+@section Using Extensions
+<%TBD%>
+
+@chapter Complex Samples
+

@@ -1,0 +1,25 @@
+' Demo executing program interactively
+ExamplesDir = CONF("include")
+LastBS = INSTRREV(ExamplesDir,"\\",len(ExamplesDir)-1)
+if IsDefined(LastBS) then
+  ExamplesDir = MID$(ExamplesDir,1,LastBS) & "examples"
+end if
+if RIGHT$(ExamplesDir,1) <> "\\" then ExamplesDir &= "\\"
+ExampleFile = ExamplesDir & "generateddemo.sb"
+print """Type your program line by line.
+When you are finished press ENTER twice:
+"""
+open ExampleFile for output as 1
+
+do
+ line input ProgramLine$
+ print#1,ProgramLine$
+loop while LEN(ProgramLine$) > 1
+close 1
+print "Your program was saved into the file: ",ExampleFile,"\n"
+print "press ENTER to start this program..."
+line input a$
+print "Now executing your program:\n"
+ExitCode = Execute("scriba " & ExampleFile , -1 , pid)
+print "\nPress any key to continue...\n"
+line input a$

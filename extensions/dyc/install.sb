@@ -1,0 +1,60 @@
+#! /usr/bin/scriba
+' """
+FILE: install.sb
+
+This file should be executed to install the module
+dyc after it has been compiled.
+
+Each module should have a similar installation 
+BASIC program.
+"""
+
+' Include this file!
+' This contains the function modinst::install() that
+' will install the header file ModulName.bas
+' and the module file ModulName.dll or ModuleName.so
+'
+include modinst.bas
+
+'
+' Call the common module installer function.
+' The argument is the name of the module. This is
+' the name of the subdirectory where this BASIC
+' program is, the name of the module dll and the
+' module header BAS file.
+'
+MODINST::INSTALL("dyc")
+
+'
+' Insert any code after this comment that the 
+' module needs to finalize its installation.
+'
+' Note that here you can use module functions as
+' the module is already installed when the code
+' gets here. However the functions you use should
+' be either declared here or the header file has
+' to be included from the original location.
+' In other words you have to
+'
+' include "module.bas"
+'
+' with the quotes to include the file from the actual
+' directory. This is because the 'include' is processed
+' when the interpreter reads the program before it 
+' starts and by that time the header file is not installed
+' yet.
+
+
+' It is nice to print a message like that.
+' If there is any operation that the installing
+' person has to manually perform then print the message
+' informing him or her here.
+'
+if MODINST::ERROR > 0 then
+  print "There were errors during the installation of the module dyc\n"
+  print "See the error messages that were printed and try to correct the error.\n"
+else
+  print "The module dyc was successfully installed.\n"
+endif
+
+STOP

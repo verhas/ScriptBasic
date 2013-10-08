@@ -1,0 +1,27 @@
+' kill a process
+print """
+This program demonstrates how to start an
+external program and later how to kill it
+if it does not finish within a certain time
+limit.
+
+Now I will start NOTEPAD wait 10 seconds and then I
+will kill it.
+
+You can also try to close NOTEPAD during the 10
+seconds.
+
+Press ENTER when you are ready!
+"""
+line input pid
+on error goto NotepadDoesNotStop
+i = Execute("NOTEPAD",10,pid)
+print "Notepad finished!!!!\n"
+print "Press ENTER to finish..."
+line input pid
+STOP
+NotepadDoesNotStop:
+i = kill(pid)
+print "I killed it...\nPress ENTER to finish..."
+line input pid
+

@@ -1,0 +1,600 @@
+{#sep/[[[/]]]}
+
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename mod_bdb
+@settitle Using the module DBD
+@setchapternewpage odd
+@c %**end of header
+@ifinfo
+@end ifinfo
+
+@titlepage
+@title Using the module BDB
+@author Peter Verhas
+
+@page
+@vskip 0pt plus 1filll
+
+@end titlepage
+@summarycontents
+@contents
+
+@menu
+@end menu
+
+
+@chapter Introduction
+
+This document describes how to install and use the module BDB developed to help programmers writing database-handling programs in ScriptBasic. The module BDB is based on the Berkeley Data Base from Sleepy Cat Software Inc.
+
+There are separate documents that describe the language (Users’ Guide), the major architecture of the source code (Source Guide).
+
+This document describes the version 2.0 of the module.
+
+The Berkeley Database (bdb) is a set of database handling routines. The program using the bdb directly calls these routines. There is no SQL server or a database daemon. In this sense this is a library collection that can handle simple database structures.
+
+Although it is cumbersome to write complex database application using the Berkeley database lacking SQL interface it pays back on performance.
+
+The Berkeley Database is available on Windows NT as well as on UNIX. It supports transaction handling and is it capable handling really huge databases. Therefore it is an ideal choice for several types of application where there is no need to separate the application from the database.
+
+The bdb module developed for ScriptBasic provides an interface to a subset of the Berkeley Database functions. Using the module the BASIC program can use database handling functions, and transactions. On the other hand BASIC programs can not directly use the shared memory management functions, or locking (only through transactions). Application programmers needing these functions should rather consider developing their own ScriptBasic module using the language C delivering their application specific functions using the underlying Berkeley Database functions.
+
+The functions available to BASIC programmers allow database creation, inserting, deleting, updating, searching data element with single or duplicated keys, start, commit and abort transactions. Some functions are simplified. The BASIC interface does not resemble to the C API of the Berkeley Database. Rather it is a BASIC language database-handling interface that happens to use the Berkeley Database.
+
+@chapter Acknowledgements
+The bdb v2.0 module uses the software Berkeley DB: Version 3.1.14, June 16, 2000, developed by Sleepy Cat Software.
+
+The bdb v1.0 module uses the software Berkeley DB: Version 3.0.55, November 15, 1999, developed by Sleepy Cat Software.
+
+@example
+Sleepycat Software	db@sleepycat.com
+394 E. Riding Dr.	510-526-3972
+Carlisle, MA 01741	877-SLEEPYCAT (toll-free, USA only)
+USA
+http://www.sleepycat.com
+@end example
+
+This product includes software developed by Harvard University and its contributors.
+
+The use of this module is NOT governed by the GNU GPL, because it uses the underlying Berkeley Database software and they happen to use a stricter licensing structure. But don't panic. The software license grants almost the same level of freedom as GNU GPL. (I emphasize: almost.) Before using the software you have to see the actual license text reading the file License in the source distribution of the module. This is the verbatim copy of the file with the same name from the Berkeley DB source distribution.
+
+@chapter Module versions, upgrading
+
+The ScriptBasic bdb module v1.0 supported the ScriptBasic interpreter v1.0build18 using the Berkeley DB 3.0.55. The version 2.0 of the module supports ScriptBasic v1.0build19 and or later using the Berkeley DB 3.1.14. There is no module using the version Berkeley DB 3.0.55 supporting ScriptBasic v1.0build19 or later.
+
+The differences between the version 1.0 and 2.0 of the module are transparent for the BASIC programmer. The interface is the same and all behavior should be the same except that the underlying newer version of Berkeley DB has some bugs fixed over the former version.
+
+The bdb module version 2.0 uses the newer Berkeley DB and uses the newer structured configuration handling supported by ScriptBasic v1.0build19 and not supported by earlier versions.
+
+When upgrading ScriptBasic from v1.0build18 to v1.0build19 you have to upgrade the bdb module. This need installation of the new DLL or SO file and tuning the configuration file. You are advised to read the documentation about the configuration of ScriptBasic in the ScriptBasic users guide and then examine the sample configuration file shipped with ScriptBasic v1.0build19. This configuration file includes a sample configuration for the bdb v2.0 module.
+
+@chapter Installing the module
+
+The module comes in source form or as compiled binary. Binary is usually available for the Win32 platforms and for Linux in Debian and RedHat packages only. The compilation of the source code is simple. Compile the source files to a @code{.dll} or to @code{.so} shared library. To help compile the module under Win32 the Visual C++ workspace and project files are delivered in the source distribution. To successfully link the application you need the static library version of the Berkeley DB system. The Windows NT version linkable using the Microsoft Visual C++ linker can be downloaded from the ScriptBasic web site in a separate ZIP file along with the library files of the other modules.
+
+The library file is called @file{libdb30s.lib}. If for some reason you miss this file or perhaps you want to try (at your own risk) a newer version of the Berkeley DB than provided with the source you should download the Berkeley source distribution from Sleepy Cat Software. They usually provide Visual C++ v5.0 workspace and project files.
+
+To use Visual C++ v6.0 you have to start the integrated environment and open the workspace. The Visual C++ development environment automatically converts the workspace and the projects. Note that you should not try to start Visual C++ v6.0 clicking on a v5.0 workspace file. In that case Visual C++ starts to convert the workspace and then crashes. So start the development environment from the start menu and use the menu "file/open workspace".
+
+If you do not have the project file for the module, create a project file that creates a Win32 @code{dll}. Specify @code{/nodefaultlib:"LIBCMT"} in the project link options.
+
+The source distribution of the Windows version compiles the module when ScriptBasic is built. Note that this @file{Makefile.nt} is generated from @file{Makefile.nt.jam} during executing the command file @file{precompile}.
+
+
+On UNIX systems you have to download the Berkeley DB from its original location. Note that the module uses a specific version and may not work with further versions. However we will try to follow the version updates of the DB system.
+
+Before starting to compile the module you have to configure and compile the Berkeley DB library file that results the files @code{db.h} and @code{libdb.a} (among other files, but we specifically need these two files). These are usually created in the directory @code{~/db-3.0.55/build_unix/}. Copy these files into the ScriptBasic source directory @code{~/scriba/source/extensions/berkeley_db/}.
+
+After you have successfully performed these operations compile and install the module typing @code{make install}.
+
+The compiled module contains a dynamic load binary file and a basic include file named @file{bdb.bas}. If your configuration is different from the default the include file @file{bdb.bas} should be placed in a module include directory file configured in the configuration file. The configuration file usually named @code{scriba.conf.unix.lsp} should include a line
+
+@example
+
+
+include "/etc/scriba/include/"
+@end example
+
+
+defining the include files location for the modules and other generally used include files. The actual directory can be different.
+
+The binary part of the module should be placed in another directory specified in the configuration file, like
+
+@example
+
+
+module "/usr/scriba/modules/"
+@end example
+
+
+There can be more than one @code{include} and module statements in the configuration file. In that case the interpreter searches the directories in the order they are specified until the include file or the module is found.
+
+Before starting any program using the module @code{bdb} you almost certainly have to edit the ScriptBasic configuration file. The keys in the configuration file included in the @code{bdb} configuration group control the initialization and use of the underlying Berkeley Database module.
+
+We describe the keys here briefly in a manner that allows most implementations to start using the database from ScriptBasic programs. However at some cases we refer to the original documentation, deep understanding of the behavior of the software can be gained reading the original documentation.
+
+The configuration keys the module supports:
+
+
+
+@itemize
+@item @code{dir}
+This key is a group that contains sub-keys and their values. These sub-keys define the directories that the Berkeley DB use as default directory for certain operations.
+
+@item
+
+@code{home}
+This key defines the database home directory. This string is passed to the @code{db_appinit} function as argument @code{db_home}. If this value is specified the databases will be located in this directory. Use of this configuration parameter gives you flexibility to move your actual database files. CGI scripts may also gain some level of security not containing the actual path of the database files.
+
+
+@item
+
+ @code{data}
+This key defines where the Berkeley DB stored the database files.
+
+@item 
+
+@code{log}
+This key defines where the Berkeley DB stores the database log files.
+
+@item
+
+@code{temp}
+This key defines where the Berkeley DB stores the temporary files.
+
+@item 
+
+@code{limits}
+This key is a group that contains sub-key and their values. These sub-keys define the limits that the system manager sets for the local installation of the Berkeley DB.
+
+Note that although these values are numeric they should be specified between @code{"} characters as string. This is because ScriptBasic v1.0build19 does not deliver support function for the external modules to access numeric configuration parameters. (n.b. older versions of ScriptBasic did not support numeric configuration parameters at all.)
+
+
+@item 
+
+@code{lg_max}
+The maximum size of a single file in the log, in bytes. This value is passed to the log subsystem in the variable dbenv.lg_max.
+
+
+@item
+
+ @code{mp_mmapsize}
+Files that are opened read-only in the pool (and that satisfy a few other criteria) are, by default, mapped into the process address space instead of being copied into the local cache. This can result in better-than-usual performance, as available virtual memory is normally much larger than the local cache, and page faults are faster than page copying on many systems. However, in the presence of limited virtual memory it can cause resource starvation, and in the presence of large databases, it can result in immense process sizes. If @code{mp_mmapsize} is non-zero, it specifies the maximum file size, in bytes, for a file to be mapped into the process address space. By default, it is set to 10Mb.
+
+@item 
+
+@code{mp_size}
+The suggested size of the shared memory buffer pool, i.e., the cache, in bytes. This should be the size of the normal working data set of the application, with some small amount of additional memory for unusual situations. (Note, the working set is not the same as the number of simultaneously referenced pages, and should be quite a bit larger!) The default cache size is 128K bytes, and may not be specified as less than 20K bytes. 
+
+@item 
+
+@code{tx_max}
+The maximum number of simultaneous transactions that are supported. This bounds the size of backing files and is used to derive limits for the size of the lock region and log files. When there are more than @code{tx_max} concurrent transactions, calls to @code{txn_begin} may cause backing files to grow. If @code{tx_max} is @code{0}, a default value is used.
+
+The bdb module provides a very simple interface to the BASIC programmer. There is only a single transaction allowed at a time and there is no support for transaction hierarchy. However the single transaction at the level of the BASIC program is supported creating a unique Berkeley DB transaction for each opened table.
+
+@item
+
+@code{lk_max}
+The maximum number of locks to be held or requested in the table. This value is used by the Berkeley DB function @code{lock_open} to estimate how much space to allocate for various lock-table data structures. If @code{lk_max} is 0, a default value is used. 
+
+The following keys define the behavior of the deadlock detector. If any of these keys are used the deadlock detector runs when a conflict occurs and this key defines which transaction should be aborted.
+
+@item 
+
+@code{lockstrategy}
+This configuration key defines what lock strategy the Berkeley DB should use. The value can be one of the keywords: default, oldest, random, youngest.
+
+@item
+
+ @code{flags}
+This key is a group that contains sub-key and their values. These sub-keys define certain flags for the operation of the Berkeley DB. Any of the keys may exist in the configuration having the value yes or having any other value. A missing key has the same effect as having the key with any value other than yes.
+
+In the following lines we list the configuration keys and their respective Berkeley DB constants that are used to pass to the function @code{DBENV->open}.
+
+@itemize
+@item
+
+ @code{create} @code{-->} @code{DB_CREATE}
+@item
+
+ @code{init_cdb} @code{-->} @code{DB_INIT_CDB}
+@item 
+
+@code{init_lock} @code{-->} @code{DB_INIT_LOCK}
+@item 
+
+@code{init_log} @code{-->} @code{DB_INIT_LOG}
+@item 
+
+@code{init_mpool} @code{-->} @code{DB_INIT_MPOOL}
+@item 
+
+@code{init_txn} @code{-->} @code{DB_INIT_TXN}
+@item 
+
+@code{private} @code{-->} @code{DB_PRIVATE}
+@item 
+
+@code{nommap} @code{-->} @code{DB_NOMMAP}
+@item 
+
+@code{recover} @code{-->} @code{DB_RECOVER}
+@item 
+
+@code{recover_fatal} @code{-->} @code{DB_RECOVER_FATAL}
+@item 
+
+@code{thread} @code{-->} @code{DB_THREAD}
+@item 
+
+@code{txn_nosync} @code{-->} @code{DB_TXN_NOSYNC}
+@item 
+
+@code{use_environ} @code{-->} @code{DB_USE_ENVIRON}
+@item 
+
+@code{use_environ_root} @code{-->} @code{DB_USE_ENVIRON_ROOT}
+@item 
+
+@code{lockdown} @code{-->} @code{DB_LOCKDOWN}
+@item 
+
+@code{system_mem} @code{-->} @code{DB_SYSTEM_MEM}
+@end itemize
+  
+@item 
+
+@code{mode}
+This configuration value may specify the access value of the created databases under UNIX when the mode value is not specified in the command @code{bdb::open}. If not specified the value zero is used. Because this mode value grants no access to anyone the underlying Berkeley Database ignores the value and uses the default file mode instead.
+@end itemize
+
+
+To specify the value you have to specify the access value as decimal number between @code{"} double-quote characters.
+
+
+@chapter Trouble shooting installation
+
+There are some typical errors that we have committed during test installations. Here we list these mistakes together with the solution.
+
+After successful compilation and installation the test program resulted Module Specific error:
+
+@example
+
+
+# scriba testbdbtransaction.bas
+(0): error 0x80000002:Extension specific error
+@end example
+
+
+The reason for this failure is that the example program tries to test the transactional behavior of the module @code{bdb}. The transaction handling is not automatically started. In order to have transaction support you have to insert the lines:
+
+@example
+
+
+flags (
+    init_lock yes
+    init_log yes
+    init_mpool yes
+    init_txn yes
+    )
+@end example
+
+
+
+into the ScriptBasic configuration file and compile the configuration file to binary format.
+
+After we have inserted these lines into the configuration file we still got the same error. The reason was that the transactional lock and log files were not yet present. In order to create these you have to tell the Berkeley Database to automatically create the files if they are not present to reach this you have to insert the line
+
+@example
+
+
+flags (
+    create yes
+    )
+@end example
+
+
+into the configuration file. This is needed even if the flag @code{bdb::Create} was used in the @code{bdb::Open} statement. The flag says to create the database file itself, but does not order the Berkeley Database to automatically create the log and lock files for the transactions.
+
+@chapter Berkeley DB Module Functions Reference
+
+To use the module the basic program should include the file @code{bdb.bas}. To do this the program should contain the line
+
+@example
+include bdb.bas
+@end example
+
+somewhere at the start of the code. Note that there are no double quote characters before and after the file name. This tells the interpreter that the include file is located in a module include directory. This include file contains all the declarations that are needed to use the bdb functions.
+
+The program using the module should call the functions declared in the include file. The binary library file is loaded when the first function call is executed.
+
+The Berkeley DB has a very simple database model. A database is a collection of keys and assigned values. Keys and values are byte arrays. The program using the bdb can insert a key/value pair into a database, retrieve a value knowing the key, delete certain or all pairs with a given key or update the value assigned to a key. The programmer can work with several databases at a time.
+
+If you are an experienced data base programmer, who uses SQL databases for a long time you may find it cumbersome. However you may notice after a while that all these structures are just the basic structures that an SQL database running a Windows NT service or UNIX daemon listening on some TCP port may use. You can perform all operation using the Berkeley DB that you can do with an SQL database with some extra work. On the other hand you may get a faster program.
+
+The ScriptBasic module bdb delivers functions that can use the simple database. These are detailed in the following sections.
+
+@section Open
+
+@example
+DB = bdb::Open(DataBase,type,flags,unixmode)
+@end example
+
+This function opens a database and returns a handle to it. This handle is a string of four or eight bytes on 32bit and 64bit machines. The actual value of this string contains the bytes of the pointer to the opened database structure that the Berkeley subsystem returns. Pass this variable as argument to subsequent database handling functions and better do not play around with it. Altering it will almost certainly result process failure or more serious damage. You can copy this value from one variable to another, pass it to user defined functions.
+
+Do not depend on the actual value of the handle as later versions of the module may alter the way it handles the database handles.
+
+The argument @code{DataBase} should be a string specifying the name of the database file. This is either an absolute file name, or a relative file name. The actual location of the database file depends on the configuration of the underlying Berkeley DB system.
+
+The argument type specifies the type of the database. This can be one of the followings:
+
+@itemize
+@item @code{Bdb::Btree}
+@item @code{Bdb::Hash}
+@item @code{Bdb::Recno}
+@item @code{Bdb::Queue}
+@item @code{Bdb::Unknown}
+@end itemize
+
+You most probably want to use @code{Bdb::Btree}. The constant @code{Bdb::Unknown} can be used when opening an already existing database file. @code{Bdb::Btree} opens or creates a database using the B-Tree indexing structure. @code{Bdb::Hash} opens or creates a database using Hash indexing structure. @code{Bdb::Recno} opens or creates a "Recno" type database. @code{Bdb::Queue} opens a queue type database.
+
+The argument flags can specify certain parameters how to open the database file. This value can be zero or some of the following constants defined in @code{bdb.bas} connected using the numeric operator And:
+
+@itemize
+@item @code{Bdb::Create} create the database file if it did not exist.
+@item @code{Bdb::NoMap} do not map this file into memory.
+@item @code{Bdb::RdOnly} open the database read only.
+@item @code{Bdb::Thread} return a database handle, which can be used in multiple threads. Because ScriptBasic interpreter threads do not share Berkeley DB handles you need not use this value.
+@item @code{Bdb::Trunc} Logically truncate the database if it exists, i.e., behave as if the database were just created, discarding any previous contents. 
+@end itemize
+
+The argument @code{unixmode} specifies the UNIX level file access control bits. On Windows NT it is ignored.
+
+The flags and the Unix mode parameters are optional.
+
+If the database can not be opened for some reason an error is raised that can be captured using the statement @code{on error goto}.
+
+When opening a database the module automatically creates a cursor for that database. If there is a transaction started before calling the function @code{bdb::open} the module automatically creates a new Berkeley DB transaction and creates the cursor under the transaction.
+
+When a transaction is started, committed or aborted all opened database cursors are closed and reopened with a new transaction or without transaction.
+
+@section Close
+
+@example
+bdb::Close DB
+@end example
+
+Closes a database opened using the function @code{bdb::Open}. If there is a transaction opened and not committed yet closing the database will abort the transaction for this database. The other opened databases using the same transaction may finish the transaction committing.
+
+The module automatically closes all databases when the interpreter finishes executing the program.
+
+@section Put
+
+@example
+bdb::Put DB,key,value,flag
+@end example
+
+Put a key-value pair into the database. The database is identified by the first argument, @code{DB} and should contain the unaltered value returned by the function @code{bdb::Open}.
+
+The arguments key and value can be arbitrary strings containing ASCII or binary data. The argument flag is optional. Its value other than zero can be some of the following constants defined in @code{bdb.bas} connected using the numeric operator @code{And}:
+
+@itemize
+
+@item @code{Bdb::Append} This flag should only be used on Recno databases. Because this type is currently not supported you better do not use this constant.
+
+@item @code{Bdb::NoOverWrite} This value specifies that the key and value should only be put into the database if the key is not present in the database yet. If the key already appears in the database an error is raised that the program can handle using the @code{On Error Goto} statement. The error code is @code{bdb::ErrorKeyExist}.
+@end itemize
+
+@section Get
+
+@example
+
+
+value = bdb::Get(DB,key)
+@end example
+
+Get the value associated with the key in the database DB. The first argument to the function should be a value returned by the function @code{bdb::open}. The second argument is the key value. It can be arbitrary strings containing ASCII or binary data.
+
+Use this function for databases where each key has only one associated value. If there are more values associated with the key the first one is returned. Actually this function is the same as the function @code{bdb::First}. If the key is missing the function returns the value of the first record of the database.
+
+@section First
+
+@example
+value = bdb::First(DB,key)
+@end example
+
+Get the first value associated with the @code{key} in the database @code{DB}. The first argument to the function should be a value returned by the function @code{bdb::open}. The second argument is the key value. It can be arbitrary string containing ASCII or binary data.
+
+Use this function to retrieve values from databases where there can be more than one values associated with a given key.
+
+If the argument key is missing the function returns the first value from the database and the database cursor is positioned to the first record. If the key specifies a string, which is not present in the database the function positions the database cursor to the first record that follows the specified key and returns the value of the record.
+
+The functions @code{bdb::First} and @code{bdb::Get} are aliases, they are defined in the @file{bdb.bas} module header file to point to the same function. You are encouraged to use the one that fits the actual programming task better in terms of readability.
+
+@section Last
+
+@example
+value = bdb::Last(DB)
+bdb::Last DB
+@end example
+
+Position the cursor of the database to the last record and return the value.
+
+@section Next
+
+@example
+value = bdb::Next(DB)
+@end example
+
+Position the cursor of the database over the next record and return the value of the record. If the cursor was positioned over the last record or if the cursor was not yet positioned at all the function returns @code{undef}.
+
+@section Previous
+
+@example
+value = bdb::Previous(DB)
+@end example
+
+Position the cursor of the database over the previous record and return the value of the record. If the cursor was positioned over the first record or if the cursor was not yet positioned at all the function returns @code{undef}.
+
+@section Key
+
+@example
+key = bdb::Key(DB)
+@end example
+
+Return the key of the last accessed record. This function can be useful to get the actual key value when the key is not known. For example you are looking up the name "Schmidt" in a database and you use the key "Sch" in the function @code{bdb::Get}. It is not guaranteed that the name is Schmidt. It can be any string, which is alphabetically later than Sch.
+
+@section Update
+
+@example
+bdb::Update DB,value
+@end example
+
+This subroutine updates the value of the last accessed record. The new value will be the string given in the second argument.
+
+@section DeleteRecord
+
+@example
+bdb::DeleteRecord DB
+@end example
+
+This command deletes the last accessed record.
+
+@section DeleteAll
+
+@example
+bdb::DeleteAll DB,key
+@end example
+
+This command deletes all records that have the key value given by the second argument key. If the key is not found in the database the command raises an error.
+
+@section BeginTransaction
+
+@example
+bdb::BeginTransaction
+@end example
+
+This command starts a transaction. This transaction lasts until a @code{CommitTransaction}, @code{EndTrasaction}, @code{AbortTransaction} command is executed or the execution of the BASIC program is finished. Any transaction not finished using @code{CommitTransaction} or @code{EndTransaction}is aborted.
+
+Transactions provide database integrity. Operations accessing the database in a transaction get exclusive access to the records they are accessing. When a program reads a record in a transaction the module assumes that the program wants to alter the value of the record later and does not allow any other program to read the value until the transaction is finished.
+
+When a program tries to access a locked record the program execution is suspended until the record is unlocked. If there are more programs waiting for the same record one of them gets access to the record and the others remain waiting.
+
+When a program alters some data in a transaction either all alterations are done in a single transaction or none of the alterations are performed.
+
+@section CommitTransaction
+
+@example
+bdb::CommitTransaction
+@end example
+
+This command commits the transaction started using the command @code{bdb::BeginTransaction}. When this command is executed all the alterations are done on the database that the program performed since the transaction begin and all locks are released, so other programs may get access to the records.
+
+@section EndTransaction
+
+@example
+bdb::EndTransaction
+@end example
+
+This command is the same as the command @code{bdb::CommitTransaction}. It is provided in case this verbiage result more readable code. 
+
+@section AbortTransaction
+
+@example
+bdb::AbortTransaction
+@end example
+
+This command aborts a transaction. This means that the alterations performed during the transaction are not performed and the locked records are released. This command is automatically executed when a database with an active transaction is closed or when the interpreter finishes the program execution and the database remained unclosed with an open transaction.
+
+@section Drop
+
+@example
+bdb::Drop "databasename"
+@end example
+
+This command deletes a database. The name of the database should be specified. Whenever you want to delete a database programmatically use this command instead of deleting the database file directly. This command takes care of the configuration and should be more compatible with future releases of the module than just deleting the physical file.
+
+@chapter Sample program
+
+This program represents how to create a counter in a database. The counter is a typical programming task that many programmers lacking concurrent programming experience fail to implement correctly.
+
+A simple counter reads the current value of the counter, increments it and then writes the new result back. The issue is the record protection when there are more than one processes trying to use the counter. The process getting access to the counter should prevent the other processes accessing the counter until it has finished its incrementing the counter.
+
+This protection can be done using transactions. Transactions automatically perform the necessary underlying record locks and provide a simpler view of the program flow. The transaction can be seen as a single, non-interruptible sequence of program lines.
+
+To test the sample program, run it from the command line simultaneously in two windows on the same machine. Start the program in one window switch the other window and start the program again in the other window. The program instance started first starts the transaction, gets the counter value and waits your key press. The second instance opens the database, starts the transaction and gets locked when trying to read the counter value. Switch back to the first instance and press enter twice to let the transaction proceed. When the code finishes the transaction, commits the changes and releases the locks, you will soon see the second instance in the other window to proceed getting and displaying the new value of the counter.
+
+Try and experience the program behavior starting it simultaneously in two or more terminal windows.
+
+@example
+include bdb.bas
+Const nl = "\n"
+@end example
+
+This line opens the database. This command is not locked by any transaction
+
+@example
+DB = bdb::open("counter.db",bdb::BTree,bdb::Create,0)
+@end example
+
+Begin a transaction. This command just starts a transaction telling the database software that all record accesses from now on are performed under the transaction.
+
+@example
+bdb::BeginTransaction
+print "transaction started\n"
+@end example
+
+Accessing the record can be done only if the record is not locked. In other words if there is any program executing this transaction and has already got this record locking it this call will not return until the record is freed.
+
+@example
+Counter = bdb::Get(DB,"COUNTER")
+print "Counter is ",Counter,nl
+print "Press enter to continue...\n"
+line input wait$
+
+If IsDefined(Counter) Then
+@end example
+
+If there was already a record with the key COUNTER then increment it and update. Numbers are converted to string and stored as decimal numbers.
+
+@example
+  Counter = Counter + 1
+  bdb::Update DB,Counter
+  print "updated\nPress enter to continue...\n"
+  line input wait$
+Else
+@end example
+
+If there is no record with the key COUNTER then create one with the value 1.
+
+@example
+ Counter = 1
+ bdb::Put DB,"COUNTER",Counter
+  print "put\nPress enter to continue...\n"
+  line input wait$
+End If
+@end example
+
+End the transaction, commit all changes and release the counter record.
+
+@example
+bdb::EndTransaction
+print "transaction has finished\n"
+@end example
+
+Although the interpreter automatically closes databases it is a disciplined behavior to close it programmatically.
+
+@example
+bdb::close(DB)
+@end example
+
+@chapter Future development, aims
+
+We plan to implement some features delivered by the Berkeley Database version 3.1.14 The interface currently uses the version 3.1.14 but the functions and the available functionality was designed based on the version 2.2.7
+@itemize
+@item The first version of the module was about to be released November 18, 1999. Just two days after the new major version of Berkeley DB was released. Therefore we decided not to ship the already obsolete version and upgraded the module to use the version 3.0.5
+@item Note that @file{scriba.conf.lsp} and/or @file{scriba.conf.unix.lsp} has to be converted to compressed binary format using the command @code{scriba -k scriba.conf.lsp} or @code{scriba -k scriba.conf.unix.lsp}.
+@item For more information on these database types read the manual of the Berkeley Database.
+@end itemize

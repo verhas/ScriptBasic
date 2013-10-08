@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=ux]]]
+[[[#define FILE=ux.c]]]
+[[[#include skeleton.jim]]]

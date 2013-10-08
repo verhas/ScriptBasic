@@ -1,0 +1,26 @@
+{@comment
+Convert this makefile.jam into makefile.vc7, makefile.bcc and to makefile 
+using the setup.pl script configure --module=cgi
+}
+{#define MODULE=cgi}
+
+all : {CreLib cgi} {CreDll cgi} {CreTexiDocument}
+
+{#include libraries.jim}
+{CreLib cgi} : {CreObj cgi} {CreSObj interface} 
+	{lib} {LibOptOutput {CreLib cgi}} {LibOptInput {CreObj cgi}} {LibOptInput {CreSObj interface}}  {LibNeededLibraryFiles}
+
+{CreDll cgi} : {CreObj cgi} {CreObj interface} 
+	{ld} {LdOptOutput {CreDll cgi}} {LdOptInput {CreObj cgi}} {LdOptInput {CreObj interface}} {LdNeededLibraryFiles}
+
+{CreObj cgi} : cgi.c cgi.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj cgi}} {CcOptInput cgi.c}
+
+{CreObj interface} : interface.c cgi.h 
+	{cc} {CcOptCompile} {CcOptOutput {CreObj interface}} {CcOptInput interface.c}
+
+{CreSObj interface} : interface.c cgi.h 
+	{cc} {CcOptDefine STATIC_LINK=1} {CcOptCompile} {CcOptOutput {CreSObj interface}} {CcOptInput interface.c}
+
+{CompileTexiDoc}
+

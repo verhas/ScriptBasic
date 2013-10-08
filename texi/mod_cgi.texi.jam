@@ -1,0 +1,5 @@
+{#sep/[[[/]]]}
+
+[[[#define MODULE=cgi]]]
+[[[#define FILE=cginterf.c]]]
+[[[#include skeleton.jim]]]
