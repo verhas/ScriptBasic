@@ -31,7 +31,7 @@ This code implements the start and the end of a function.
 When the program execution reaches the code that was generated from the code
 
 =verbatim
-     fun(x,y,z)     
+     fun(x,y,z)
 =noverbatim
 
 if saves some of the state variables, like the function result pointer, local variable pointer,
@@ -82,7 +82,7 @@ CUT*/
 =section misc
 =title FUNCTION fun()
 
-This command should be used to define a function. A function is a piece of code that can be called by the BASIC program from the main part or from a function or subroutine. 
+This command should be used to define a function. A function is a piece of code that can be called by the BASIC program from the main part or from a function or subroutine.
 
 =verbatim
 FUNCTION fun(a,b,c)
@@ -273,10 +273,10 @@ typedef struct _GosubStack {
   NODE nReturnNode;
   } GosubStack , *pGosubStack;
 
-#define GosubStackRoot ((pGosubStack)PARAMPTR(CMD_GOSUB))
+#define GosubStackRoot (*((GosubStack **)pEo->CommandParameter+CMD_GOSUB - START_CMD))
 
 /**GOSUB
-=section misc 
+=section misc
 =H Gosub commands
 =title GOSUB label
 
@@ -378,7 +378,7 @@ NOTIMPLEMENTED;
     pGSS = GosubStackRoot;
     }
   pEo->fStop = fStopRETURN;
-  
+
 #endif
 END
 
@@ -388,7 +388,7 @@ NOTIMPLEMENTED;
 #else
 
   IDENTICAL_COMMAND(EXITFUNC)
-  
+
 #endif
 END
 
@@ -461,7 +461,7 @@ The rest of the arguments are the arguments to be passed to the function to be c
 
 =details
 
-Whenever you call a function or subroutine you have to know the name of the subroutine or function. In some situation programmers want to call a function without knowing the name of the function. For example you want to write a sorting subroutine that sorts general elements and the caller should provide a subroutine that makes the comparison. This way the sorting algorithm can be implemented only once and need not be rewritten each time a new type of data is to be sorted. The sorting subroutine gets the comparing function as an argument and calls the function indirectly. ScriptBasic can not pass functions as arguments to other functions, but it can pass integer numbers. The function 
+Whenever you call a function or subroutine you have to know the name of the subroutine or function. In some situation programmers want to call a function without knowing the name of the function. For example you want to write a sorting subroutine that sorts general elements and the caller should provide a subroutine that makes the comparison. This way the sorting algorithm can be implemented only once and need not be rewritten each time a new type of data is to be sorted. The sorting subroutine gets the comparing function as an argument and calls the function indirectly. ScriptBasic can not pass functions as arguments to other functions, but it can pass integer numbers. The function
 R<ADDRESS> can be used to convert a function into integer. The result of the built-in function R<ADDRESS> is an integer number, which is associated inside the basic code with the function. You can pass this value to the T<ICALL> command or function as first argument. The T<ICALL> command is the command for indirect subroutine call. The call
 
 =verbatim
@@ -541,7 +541,7 @@ Instead you have to write
 Address( MySub() )
 =noverbatim
 
-using the parentheses. In this situation the function or subroutine 
+using the parentheses. In this situation the function or subroutine
 T<MySub()> will not be invoked. The parentheses tell the compiler that this is a function and not a variable.
 */
 COMMAND(ICALLFUN)
@@ -594,7 +594,7 @@ NOTIMPLEMENTED;
   pEo->ErrorResume = 0;
   SavefErrorGoto = pEo->fErrorGoto;
   pEo->fErrorGoto = ONERROR_NOTHING;
-  if( pEo->pHookers->HOOK_ExecCall && 
+  if( pEo->pHookers->HOOK_ExecCall &&
       (iErrorCode = pEo->pHookers->HOOK_ExecCall(pEo)) )
     ERROR(iErrorCode);
   /* function entering code needs access to the caller local variables, therefore
@@ -671,7 +671,7 @@ NOTIMPLEMENTED;
   pEo->ErrorResume = 0;
   SavefErrorGoto = pEo->fErrorGoto;
   pEo->fErrorGoto = ONERROR_NOTHING;
-  if( pEo->pHookers->HOOK_ExecCall && 
+  if( pEo->pHookers->HOOK_ExecCall &&
       (iErrorCode = pEo->pHookers->HOOK_ExecCall(pEo)) )
     ERROR(iErrorCode);
   /* function entering code needs access to the caller local variables, therefore
@@ -725,7 +725,7 @@ END
 =section misc
 =title SUB fun()
 
-This command should be used to define a subroutine. A subroutine is a piece of code that can be called by the BASIC program from the main part or from a function or subroutine. 
+This command should be used to define a subroutine. A subroutine is a piece of code that can be called by the BASIC program from the main part or from a function or subroutine.
 
 =verbatim
 SUB sub(a,b,c)
